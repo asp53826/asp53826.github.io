@@ -18,10 +18,18 @@ import {
   X
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  ArchitectureConstellation,
+  EvidenceDesk,
+  ExperimentLedger,
+  PostmortemIndex,
+  RecruiterTour,
+  VerificationTheater
+} from "./ExperienceModules";
 
 export type TrackId = "systems" | "quant" | "defense" | "ml-infrastructure";
 
-type Route = {
+export type Route = {
   id: TrackId;
   label: string;
   short: string;
@@ -29,7 +37,7 @@ type Route = {
   projects: string[];
 };
 
-type Project = {
+export type Project = {
   id: string;
   name: string;
   track: TrackId;
@@ -46,6 +54,27 @@ type Project = {
   repo: string;
   live?: string;
   methods: string[];
+};
+
+export type ReplayEvent = {
+  time: string;
+  label: string;
+  detail: string;
+  state: "healthy" | "fault" | "contained" | "recovering" | "verified";
+};
+
+export type FlagshipExperience = {
+  projectId: string;
+  commit: string;
+  benchmarkCommand: string;
+  sourceFiles: string[];
+  scenarioLabel: string;
+  scenarioSummary: string;
+  invariant: string;
+  result: string;
+  events: ReplayEvent[];
+  history: Array<{ label: string; commit: string; metric: string; note: string }>;
+  postmortem: { failure: string; signal: string; correction: string; lesson: string };
 };
 
 export type Evidence = {
@@ -69,6 +98,11 @@ export type Evidence = {
     status: string;
     summary: string;
     proof: string;
+  };
+  experience: {
+    verifiedOn: string;
+    disclosure: string;
+    flagships: FlagshipExperience[];
   };
   routes: Route[];
   projects: Project[];
@@ -110,7 +144,7 @@ function CopyCommand({ command, compact = false }: { command: string; compact?: 
   );
 }
 
-function ProjectCard({ project, featured = false }: { project: Project; featured?: boolean }) {
+function ProjectCard({ project, featured = false, verifiedOn }: { project: Project; featured?: boolean; verifiedOn: string }) {
   return (
     <article className={`project-card${featured ? " featured" : ""}`}>
       <header>
@@ -128,6 +162,7 @@ function ProjectCard({ project, featured = false }: { project: Project; featured
         <span>{project.metricLabel}</span>
       </div>
       <p className="project-proof">{project.proof}</p>
+      <div className="proof-freshness"><span><i /> VERIFIED</span><time dateTime={verifiedOn}>{verifiedOn}</time></div>
       <details>
         <summary>Inspect proof chain</summary>
         <dl className="proof-chain">
@@ -287,7 +322,7 @@ export default function Observatory({ evidence, initialTrack }: Props) {
   ];
 
   return (
-    <div className="observatory-shell">
+    <div className="observatory-shell" data-track={activeTrack}>
       <a className="skip-link" href="#main-content">Skip to portfolio evidence</a>
 
       <header className="topbar">
@@ -296,8 +331,9 @@ export default function Observatory({ evidence, initialTrack }: Props) {
           <span><strong>Aaryan Patel</strong><small>Systems Observatory</small></span>
         </a>
         <nav aria-label="Primary">
-          <a href="#flagships">Proof cards</a>
-          <a href="#compare">Compare</a>
+          <a href="#theater">Verification theater</a>
+          <a href="#map">System map</a>
+          <a href="#evidence-desk">Ask evidence</a>
           <a href="/data/evidence.json" target="_blank" rel="noreferrer">Evidence</a>
         </nav>
         <div className="topbar-actions">
@@ -318,6 +354,7 @@ export default function Observatory({ evidence, initialTrack }: Props) {
             <p className="hero-contract">{evidence.contract}</p>
             <div className="hero-actions">
               <a className="button primary" href="#routes">Choose a recruiter route <ChevronRight aria-hidden="true" /></a>
+              <RecruiterTour evidence={evidence} activeTrack={activeTrack} onSelectTrack={chooseTrack} />
               <a className="button" href="/resume/Aaryan-Patel-Systems-Resume.pdf" download>
                 <Download aria-hidden="true" /> Download resume
               </a>
@@ -346,6 +383,8 @@ export default function Observatory({ evidence, initialTrack }: Props) {
           <a href="https://github.com/asp53826/asp53826.github.io">Open source <ArrowUpRight aria-hidden="true" /></a>
         </section>
 
+        <VerificationTheater evidence={evidence} />
+
         <section className="routes-section" id="routes" aria-labelledby="routes-title">
           <div className="section-heading">
             <div><p className="eyebrow">RECRUITER ENTRY ROUTES</p><h2 id="routes-title">Choose the signal that matches the role.</h2></div>
@@ -369,7 +408,14 @@ export default function Observatory({ evidence, initialTrack }: Props) {
           </div>
           <div className="signal-path" data-track={activeTrack} aria-hidden="true"><span /></div>
           <p className="visually-hidden" aria-live="polite">Showing the {route.label} recruiter route.</p>
+          <div className="route-packet-bar">
+            <span><FileJson aria-hidden="true" /> {route.short} evidence packet</span>
+            <a href={`/recruiter/${activeTrack}.pdf`} download><Download aria-hidden="true" /> Download recruiter PDF</a>
+            <a href={`/recruiter/${activeTrack}.json`} target="_blank" rel="noreferrer">Open JSON <ArrowUpRight aria-hidden="true" /></a>
+          </div>
         </section>
+
+        <ArchitectureConstellation evidence={evidence} activeTrack={activeTrack} onSelectTrack={chooseTrack} />
 
         <section className="route-output" aria-labelledby="route-output-title">
           <div className="section-heading compact-heading">
@@ -377,7 +423,7 @@ export default function Observatory({ evidence, initialTrack }: Props) {
             <p>{route.summary}</p>
           </div>
           <div className="project-grid">
-            {routeProjects.map((project) => <ProjectCard key={project.id} project={project} />)}
+            {routeProjects.map((project) => <ProjectCard key={project.id} project={project} verifiedOn={evidence.experience.verifiedOn} />)}
           </div>
         </section>
 
@@ -387,9 +433,15 @@ export default function Observatory({ evidence, initialTrack }: Props) {
             <p>The failure boundary is part of the card because knowing what a result does not prove is engineering evidence.</p>
           </div>
           <div className="flagship-grid">
-            {flagships.map((project) => <ProjectCard key={project.id} project={project} featured />)}
+            {flagships.map((project) => <ProjectCard key={project.id} project={project} featured verifiedOn={evidence.experience.verifiedOn} />)}
           </div>
         </section>
+
+        <ExperimentLedger evidence={evidence} />
+
+        <PostmortemIndex evidence={evidence} />
+
+        <EvidenceDesk evidence={evidence} />
 
         <section className="compare-section" id="compare" aria-labelledby="compare-title">
           <div className="section-heading compact-heading">

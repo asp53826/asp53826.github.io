@@ -21,6 +21,14 @@ for (const project of evidence.projects) {
 for (const route of evidence.routes) {
   await access(path.join(root, `public/social/route-${route.id}.png`));
   await access(path.join(root, `public/recruiter/${route.id}.json`));
+  await access(path.join(root, `public/recruiter/${route.id}.pdf`));
+}
+if (evidence.version < 2) throw new Error("evidence manifest must include the interactive verification schema");
+if (evidence.experience.flagships.length !== 3) throw new Error("exactly three flagship verification experiences are required");
+for (const experience of evidence.experience.flagships) {
+  if (!ids.has(experience.projectId)) throw new Error(`verification experience references missing project ${experience.projectId}`);
+  if (experience.events.length !== 6) throw new Error(`${experience.projectId} must include six 10-second replay checkpoints`);
+  if (!experience.commit || !experience.benchmarkCommand || experience.sourceFiles.length < 2) throw new Error(`${experience.projectId} missing provenance`);
 }
 await Promise.all([
   access(path.join(root, "public/social/observatory.png")),

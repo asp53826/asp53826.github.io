@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "generated": "2026-07-31",
   "owner": {
     "name": "Aaryan Patel",
@@ -29,6 +29,101 @@
     "status": "active",
     "summary": "A single source of truth that generates the recruiter site, GitHub profile surfaces, proof cards, social artwork, and resume.",
     "proof": "Every public claim resolves to a command, source, oracle, and limitation."
+  },
+  "experience": {
+    "verifiedOn": "2026-07-31",
+    "disclosure": "Interactive replays are deterministic narrative checkpoints derived from published tests and benchmark tables. They are not live production telemetry.",
+    "flagships": [
+      {
+        "projectId": "raft-mvcc",
+        "commit": "dbd5398",
+        "benchmarkCommand": "make clean test benchmark",
+        "sourceFiles": ["tests/test_raft_mvcc.cpp", "bench/benchmark.cpp", "src/raft.cpp", "src/linearizability.cpp"],
+        "scenarioLabel": "Leader isolation and log repair",
+        "scenarioSummary": "Isolate the leader, allow an unsafe proposal on the minority side, elect a majority leader, then heal the partition.",
+        "invariant": "A minority leader may append locally but cannot advance the committed index.",
+        "result": "The majority fails over in 11 logical ticks and the old leader's conflicting suffix is repaired after healing.",
+        "events": [
+          {"time": "T+00", "label": "Five nodes agree", "detail": "Node 1 leads a healthy five-node cluster; the committed prefix matches on every node.", "state": "healthy"},
+          {"time": "T+01", "label": "Partition injected", "detail": "Node 1 is isolated from the four-node majority. Messages crossing the cut are deterministically dropped.", "state": "fault"},
+          {"time": "T+03", "label": "Minority proposal", "detail": "The isolated leader accepts an uncommitted local proposal but cannot obtain a quorum.", "state": "contained"},
+          {"time": "T+07", "label": "Fresh candidate wins", "detail": "The majority elects a leader using the term and last-log freshness checks.", "state": "recovering"},
+          {"time": "T+11", "label": "Majority commits", "detail": "The new leader commits on the majority while the isolated leader remains unable to commit.", "state": "verified"},
+          {"time": "HEAL", "label": "Conflict repaired", "detail": "Healing exposes the stale suffix; nextIndex backtracking truncates and replaces it.", "state": "verified"}
+        ],
+        "history": [
+          {"label": "Mechanism release", "commit": "dbd5398", "metric": "598 assertions", "note": "Targeted invariants plus a seeded failover campaign."},
+          {"label": "Published failover", "commit": "dbd5398", "metric": "11 logical ticks", "note": "Five-node leader isolation and majority re-election."},
+          {"label": "Verification surface", "commit": "b4eef31", "metric": "CI badge added", "note": "Repository metadata now exposes the same correctness path."}
+        ],
+        "postmortem": {
+          "failure": "An isolated leader can still accept a local append, which looks successful if commit state is ignored.",
+          "signal": "The test tracks commit advancement separately from proposal acceptance.",
+          "correction": "Only a current-term entry replicated to a majority can advance the leader's commit index.",
+          "lesson": "Availability-looking behavior is not safety evidence; the invariant must be observed at the commit boundary."
+        }
+      },
+      {
+        "projectId": "edgar-mcp",
+        "commit": "825052d",
+        "benchmarkCommand": "make test && make bench",
+        "sourceFiles": ["src/edgar_mcp/client.py", "tests/test_client.py", "tests/test_tools.py", "README.md"],
+        "scenarioLabel": "Burst control and truthful cache hits",
+        "scenarioSummary": "Drive concurrent EDGAR reads through the original burst-prone design, then replay the strict pacer and host-aware cache correction.",
+        "invariant": "Request grants stay paced below the SEC ceiling, and a cache hit transfers no response body.",
+        "result": "The corrected client sustains 9.2 requests per second and serves a warm 10-K in 1.1 ms with zero downloaded megabytes.",
+        "events": [
+          {"time": "T+00", "label": "Cold filing read", "detail": "The client fetches a 1.52 MB 10-K and stores the immutable archive document.", "state": "healthy"},
+          {"time": "T+01", "label": "Burst model challenged", "detail": "The original full token bucket places 19 grants inside a one-second window.", "state": "fault"},
+          {"time": "T+02", "label": "Strict pacing enabled", "detail": "A global monotonic pacer spaces grants and removes startup burst capacity.", "state": "contained"},
+          {"time": "T+03", "label": "False cache hit exposed", "detail": "A reported hit still transfers 3.75 MB because the host cannot validate it as assumed.", "state": "fault"},
+          {"time": "T+04", "label": "Freshness split by host", "detail": "Immutable archives cache forever; data APIs use TTL or validators that the host actually provides.", "state": "recovering"},
+          {"time": "T+05", "label": "Warm read verified", "detail": "The 10-K returns in 1.1 ms with 0.00 MB downloaded, a measured 138x improvement.", "state": "verified"}
+        ],
+        "history": [
+          {"label": "First rate benchmark", "commit": "pre-fix", "metric": "19 req / 1 s", "note": "A full token bucket nearly doubled the intended ceiling."},
+          {"label": "Strict pacer", "commit": "current", "metric": "9.2 req / s", "note": "Grants are globally spaced with no initial burst."},
+          {"label": "First cache benchmark", "commit": "pre-fix", "metric": "3.75 MB warm", "note": "The hit counter hid a complete re-download."},
+          {"label": "Host-aware cache", "commit": "current", "metric": "0.00 MB warm", "note": "Warm 10-K read measures 1.1 ms and 138x speedup."}
+        ],
+        "postmortem": {
+          "failure": "The first implementation looked compliant and cached because its abstractions reported tokens and hits.",
+          "signal": "Wire-level one-second request windows and transferred-byte counters contradicted the abstraction-level metrics.",
+          "correction": "Replace burst capacity with strict pacing and assign cache freshness rules per EDGAR host.",
+          "lesson": "Measure the wire, not the class name: a RateLimiter and Cache do not prove rate limiting or caching."
+        }
+      },
+      {
+        "projectId": "track-fusion",
+        "commit": "099601b",
+        "benchmarkCommand": "python -m pytest -q && python bench/benchmark.py --quick",
+        "sourceFiles": ["tf/imm.py", "tf/assoc/jpda.py", "tf/metrics.py", "bench/benchmark.py"],
+        "scenarioLabel": "Maneuver, crossing, and cardinality failure",
+        "scenarioSummary": "Track a maneuvering target, introduce a crossing under clutter, then compare localization accuracy with full OSPA cost.",
+        "invariant": "Association comparisons hold the tracker constant, and evaluation charges for both localization and target-count errors.",
+        "result": "IMM lowers localization error 47% inside its useful turn-rate band; JPDA improves crossing localization but sustains 2.7x the false tracks.",
+        "events": [
+          {"time": "T+00", "label": "Straight leg", "detail": "The CV and IMM estimators agree while motion remains close to constant velocity.", "state": "healthy"},
+          {"time": "T+01", "label": "Turn begins", "detail": "Measurements shift probability toward the coordinated-turn modes in the IMM bank.", "state": "recovering"},
+          {"time": "T+02", "label": "Localization measured", "detail": "OSPA localization falls from 26.92 for the single CV filter to 14.40 for IMM.", "state": "verified"},
+          {"time": "T+03", "label": "Tracks cross", "detail": "Two measurements become plausible for both targets under light clutter.", "state": "fault"},
+          {"time": "T+04", "label": "Soft association wins locally", "detail": "JPDA localization reaches 13.76 versus 14.70 for GNN across the crossing.", "state": "contained"},
+          {"time": "T+05", "label": "Cardinality exposes the loss", "detail": "JPDA keeps 2.7x the false tracks; total OSPA is 39.55 versus 28.73 for GNN.", "state": "verified"}
+        ],
+        "history": [
+          {"label": "Single CV baseline", "commit": "099601b", "metric": "26.92 OSPA loc", "note": "Coverage is 0.893 through the maneuver."},
+          {"label": "IMM bank", "commit": "099601b", "metric": "14.40 OSPA loc", "note": "Coverage rises to 0.960 inside the 3-6 degree/s useful band."},
+          {"label": "Crossing GNN", "commit": "099601b", "metric": "28.73 total OSPA", "note": "Hard association has slightly worse localization and much lower cardinality error."},
+          {"label": "Crossing JPDA", "commit": "099601b", "metric": "39.55 total OSPA", "note": "Localization improves while false tracks rise from 0.21 to 0.56 per scan."}
+        ],
+        "postmortem": {
+          "failure": "RMSE and localization-only views make JPDA look like the better crossing strategy.",
+          "signal": "OSPA cardinality cost reveals marginal clutter tracks that soft association keeps alive.",
+          "correction": "Publish localization and cardinality separately, then compare the total under paired seeds.",
+          "lesson": "A better estimator can be a worse tracking system when the metric ignores existence errors."
+        }
+      }
+    ]
   },
   "routes": [
     {

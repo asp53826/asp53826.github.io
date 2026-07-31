@@ -20,6 +20,24 @@ const {
 } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 const socialImage = new URL(image, Astro.site);
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "ProfilePage",
+  name: title,
+  description,
+  url: canonical.href,
+  mainEntity: {
+    "@type": "Person",
+    name: "Aaryan Patel",
+    url: "https://asp53826.github.io",
+    email: "mailto:aaryansp26@gmail.com",
+    jobTitle: "Systems and ML Infrastructure Engineer",
+    sameAs: [
+      "https://github.com/asp53826",
+      "https://www.linkedin.com/in/aaryanpatelsystems/"
+    ]
+  }
+};
 ---
 
 <!doctype html>
@@ -46,6 +64,7 @@ const socialImage = new URL(image, Astro.site);
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={socialImage} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
     <title>{title}</title>
     <script is:inline>
       try {
