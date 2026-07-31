@@ -1,0 +1,93 @@
+{
+  "route": {
+    "id": "quant",
+    "label": "Quant / Finance",
+    "short": "QNT",
+    "summary": "Financial data, market structure, and differentiable pricing.",
+    "projects": [
+      "edgar-mcp",
+      "aad-greeks",
+      "lob-market-making"
+    ]
+  },
+  "owner": {
+    "name": "Aaryan Patel",
+    "email": "aaryansp26@gmail.com",
+    "github": "https://github.com/asp53826",
+    "linkedin": "https://www.linkedin.com/in/aaryanpatelsystems/",
+    "site": "https://asp53826.github.io",
+    "role": "Systems and ML Infrastructure Engineer",
+    "education": "Computer Science undergraduate at the University of Georgia",
+    "work": "Automation and analytics at MP Equipment"
+  },
+  "thesis": "I build systems that survive faults, bad data, and dishonest benchmarks.",
+  "projects": [
+    {
+      "id": "edgar-mcp",
+      "name": "edgar-mcp",
+      "track": "quant",
+      "language": "Python",
+      "tagline": "SEC EDGAR tools with bounded context, caching, and global pacing.",
+      "problem": "Filings are large, issuer identities are ambiguous, and naive concurrent clients can violate the SEC request ceiling.",
+      "mechanism": "Identity resolution, filing history, bounded text windows, XBRL discovery, per-host cache validation, and a global request pacer.",
+      "attack": "Cold and warm reads, burst traffic, identity collisions, overflow history, and malformed iXBRL.",
+      "metric": "138x",
+      "metricLabel": "warm 10-K read vs cold fetch",
+      "proof": "32 offline tests; peak request windows stay at the SEC 10 requests-per-second ceiling.",
+      "limitation": "Public EDGAR data only; it is not an investment recommendation or a complete accounting model.",
+      "command": "git clone https://github.com/asp53826/edgar-mcp && cd edgar-mcp && make test",
+      "repo": "https://github.com/asp53826/edgar-mcp",
+      "live": "https://asp53826.github.io/edgar-mcp/",
+      "methods": [
+        "rate-limit enforcement",
+        "cache benchmark",
+        "fixture tests"
+      ]
+    },
+    {
+      "id": "aad-greeks",
+      "name": "aad-greeks",
+      "track": "quant",
+      "language": "Python",
+      "tagline": "Reverse-mode automatic differentiation over Monte Carlo paths.",
+      "problem": "Bumping every pricing input scales linearly and finite differences collapse near discontinuous payoffs.",
+      "mechanism": "A tape-based reverse-mode AD engine with pricers written once and differentiated instead of hand-derived.",
+      "attack": "Analytic Black-Scholes formulas, central differences across bump sizes, and discontinuous-payoff failure cases.",
+      "metric": "5.6e-16",
+      "metricLabel": "maximum analytic error",
+      "proof": "19 tests; all Greeks cost 1.7-2.4x the price across a 50x change in input count.",
+      "limitation": "Pathwise derivatives return a wrong zero delta for an unsmoothed digital payoff; the live lab exposes it.",
+      "command": "git clone https://github.com/asp53826/aad-greeks && cd aad-greeks && make test",
+      "repo": "https://github.com/asp53826/aad-greeks",
+      "live": "https://asp53826.github.io/aad-greeks/",
+      "methods": [
+        "analytic oracle",
+        "finite differences",
+        "complexity benchmark"
+      ]
+    },
+    {
+      "id": "lob-market-making",
+      "name": "lob-market-making",
+      "track": "quant",
+      "language": "Python",
+      "tagline": "Price-time matching and market making under toxic flow.",
+      "problem": "Raw PnL can make a strategy look strong while inventory exposure and adverse selection carry the risk.",
+      "mechanism": "Limit order book, post-only orders, informed flow, three quoting strategies, and exact PnL decomposition.",
+      "attack": "Paired 12-seed strategy comparison with spread, inventory, and toxicity held explicit.",
+      "metric": "7x",
+      "metricLabel": "naive inventory deviation",
+      "proof": "36 tests; naive quoting wins raw PnL and loses every risk-adjusted metric.",
+      "limitation": "Synthetic order flow without exchange latency, queue-position uncertainty, or real fees.",
+      "command": "git clone https://github.com/asp53826/lob-market-making && cd lob-market-making && make test",
+      "repo": "https://github.com/asp53826/lob-market-making",
+      "live": "https://asp53826.github.io/lob-market-making/",
+      "methods": [
+        "paired seeds",
+        "PnL attribution",
+        "regime sweep"
+      ]
+    }
+  ],
+  "generated": "2026-07-31"
+}

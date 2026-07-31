@@ -1,0 +1,90 @@
+{
+  "route": {
+    "id": "defense",
+    "label": "Defense / Autonomy",
+    "short": "DEF",
+    "summary": "Tracking, radar image formation, and GPS-denied navigation.",
+    "projects": [
+      "track-fusion",
+      "sar-focus",
+      "vio-nav"
+    ]
+  },
+  "owner": {
+    "name": "Aaryan Patel",
+    "email": "aaryansp26@gmail.com",
+    "github": "https://github.com/asp53826",
+    "linkedin": "https://www.linkedin.com/in/aaryanpatelsystems/",
+    "site": "https://asp53826.github.io",
+    "role": "Systems and ML Infrastructure Engineer",
+    "education": "Computer Science undergraduate at the University of Georgia",
+    "work": "Automation and analytics at MP Equipment"
+  },
+  "thesis": "I build systems that survive faults, bad data, and dishonest benchmarks.",
+  "projects": [
+    {
+      "id": "track-fusion",
+      "name": "track-fusion",
+      "track": "defense",
+      "language": "Python",
+      "tagline": "IMM, JPDA, track scoring, and OSPA from the filter up.",
+      "problem": "Tracking fails across estimation, association, and track existence; RMSE alone hides cardinality failure.",
+      "mechanism": "IMM motion bank, exact JPDA enumeration with bounded fallback, Wald track scoring, and OSPA decomposition.",
+      "attack": "Turn-rate sweeps, crossing targets, clutter, and paired association comparisons.",
+      "metric": "47%",
+      "metricLabel": "localization error reduction",
+      "proof": "67 tests; IMM coverage rises from 0.893 to 0.960, while the published sweep shows where the bank loses.",
+      "limitation": "The useful IMM band is 3-6 degrees per second; at 0 and 12 degrees per second the configured bank loses.",
+      "command": "git clone https://github.com/asp53826/track-fusion && cd track-fusion && python -m pip install -e '.[dev]' && python -m pytest -q",
+      "repo": "https://github.com/asp53826/track-fusion",
+      "methods": [
+        "OSPA",
+        "paired seeds",
+        "parameter sweep"
+      ]
+    },
+    {
+      "id": "sar-focus",
+      "name": "sar-focus",
+      "track": "defense",
+      "language": "Python",
+      "tagline": "Image formation checked against analytic resolution and sidelobe theory.",
+      "problem": "A plausible radar image can still have the wrong resolution or impossible sidelobes.",
+      "mechanism": "LFM pulse compression, time-domain backprojection, phase-gradient autofocus, and impulse-response analysis.",
+      "attack": "Independent bandwidth/aperture sweeps and theory checks for resolution and PSLR.",
+      "metric": "<0.5%",
+      "metricLabel": "resolution error vs theory",
+      "proof": "27 tests; the theory oracle exposed interpolation that produced physically impossible sidelobes.",
+      "limitation": "Synthetic phase history with idealized propagation and no measured sensor calibration errors.",
+      "command": "git clone https://github.com/asp53826/sar-focus && cd sar-focus && python -m pip install -e '.[dev]' && python -m pytest -q",
+      "repo": "https://github.com/asp53826/sar-focus",
+      "methods": [
+        "analytic theory",
+        "double dissociation",
+        "impulse response"
+      ]
+    },
+    {
+      "id": "vio-nav",
+      "name": "vio-nav",
+      "track": "defense",
+      "language": "Python",
+      "tagline": "MSCKF visual-inertial odometry built from the Lie algebra up.",
+      "problem": "IMU bias integrates into unbounded position drift while a monocular camera cannot observe scale alone.",
+      "mechanism": "SO(3) preintegration, sliding camera-state window, null-space feature marginalization, and ATE/RPE evaluation.",
+      "attack": "Duration sweeps, hover/circle/figure-eight motion, parallax rejection, and dead-reckoning baseline.",
+      "metric": "51.9x",
+      "metricLabel": "lower drift at 40 seconds",
+      "proof": "37 tests; MSCKF stays near four centimeters while dead reckoning reaches 2.106 meters.",
+      "limitation": "At five seconds VIO is worse than inertial-only, and hover makes it 13x worse because depth is unobservable.",
+      "command": "git clone https://github.com/asp53826/vio-nav && cd vio-nav && python -m pip install -e '.[dev]' && python -m pytest -q",
+      "repo": "https://github.com/asp53826/vio-nav",
+      "methods": [
+        "ground-truth trajectory",
+        "motion sweep",
+        "ATE and RPE"
+      ]
+    }
+  ],
+  "generated": "2026-07-31"
+}

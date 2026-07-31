@@ -1,0 +1,21 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Observatory from "../components/Observatory";
+import type { Evidence, TrackId } from "../components/Observatory";
+import evidence from "../../data/evidence.json";
+
+export function getStaticPaths() {
+  return evidence.routes.map((route) => ({
+    params: { track: route.id },
+    props: { route }
+  }));
+}
+
+const { route } = Astro.props;
+const title = `${route.label} | Aaryan Systems Observatory`;
+const description = `${route.summary} Inspect source-backed projects, proof methods, limitations, and reproduction commands.`;
+---
+
+<BaseLayout title={title} description={description} image={`/social/route-${route.id}.png`}>
+  <Observatory client:load evidence={evidence as Evidence} initialTrack={route.id as TrackId} />
+</BaseLayout>

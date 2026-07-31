@@ -1,0 +1,336 @@
+{
+  "version": 1,
+  "generated": "2026-07-31",
+  "owner": {
+    "name": "Aaryan Patel",
+    "email": "aaryansp26@gmail.com",
+    "github": "https://github.com/asp53826",
+    "linkedin": "https://www.linkedin.com/in/aaryanpatelsystems/",
+    "site": "https://asp53826.github.io",
+    "role": "Systems and ML Infrastructure Engineer",
+    "education": "Computer Science undergraduate at the University of Georgia",
+    "work": "Automation and analytics at MP Equipment"
+  },
+  "thesis": "I build systems that survive faults, bad data, and dishonest benchmarks.",
+  "contract": "Build the mechanism. Attack the assumptions. Measure against a real baseline. Publish where it loses.",
+  "health": {
+    "measuredSystems": 23,
+    "publicRepositories": 25,
+    "testFunctions": 806,
+    "sourceFiles": 485,
+    "languages": 8,
+    "liveLabs": 4,
+    "trackedWorkflows": 11,
+    "lastVerified": "2026-07-31"
+  },
+  "current": {
+    "title": "Evidence infrastructure for technical portfolios",
+    "repo": "asp53826.github.io",
+    "status": "active",
+    "summary": "A single source of truth that generates the recruiter site, GitHub profile surfaces, proof cards, social artwork, and resume.",
+    "proof": "Every public claim resolves to a command, source, oracle, and limitation."
+  },
+  "routes": [
+    {
+      "id": "systems",
+      "label": "Systems",
+      "short": "SYS",
+      "summary": "Storage, execution, consensus, and fault discovery.",
+      "projects": [
+        "raft-mvcc",
+        "columnar-engine",
+        "dst-harness"
+      ]
+    },
+    {
+      "id": "quant",
+      "label": "Quant / Finance",
+      "short": "QNT",
+      "summary": "Financial data, market structure, and differentiable pricing.",
+      "projects": [
+        "edgar-mcp",
+        "aad-greeks",
+        "lob-market-making"
+      ]
+    },
+    {
+      "id": "defense",
+      "label": "Defense / Autonomy",
+      "short": "DEF",
+      "summary": "Tracking, radar image formation, and GPS-denied navigation.",
+      "projects": [
+        "track-fusion",
+        "sar-focus",
+        "vio-nav"
+      ]
+    },
+    {
+      "id": "ml-infrastructure",
+      "label": "ML Infrastructure",
+      "short": "MLI",
+      "summary": "Retrieval, inference serving, and distributed training.",
+      "projects": [
+        "annlite",
+        "vllm-lite",
+        "dist-train"
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "raft-mvcc",
+      "name": "raft-mvcc",
+      "track": "systems",
+      "language": "C++17",
+      "tagline": "Consensus, serializable snapshots, and machine-checkable histories.",
+      "problem": "A replicated database can acknowledge writes while violating safety under partitions, leader changes, or transaction conflicts.",
+      "mechanism": "Raft elections and conflict repair combined with MVCC snapshots, serializable OCC, safe-point GC, and P-compositional linearizability checking.",
+      "attack": "Seeded partitions, stale candidates, minority leaders, conflicting transactions, tombstones, and invalid histories.",
+      "metric": "598",
+      "metricLabel": "assertions across seeded faults",
+      "proof": "Five-node failover completes in 11 simulator ticks while minority leaders cannot commit.",
+      "limitation": "An in-process simulator: no sockets, fsync, snapshots, membership changes, or multi-range transactions.",
+      "command": "git clone https://github.com/asp53826/raft-mvcc && cd raft-mvcc && make test",
+      "repo": "https://github.com/asp53826/raft-mvcc",
+      "methods": [
+        "linearizability",
+        "fault injection",
+        "differential invariants"
+      ]
+    },
+    {
+      "id": "columnar-engine",
+      "name": "columnar-engine",
+      "track": "systems",
+      "language": "C++17",
+      "tagline": "Vector-at-a-time analytical execution checked against scalar oracles.",
+      "problem": "Analytical operators can be fast while silently mishandling nulls, selections, joins, or aggregation.",
+      "mechanism": "Null bitmaps, selection vectors, vectorized filters, joins, aggregation, and TPC-H Q1.",
+      "attack": "Every vectorized operator is differentially checked against a scalar reference.",
+      "metric": "53.1M",
+      "metricLabel": "TPC-H Q1 rows per second",
+      "proof": "6,288 assertions; batched filters are 1.94x the scalar implementation.",
+      "limitation": "In-memory engine without persistence, distributed execution, or a SQL frontend.",
+      "command": "git clone https://github.com/asp53826/columnar-engine && cd columnar-engine && make test",
+      "repo": "https://github.com/asp53826/columnar-engine",
+      "methods": [
+        "scalar oracle",
+        "differential testing",
+        "benchmark"
+      ]
+    },
+    {
+      "id": "dst-harness",
+      "name": "dst-harness",
+      "track": "systems",
+      "language": "Python",
+      "tagline": "Deterministic simulation testing scored by seeds-to-first-catch.",
+      "problem": "Distributed failures are hard to reproduce when time, network, disk, and scheduling remain nondeterministic.",
+      "mechanism": "Virtual clock, network and disk, seeded fault injection, Raft safety properties, and a Wing-Gong checker.",
+      "attack": "Twelve planted Raft defects plus 2,000 clean control seeds.",
+      "metric": "12 / 12",
+      "metricLabel": "planted defects caught",
+      "proof": "Seeds-to-first-catch range from 1 to 485; the harness also found two real bugs with reproducing seeds.",
+      "limitation": "The target protocol model is deliberately smaller than a production Raft implementation.",
+      "command": "git clone https://github.com/asp53826/dst-harness && cd dst-harness && python3 -m venv .venv && .venv/bin/pip install -e '.[dev]' && .venv/bin/python -m pytest -q",
+      "repo": "https://github.com/asp53826/dst-harness",
+      "methods": [
+        "deterministic simulation",
+        "mutation testing",
+        "linearizability"
+      ]
+    },
+    {
+      "id": "edgar-mcp",
+      "name": "edgar-mcp",
+      "track": "quant",
+      "language": "Python",
+      "tagline": "SEC EDGAR tools with bounded context, caching, and global pacing.",
+      "problem": "Filings are large, issuer identities are ambiguous, and naive concurrent clients can violate the SEC request ceiling.",
+      "mechanism": "Identity resolution, filing history, bounded text windows, XBRL discovery, per-host cache validation, and a global request pacer.",
+      "attack": "Cold and warm reads, burst traffic, identity collisions, overflow history, and malformed iXBRL.",
+      "metric": "138x",
+      "metricLabel": "warm 10-K read vs cold fetch",
+      "proof": "32 offline tests; peak request windows stay at the SEC 10 requests-per-second ceiling.",
+      "limitation": "Public EDGAR data only; it is not an investment recommendation or a complete accounting model.",
+      "command": "git clone https://github.com/asp53826/edgar-mcp && cd edgar-mcp && make test",
+      "repo": "https://github.com/asp53826/edgar-mcp",
+      "live": "https://asp53826.github.io/edgar-mcp/",
+      "methods": [
+        "rate-limit enforcement",
+        "cache benchmark",
+        "fixture tests"
+      ]
+    },
+    {
+      "id": "aad-greeks",
+      "name": "aad-greeks",
+      "track": "quant",
+      "language": "Python",
+      "tagline": "Reverse-mode automatic differentiation over Monte Carlo paths.",
+      "problem": "Bumping every pricing input scales linearly and finite differences collapse near discontinuous payoffs.",
+      "mechanism": "A tape-based reverse-mode AD engine with pricers written once and differentiated instead of hand-derived.",
+      "attack": "Analytic Black-Scholes formulas, central differences across bump sizes, and discontinuous-payoff failure cases.",
+      "metric": "5.6e-16",
+      "metricLabel": "maximum analytic error",
+      "proof": "19 tests; all Greeks cost 1.7-2.4x the price across a 50x change in input count.",
+      "limitation": "Pathwise derivatives return a wrong zero delta for an unsmoothed digital payoff; the live lab exposes it.",
+      "command": "git clone https://github.com/asp53826/aad-greeks && cd aad-greeks && make test",
+      "repo": "https://github.com/asp53826/aad-greeks",
+      "live": "https://asp53826.github.io/aad-greeks/",
+      "methods": [
+        "analytic oracle",
+        "finite differences",
+        "complexity benchmark"
+      ]
+    },
+    {
+      "id": "lob-market-making",
+      "name": "lob-market-making",
+      "track": "quant",
+      "language": "Python",
+      "tagline": "Price-time matching and market making under toxic flow.",
+      "problem": "Raw PnL can make a strategy look strong while inventory exposure and adverse selection carry the risk.",
+      "mechanism": "Limit order book, post-only orders, informed flow, three quoting strategies, and exact PnL decomposition.",
+      "attack": "Paired 12-seed strategy comparison with spread, inventory, and toxicity held explicit.",
+      "metric": "7x",
+      "metricLabel": "naive inventory deviation",
+      "proof": "36 tests; naive quoting wins raw PnL and loses every risk-adjusted metric.",
+      "limitation": "Synthetic order flow without exchange latency, queue-position uncertainty, or real fees.",
+      "command": "git clone https://github.com/asp53826/lob-market-making && cd lob-market-making && make test",
+      "repo": "https://github.com/asp53826/lob-market-making",
+      "live": "https://asp53826.github.io/lob-market-making/",
+      "methods": [
+        "paired seeds",
+        "PnL attribution",
+        "regime sweep"
+      ]
+    },
+    {
+      "id": "track-fusion",
+      "name": "track-fusion",
+      "track": "defense",
+      "language": "Python",
+      "tagline": "IMM, JPDA, track scoring, and OSPA from the filter up.",
+      "problem": "Tracking fails across estimation, association, and track existence; RMSE alone hides cardinality failure.",
+      "mechanism": "IMM motion bank, exact JPDA enumeration with bounded fallback, Wald track scoring, and OSPA decomposition.",
+      "attack": "Turn-rate sweeps, crossing targets, clutter, and paired association comparisons.",
+      "metric": "47%",
+      "metricLabel": "localization error reduction",
+      "proof": "67 tests; IMM coverage rises from 0.893 to 0.960, while the published sweep shows where the bank loses.",
+      "limitation": "The useful IMM band is 3-6 degrees per second; at 0 and 12 degrees per second the configured bank loses.",
+      "command": "git clone https://github.com/asp53826/track-fusion && cd track-fusion && python -m pip install -e '.[dev]' && python -m pytest -q",
+      "repo": "https://github.com/asp53826/track-fusion",
+      "methods": [
+        "OSPA",
+        "paired seeds",
+        "parameter sweep"
+      ]
+    },
+    {
+      "id": "sar-focus",
+      "name": "sar-focus",
+      "track": "defense",
+      "language": "Python",
+      "tagline": "Image formation checked against analytic resolution and sidelobe theory.",
+      "problem": "A plausible radar image can still have the wrong resolution or impossible sidelobes.",
+      "mechanism": "LFM pulse compression, time-domain backprojection, phase-gradient autofocus, and impulse-response analysis.",
+      "attack": "Independent bandwidth/aperture sweeps and theory checks for resolution and PSLR.",
+      "metric": "<0.5%",
+      "metricLabel": "resolution error vs theory",
+      "proof": "27 tests; the theory oracle exposed interpolation that produced physically impossible sidelobes.",
+      "limitation": "Synthetic phase history with idealized propagation and no measured sensor calibration errors.",
+      "command": "git clone https://github.com/asp53826/sar-focus && cd sar-focus && python -m pip install -e '.[dev]' && python -m pytest -q",
+      "repo": "https://github.com/asp53826/sar-focus",
+      "methods": [
+        "analytic theory",
+        "double dissociation",
+        "impulse response"
+      ]
+    },
+    {
+      "id": "vio-nav",
+      "name": "vio-nav",
+      "track": "defense",
+      "language": "Python",
+      "tagline": "MSCKF visual-inertial odometry built from the Lie algebra up.",
+      "problem": "IMU bias integrates into unbounded position drift while a monocular camera cannot observe scale alone.",
+      "mechanism": "SO(3) preintegration, sliding camera-state window, null-space feature marginalization, and ATE/RPE evaluation.",
+      "attack": "Duration sweeps, hover/circle/figure-eight motion, parallax rejection, and dead-reckoning baseline.",
+      "metric": "51.9x",
+      "metricLabel": "lower drift at 40 seconds",
+      "proof": "37 tests; MSCKF stays near four centimeters while dead reckoning reaches 2.106 meters.",
+      "limitation": "At five seconds VIO is worse than inertial-only, and hover makes it 13x worse because depth is unobservable.",
+      "command": "git clone https://github.com/asp53826/vio-nav && cd vio-nav && python -m pip install -e '.[dev]' && python -m pytest -q",
+      "repo": "https://github.com/asp53826/vio-nav",
+      "methods": [
+        "ground-truth trajectory",
+        "motion sweep",
+        "ATE and RPE"
+      ]
+    },
+    {
+      "id": "annlite",
+      "name": "annlite",
+      "track": "ml-infrastructure",
+      "language": "C++17 + Python",
+      "tagline": "HNSW with SIMD kernels, Python bindings, and FAISS comparison.",
+      "problem": "Approximate retrieval claims are meaningless without the full recall-versus-latency curve.",
+      "mechanism": "Layered HNSW graph, diversity-aware neighbor selection, SIMD distance kernels, and GIL-free search.",
+      "attack": "Exact ground truth, recall-matched FAISS comparison, and thread-count invariance.",
+      "metric": "1.83x",
+      "metricLabel": "FAISS QPS at 0.999 recall",
+      "proof": "51 tests; at 98.5% recall it performs 26x fewer distance computations than exact scan.",
+      "limitation": "FAISS remains 10-20% faster in the low-recall regime; the crossover appears only at high recall.",
+      "command": "git clone https://github.com/asp53826/annlite && cd annlite && pip install -r requirements-dev.txt && make test",
+      "repo": "https://github.com/asp53826/annlite",
+      "methods": [
+        "exact recall",
+        "FAISS baseline",
+        "concurrency invariants"
+      ]
+    },
+    {
+      "id": "vllm-lite",
+      "name": "vllm-lite",
+      "track": "ml-infrastructure",
+      "language": "Python",
+      "tagline": "Paged KV cache and continuous batching around a small model.",
+      "problem": "Static batching strands KV memory and creates head-of-line blocking under variable request lengths.",
+      "mechanism": "Paged cache, continuous batching, chunked prefill, prefix caching, and speculative decoding.",
+      "attack": "Same weights, sampling, traffic distribution, and memory budget across sequential, static, and paged schedulers.",
+      "metric": "94%",
+      "metricLabel": "KV slot utilization vs 21%",
+      "proof": "90 tests; paged scheduling reaches 2.9x sequential throughput and 5.5x better median TTFT.",
+      "limitation": "CPU-scale simulator with a small model; it does not claim production GPU kernel performance.",
+      "command": "git clone https://github.com/asp53826/vllm-lite && cd vllm-lite && pip install -r requirements.txt && pytest",
+      "repo": "https://github.com/asp53826/vllm-lite",
+      "methods": [
+        "scheduler benchmark",
+        "memory accounting",
+        "token invariance"
+      ]
+    },
+    {
+      "id": "dist-train",
+      "name": "dist-train",
+      "track": "ml-infrastructure",
+      "language": "Python",
+      "tagline": "Ring all-reduce built from send/recv, then measured where it loses.",
+      "problem": "A one-line collective hides the communication cost and the scale at which latency dominates bandwidth efficiency.",
+      "mechanism": "Ring all-reduce, data parallelism, tensor parallelism, pipeline parallelism, and explicit cost models.",
+      "attack": "Every collective is checked against torch.distributed across worker counts and tensor sizes.",
+      "metric": "58.7 MB",
+      "metricLabel": "per worker at eight workers",
+      "proof": "57 tests; the naive baseline sends 234.9 MB per worker under the same eight-worker case.",
+      "limitation": "Loopback gloo on a 10-core machine; efficiency falls past four workers and small tensors favor naive collectives.",
+      "command": "git clone https://github.com/asp53826/dist-train && cd dist-train && pip install -r requirements.txt && pytest",
+      "repo": "https://github.com/asp53826/dist-train",
+      "methods": [
+        "torch.distributed oracle",
+        "cost model",
+        "scaling sweep"
+      ]
+    }
+  ]
+}

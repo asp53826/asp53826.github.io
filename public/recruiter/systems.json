@@ -1,0 +1,90 @@
+{
+  "route": {
+    "id": "systems",
+    "label": "Systems",
+    "short": "SYS",
+    "summary": "Storage, execution, consensus, and fault discovery.",
+    "projects": [
+      "raft-mvcc",
+      "columnar-engine",
+      "dst-harness"
+    ]
+  },
+  "owner": {
+    "name": "Aaryan Patel",
+    "email": "aaryansp26@gmail.com",
+    "github": "https://github.com/asp53826",
+    "linkedin": "https://www.linkedin.com/in/aaryanpatelsystems/",
+    "site": "https://asp53826.github.io",
+    "role": "Systems and ML Infrastructure Engineer",
+    "education": "Computer Science undergraduate at the University of Georgia",
+    "work": "Automation and analytics at MP Equipment"
+  },
+  "thesis": "I build systems that survive faults, bad data, and dishonest benchmarks.",
+  "projects": [
+    {
+      "id": "raft-mvcc",
+      "name": "raft-mvcc",
+      "track": "systems",
+      "language": "C++17",
+      "tagline": "Consensus, serializable snapshots, and machine-checkable histories.",
+      "problem": "A replicated database can acknowledge writes while violating safety under partitions, leader changes, or transaction conflicts.",
+      "mechanism": "Raft elections and conflict repair combined with MVCC snapshots, serializable OCC, safe-point GC, and P-compositional linearizability checking.",
+      "attack": "Seeded partitions, stale candidates, minority leaders, conflicting transactions, tombstones, and invalid histories.",
+      "metric": "598",
+      "metricLabel": "assertions across seeded faults",
+      "proof": "Five-node failover completes in 11 simulator ticks while minority leaders cannot commit.",
+      "limitation": "An in-process simulator: no sockets, fsync, snapshots, membership changes, or multi-range transactions.",
+      "command": "git clone https://github.com/asp53826/raft-mvcc && cd raft-mvcc && make test",
+      "repo": "https://github.com/asp53826/raft-mvcc",
+      "methods": [
+        "linearizability",
+        "fault injection",
+        "differential invariants"
+      ]
+    },
+    {
+      "id": "columnar-engine",
+      "name": "columnar-engine",
+      "track": "systems",
+      "language": "C++17",
+      "tagline": "Vector-at-a-time analytical execution checked against scalar oracles.",
+      "problem": "Analytical operators can be fast while silently mishandling nulls, selections, joins, or aggregation.",
+      "mechanism": "Null bitmaps, selection vectors, vectorized filters, joins, aggregation, and TPC-H Q1.",
+      "attack": "Every vectorized operator is differentially checked against a scalar reference.",
+      "metric": "53.1M",
+      "metricLabel": "TPC-H Q1 rows per second",
+      "proof": "6,288 assertions; batched filters are 1.94x the scalar implementation.",
+      "limitation": "In-memory engine without persistence, distributed execution, or a SQL frontend.",
+      "command": "git clone https://github.com/asp53826/columnar-engine && cd columnar-engine && make test",
+      "repo": "https://github.com/asp53826/columnar-engine",
+      "methods": [
+        "scalar oracle",
+        "differential testing",
+        "benchmark"
+      ]
+    },
+    {
+      "id": "dst-harness",
+      "name": "dst-harness",
+      "track": "systems",
+      "language": "Python",
+      "tagline": "Deterministic simulation testing scored by seeds-to-first-catch.",
+      "problem": "Distributed failures are hard to reproduce when time, network, disk, and scheduling remain nondeterministic.",
+      "mechanism": "Virtual clock, network and disk, seeded fault injection, Raft safety properties, and a Wing-Gong checker.",
+      "attack": "Twelve planted Raft defects plus 2,000 clean control seeds.",
+      "metric": "12 / 12",
+      "metricLabel": "planted defects caught",
+      "proof": "Seeds-to-first-catch range from 1 to 485; the harness also found two real bugs with reproducing seeds.",
+      "limitation": "The target protocol model is deliberately smaller than a production Raft implementation.",
+      "command": "git clone https://github.com/asp53826/dst-harness && cd dst-harness && python3 -m venv .venv && .venv/bin/pip install -e '.[dev]' && .venv/bin/python -m pytest -q",
+      "repo": "https://github.com/asp53826/dst-harness",
+      "methods": [
+        "deterministic simulation",
+        "mutation testing",
+        "linearizability"
+      ]
+    }
+  ],
+  "generated": "2026-07-31"
+}

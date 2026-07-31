@@ -1,0 +1,49 @@
+{
+  "$schema": "https://21st.dev/schemas/design-context.json",
+  "project": "Aaryan Systems Observatory",
+  "audience": [
+    "systems infrastructure recruiters",
+    "quant engineering recruiters",
+    "defense and autonomy teams",
+    "ML infrastructure engineers"
+  ],
+  "jobs": [
+    "identify role fit in 15 seconds",
+    "inspect defensible proof in 60 seconds",
+    "reproduce a flagship result in five minutes"
+  ],
+  "stack": {
+    "framework": "Astro static site with a React interaction island",
+    "styling": "semantic CSS tokens",
+    "content": "generated JSON evidence manifest",
+    "deployment": "GitHub Pages"
+  },
+  "direction": {
+    "name": "Measured systems observatory",
+    "feel": "avionics verification lab, not hacker terminal",
+    "signature": "recruiter signal paths connecting claims to methods, results, commands, and source",
+    "depth": "quiet borders and subtle surface shifts",
+    "motion": "one signal-trace transition, reduced-motion safe"
+  },
+  "tokens": {
+    "night": "#050913",
+    "shell": "#0b1220",
+    "paper": "#f4f7fb",
+    "signal": "#39d9f9",
+    "verified": "#65e6a7",
+    "caution": "#f2b84b"
+  },
+  "reject": [
+    "generic gradient hero",
+    "glassmorphism",
+    "decorative certification badges",
+    "3D portfolio timeline",
+    "invented metrics",
+    "constant ambient motion"
+  ],
+  "references": {
+    "commandPalette": "21st.dev component 2075",
+    "commandSnippet": "21st.dev component 3920",
+    "bentoComposition": "21st.dev component 18898"
+  }
+}

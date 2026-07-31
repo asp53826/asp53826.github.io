@@ -1,0 +1,10 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Observatory from "../components/Observatory";
+import type { Evidence } from "../components/Observatory";
+import evidence from "../../data/evidence.json";
+---
+
+<BaseLayout>
+  <Observatory client:load evidence={evidence as Evidence} initialTrack="systems" />
+</BaseLayout>

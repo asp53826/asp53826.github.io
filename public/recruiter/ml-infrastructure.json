@@ -1,0 +1,90 @@
+{
+  "route": {
+    "id": "ml-infrastructure",
+    "label": "ML Infrastructure",
+    "short": "MLI",
+    "summary": "Retrieval, inference serving, and distributed training.",
+    "projects": [
+      "annlite",
+      "vllm-lite",
+      "dist-train"
+    ]
+  },
+  "owner": {
+    "name": "Aaryan Patel",
+    "email": "aaryansp26@gmail.com",
+    "github": "https://github.com/asp53826",
+    "linkedin": "https://www.linkedin.com/in/aaryanpatelsystems/",
+    "site": "https://asp53826.github.io",
+    "role": "Systems and ML Infrastructure Engineer",
+    "education": "Computer Science undergraduate at the University of Georgia",
+    "work": "Automation and analytics at MP Equipment"
+  },
+  "thesis": "I build systems that survive faults, bad data, and dishonest benchmarks.",
+  "projects": [
+    {
+      "id": "annlite",
+      "name": "annlite",
+      "track": "ml-infrastructure",
+      "language": "C++17 + Python",
+      "tagline": "HNSW with SIMD kernels, Python bindings, and FAISS comparison.",
+      "problem": "Approximate retrieval claims are meaningless without the full recall-versus-latency curve.",
+      "mechanism": "Layered HNSW graph, diversity-aware neighbor selection, SIMD distance kernels, and GIL-free search.",
+      "attack": "Exact ground truth, recall-matched FAISS comparison, and thread-count invariance.",
+      "metric": "1.83x",
+      "metricLabel": "FAISS QPS at 0.999 recall",
+      "proof": "51 tests; at 98.5% recall it performs 26x fewer distance computations than exact scan.",
+      "limitation": "FAISS remains 10-20% faster in the low-recall regime; the crossover appears only at high recall.",
+      "command": "git clone https://github.com/asp53826/annlite && cd annlite && pip install -r requirements-dev.txt && make test",
+      "repo": "https://github.com/asp53826/annlite",
+      "methods": [
+        "exact recall",
+        "FAISS baseline",
+        "concurrency invariants"
+      ]
+    },
+    {
+      "id": "vllm-lite",
+      "name": "vllm-lite",
+      "track": "ml-infrastructure",
+      "language": "Python",
+      "tagline": "Paged KV cache and continuous batching around a small model.",
+      "problem": "Static batching strands KV memory and creates head-of-line blocking under variable request lengths.",
+      "mechanism": "Paged cache, continuous batching, chunked prefill, prefix caching, and speculative decoding.",
+      "attack": "Same weights, sampling, traffic distribution, and memory budget across sequential, static, and paged schedulers.",
+      "metric": "94%",
+      "metricLabel": "KV slot utilization vs 21%",
+      "proof": "90 tests; paged scheduling reaches 2.9x sequential throughput and 5.5x better median TTFT.",
+      "limitation": "CPU-scale simulator with a small model; it does not claim production GPU kernel performance.",
+      "command": "git clone https://github.com/asp53826/vllm-lite && cd vllm-lite && pip install -r requirements.txt && pytest",
+      "repo": "https://github.com/asp53826/vllm-lite",
+      "methods": [
+        "scheduler benchmark",
+        "memory accounting",
+        "token invariance"
+      ]
+    },
+    {
+      "id": "dist-train",
+      "name": "dist-train",
+      "track": "ml-infrastructure",
+      "language": "Python",
+      "tagline": "Ring all-reduce built from send/recv, then measured where it loses.",
+      "problem": "A one-line collective hides the communication cost and the scale at which latency dominates bandwidth efficiency.",
+      "mechanism": "Ring all-reduce, data parallelism, tensor parallelism, pipeline parallelism, and explicit cost models.",
+      "attack": "Every collective is checked against torch.distributed across worker counts and tensor sizes.",
+      "metric": "58.7 MB",
+      "metricLabel": "per worker at eight workers",
+      "proof": "57 tests; the naive baseline sends 234.9 MB per worker under the same eight-worker case.",
+      "limitation": "Loopback gloo on a 10-core machine; efficiency falls past four workers and small tensors favor naive collectives.",
+      "command": "git clone https://github.com/asp53826/dist-train && cd dist-train && pip install -r requirements.txt && pytest",
+      "repo": "https://github.com/asp53826/dist-train",
+      "methods": [
+        "torch.distributed oracle",
+        "cost model",
+        "scaling sweep"
+      ]
+    }
+  ],
+  "generated": "2026-07-31"
+}
