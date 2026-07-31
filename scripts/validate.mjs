@@ -32,6 +32,8 @@ for (const experience of evidence.experience.flagships) {
 }
 await Promise.all([
   access(path.join(root, "public/social/observatory.png")),
+  access(path.join(root, "public/.nojekyll")),
+  access(path.join(root, "public/.well-known/security.txt")),
   access(path.join(root, "public/data/evidence.json")),
   access(path.join(root, "public/data/health.json")),
   access(path.join(root, "public/resume/Aaryan-Patel-Systems-Resume.pdf"))
