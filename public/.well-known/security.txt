@@ -1,0 +1,4 @@
+Contact: mailto:aaryansp26@gmail.com
+Canonical: https://asp53826.github.io/.well-known/security.txt
+Preferred-Languages: en
+Expires: 2027-07-31T23:59:59Z

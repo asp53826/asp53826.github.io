@@ -30,6 +30,7 @@ PAPER = HexColor("#f4f7fb")
 
 
 def draw_text(c, text, x, y, font="Helvetica", size=9, color=INK):
+    text = str(text).replace("–", "-").replace("—", "-").replace("‑", "-").replace("°", " degrees")
     c.setFillColor(color)
     c.setFont(font, size)
     c.drawString(x, y, text)
@@ -186,3 +187,108 @@ c.save()
 shutil.copy2(OUT, PUBLIC)
 print(f"wrote {OUT}")
 print(f"wrote {PUBLIC}")
+
+
+ROUTE_ACCENTS = {
+    "systems": HexColor("#007d9d"),
+    "quant": HexColor("#976000"),
+    "defense": HexColor("#087a4c"),
+    "ml-infrastructure": HexColor("#6a54b8"),
+}
+
+ROUTE_FILENAMES = {
+    "systems": "Aaryan-Patel-Systems-Recruiter-Packet.pdf",
+    "quant": "Aaryan-Patel-Quant-Recruiter-Packet.pdf",
+    "defense": "Aaryan-Patel-Defense-Recruiter-Packet.pdf",
+    "ml-infrastructure": "Aaryan-Patel-ML-Infrastructure-Recruiter-Packet.pdf",
+}
+
+
+def route_packet(route):
+    accent = ROUTE_ACCENTS[route["id"]]
+    filename = ROUTE_FILENAMES[route["id"]]
+    output = ROOT / "output/pdf" / filename
+    public = ROOT / "public/recruiter" / f'{route["id"]}.pdf'
+    public.parent.mkdir(parents=True, exist_ok=True)
+    projects = [next(item for item in DATA["projects"] if item["id"] == project_id) for project_id in route["projects"]]
+    packet = canvas.Canvas(str(output), pagesize=LETTER)
+    packet.setTitle(f'Aaryan Patel - {route["label"]} Recruiter Packet')
+    packet.setAuthor("Aaryan Patel")
+    packet.setSubject("Source-backed recruiter route with verification commands and failure boundaries")
+
+    packet.setFillColor(NAVY)
+    packet.rect(0, PAGE_H - 162, PAGE_W, 162, fill=1, stroke=0)
+    packet.setFillColor(accent)
+    packet.rect(38, PAGE_H - 162, 154, 4, fill=1, stroke=0)
+    draw_text(packet, f'{route["short"]} RECRUITER SIGNAL', 38, PAGE_H - 46, "Courier-Bold", 8, accent)
+    draw_text(packet, route["label"], 38, PAGE_H - 82, "Helvetica-Bold", 28, HexColor("#f4f7fb"))
+    paragraph(packet, route["summary"], 38, PAGE_H - 105, 350, "Helvetica", 10, 13, HexColor("#b6c4d8"), 2)
+    draw_text(packet, "AARYAN PATEL", 426, PAGE_H - 47, "Helvetica-Bold", 12, HexColor("#f4f7fb"))
+    draw_text(packet, DATA["owner"]["role"], 426, PAGE_H - 65, "Helvetica", 7.5, HexColor("#b6c4d8"))
+    draw_text(packet, DATA["owner"]["email"], 426, PAGE_H - 87, "Courier", 7.2, HexColor("#eaf1fb"))
+    draw_text(packet, "asp53826.github.io", 426, PAGE_H - 103, "Courier", 7.2, HexColor("#eaf1fb"))
+    draw_text(packet, "github.com/asp53826", 426, PAGE_H - 119, "Courier", 7.2, HexColor("#eaf1fb"))
+
+    y = PAGE_H - 191
+    draw_text(packet, "THREE SYSTEMS TO INSPECT", 38, y, "Courier-Bold", 7.5, accent)
+    packet.setStrokeColor(LINE)
+    packet.line(38, y - 7, PAGE_W - 38, y - 7)
+    y -= 28
+
+    for index, project in enumerate(projects, start=1):
+        top = y
+        packet.setFillColor(PAPER)
+        packet.roundRect(38, top - 136, PAGE_W - 76, 124, 7, fill=1, stroke=0)
+        packet.setStrokeColor(LINE)
+        packet.roundRect(38, top - 136, PAGE_W - 76, 124, 7, fill=0, stroke=1)
+        packet.setFillColor(accent)
+        packet.circle(56, top - 32, 10, fill=1, stroke=0)
+        draw_text(packet, f"{index:02d}", 50, top - 35, "Courier-Bold", 7, HexColor("#ffffff"))
+        draw_text(packet, project["name"], 76, top - 29, "Helvetica-Bold", 13, INK)
+        draw_text(packet, project["language"], 76, top - 43, "Courier-Bold", 6.8, accent)
+        packet.setFillColor(GREEN)
+        packet.setFont("Helvetica-Bold", 15)
+        packet.drawRightString(PAGE_W - 54, top - 29, project["metric"])
+        packet.setFillColor(MUTED)
+        packet.setFont("Courier", 6.4)
+        packet.drawRightString(PAGE_W - 54, top - 43, project["metricLabel"].upper())
+        paragraph(packet, project["proof"], 56, top - 64, 300, "Helvetica", 8, 10, INK, 3)
+        draw_text(packet, "FAILURE BOUNDARY", 380, top - 64, "Courier-Bold", 6.7, accent)
+        paragraph(packet, project["limitation"], 380, top - 77, PAGE_W - 434, "Helvetica", 7.3, 9.2, MUTED, 4)
+        draw_text(packet, "START", 56, top - 113, "Courier-Bold", 6.5, accent)
+        command = project["command"]
+        if len(command) > 94:
+            command = command[:91] + "..."
+        draw_text(packet, command, 92, top - 113, "Courier", 6.1, MUTED)
+        y -= 142
+
+    y -= 3
+    draw_text(packet, "VERIFICATION CONTRACT", 38, y, "Courier-Bold", 7.5, accent)
+    packet.setStrokeColor(LINE)
+    packet.line(38, y - 7, PAGE_W - 38, y - 7)
+    y -= 25
+    contract_points = [
+        "Claims name the comparison baseline and units.",
+        "Commands reproduce the public correctness path.",
+        "Failure boundaries remain beside the measured result.",
+        "The evidence manifest connects claims to methods and sources.",
+    ]
+    for index, point in enumerate(contract_points):
+        x = 38 + (index % 2) * 270
+        row_y = y - (index // 2) * 24
+        packet.setFillColor(accent)
+        packet.circle(x + 3, row_y + 2, 2.5, fill=1, stroke=0)
+        draw_text(packet, point, x + 12, row_y, "Helvetica", 7.6, MUTED)
+
+    packet.setStrokeColor(LINE)
+    packet.line(38, 42, PAGE_W - 38, 42)
+    draw_text(packet, f'Downloadable route: asp53826.github.io/{route["id"]}/', 38, 27, "Courier", 6.8, MUTED)
+    draw_text(packet, f'VERIFIED {DATA["experience"]["verifiedOn"]}', PAGE_W - 145, 27, "Courier-Bold", 6.8, accent)
+    packet.save()
+    shutil.copy2(output, public)
+    print(f"wrote {output}")
+    print(f"wrote {public}")
+
+
+for recruiter_route in DATA["routes"]:
+    route_packet(recruiter_route)

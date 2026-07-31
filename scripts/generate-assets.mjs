@@ -74,7 +74,13 @@ async function render(name, spec) {
 }
 
 await writeFile(path.join(dataDir, "evidence.json"), `${JSON.stringify(evidence, null, 2)}\n`);
-await writeFile(path.join(dataDir, "health.json"), `${JSON.stringify({ ...evidence.health, generated: evidence.generated, status: "passing" }, null, 2)}\n`);
+await writeFile(path.join(dataDir, "health.json"), `${JSON.stringify({
+  ...evidence.health,
+  evidenceVersion: evidence.version,
+  evidenceVerified: evidence.experience.verifiedOn,
+  generated: new Date().toISOString(),
+  status: "passing"
+}, null, 2)}\n`);
 
 await render("observatory", {
   eyebrow: "Aaryan Systems Observatory",
