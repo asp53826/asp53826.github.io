@@ -28,7 +28,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Install PDF runtime
-        run: python3 -m pip install reportlab
+        run: python3 -m pip install -r requirements-build.txt
       - name: Generate and build
         run: npm run build
       - uses: actions/configure-pages@v6

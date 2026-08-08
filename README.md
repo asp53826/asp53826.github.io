@@ -22,6 +22,7 @@ manifest drives:
 
 ```bash
 npm install
+python3 -m pip install -r requirements-build.txt
 npm run build
 npm run dev
 ```
@@ -30,6 +31,11 @@ The implementation is static-first: no visitor-side GitHub API calls, no
 third-party badge service, no generative chatbot, and no runtime database.
 GitHub Actions rebuilds and deploys the generated `dist/` folder on every main
 push and on a daily proof-freshness schedule.
+
+The interaction layer uses GSAP and ScrollTrigger for the observatory boot
+sequence, proof-spine playback, route-card reveals, and scroll-linked hero
+motion. CSS and runtime guards disable the choreography for visitors who prefer
+reduced motion; the full evidence surface remains available without animation.
 
 ## Interaction references
 

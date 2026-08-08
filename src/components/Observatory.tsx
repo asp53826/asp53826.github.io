@@ -26,6 +26,7 @@ import {
   RecruiterTour,
   VerificationTheater
 } from "./ExperienceModules";
+import MotionDirector from "./MotionDirector";
 
 export type TrackId = "systems" | "quant" | "defense" | "ml-infrastructure";
 
@@ -323,6 +324,7 @@ export default function Observatory({ evidence, initialTrack }: Props) {
 
   return (
     <div className="observatory-shell" data-track={activeTrack}>
+      <MotionDirector />
       <a className="skip-link" href="#main-content">Skip to portfolio evidence</a>
 
       <header className="topbar">
@@ -337,7 +339,7 @@ export default function Observatory({ evidence, initialTrack }: Props) {
           <a href="/data/evidence.json" target="_blank" rel="noreferrer">Evidence</a>
         </nav>
         <div className="topbar-actions">
-          <button ref={commandButtonRef} className="command-trigger" type="button" onClick={openPalette}>
+          <button ref={commandButtonRef} className="command-trigger" type="button" onClick={openPalette} aria-label="Search portfolio evidence">
             <Search aria-hidden="true" /> <span>Search evidence</span> <kbd>⌘K</kbd>
           </button>
           <button className="icon-button" type="button" onClick={toggleTheme} aria-label={`Use ${theme === "dark" ? "light" : "dark"} theme`}>
@@ -348,6 +350,16 @@ export default function Observatory({ evidence, initialTrack }: Props) {
 
       <main id="main-content">
         <section className="hero" aria-labelledby="hero-title">
+          <div className="hero-radar" aria-hidden="true">
+            <span className="radar-ring ring-1" />
+            <span className="radar-ring ring-2" />
+            <span className="radar-ring ring-3" />
+            <span className="radar-crosshair" />
+            <i className="radar-sweep" />
+            <b className="radar-target target-1" />
+            <b className="radar-target target-2" />
+            <b className="radar-target target-3" />
+          </div>
           <div className="hero-copy">
             <p className="eyebrow"><Radio aria-hidden="true" /> LIVE EVIDENCE SURFACE</p>
             <h1 id="hero-title">{evidence.thesis}</h1>
@@ -366,12 +378,19 @@ export default function Observatory({ evidence, initialTrack }: Props) {
               <span className="status"><i /> SOURCE BACKED</span>
             </div>
             <div className="instrument-grid">
-              <div><span>Measured systems</span><strong>{evidence.health.measuredSystems}</strong></div>
-              <div><span>Test functions</span><strong>{Number(evidence.health.testFunctions).toLocaleString()}</strong></div>
-              <div><span>Live labs</span><strong>{evidence.health.liveLabs}</strong></div>
-              <div><span>Languages</span><strong>{evidence.health.languages}</strong></div>
+              <div><span>Measured systems</span><strong data-count={evidence.health.measuredSystems}>{evidence.health.measuredSystems}</strong></div>
+              <div><span>Test functions</span><strong data-count={evidence.health.testFunctions}>{Number(evidence.health.testFunctions).toLocaleString()}</strong></div>
+              <div><span>Live labs</span><strong data-count={evidence.health.liveLabs}>{evidence.health.liveLabs}</strong></div>
+              <div><span>Languages</span><strong data-count={evidence.health.languages}>{evidence.health.languages}</strong></div>
             </div>
-            <div className="trace" aria-hidden="true"><span /></div>
+            <div className="proof-spine" role="img" aria-label="Evidence pipeline: claim, attack, oracle, and failure boundary">
+              <span className="proof-rail" aria-hidden="true"><i className="proof-rail-live" /></span>
+              <i className="proof-packet" aria-hidden="true" />
+              <div className="proof-stage"><small>01</small><strong>CLAIM</strong><span>published</span></div>
+              <div className="proof-stage"><small>02</small><strong>ATTACK</strong><span>fault injected</span></div>
+              <div className="proof-stage"><small>03</small><strong>ORACLE</strong><span>independent</span></div>
+              <div className="proof-stage"><small>04</small><strong>LIMIT</strong><span>disclosed</span></div>
+            </div>
             <p>No page-load API. No third-party stats card. Every claim is committed with its source.</p>
           </div>
         </section>

@@ -299,13 +299,84 @@ section {
 }
 
 .hero {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1.04fr) minmax(440px, 0.96fr);
   gap: clamp(44px, 7vw, 96px);
   align-items: center;
   min-height: 690px;
   padding: 92px 0 70px;
+  isolation: isolate;
 }
+
+.hero-copy,
+.hero-instrument {
+  position: relative;
+  z-index: 2;
+}
+
+.hero-radar {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  right: -12vw;
+  width: min(76vw, 960px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  opacity: 0.38;
+  pointer-events: none;
+  transform: translateY(-50%);
+  will-change: transform, opacity;
+}
+
+.radar-ring,
+.radar-crosshair,
+.radar-sweep,
+.radar-target {
+  position: absolute;
+}
+
+.radar-ring {
+  inset: 8%;
+  border: 1px solid color-mix(in srgb, var(--signal) 22%, transparent);
+  border-radius: 50%;
+  box-shadow: inset 0 0 70px color-mix(in srgb, var(--signal) 4%, transparent);
+}
+
+.radar-ring.ring-2 { inset: 23%; }
+.radar-ring.ring-3 { inset: 38%; }
+
+.radar-crosshair {
+  inset: 5%;
+  border-radius: 50%;
+  background:
+    linear-gradient(transparent calc(50% - 0.5px), color-mix(in srgb, var(--signal) 22%, transparent) 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(90deg, transparent calc(50% - 0.5px), color-mix(in srgb, var(--signal) 22%, transparent) 50%, transparent calc(50% + 0.5px));
+  clip-path: circle(50%);
+}
+
+.radar-sweep {
+  inset: 5%;
+  overflow: hidden;
+  border-radius: 50%;
+  background: conic-gradient(from 8deg, transparent 0 76%, color-mix(in srgb, var(--signal) 23%, transparent) 93%, color-mix(in srgb, var(--signal) 62%, transparent));
+  clip-path: circle(50%);
+  animation: radar-sweep 10s linear infinite;
+}
+
+.radar-target {
+  width: 7px;
+  height: 7px;
+  border: 1px solid var(--route-accent);
+  border-radius: 50%;
+  background: var(--route-accent);
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--route-accent) 9%, transparent), 0 0 20px var(--route-accent);
+  animation: radar-target 2.8s ease-in-out infinite;
+}
+
+.radar-target.target-1 { top: 24%; left: 39%; }
+.radar-target.target-2 { top: 58%; right: 19%; animation-delay: -1.1s; }
+.radar-target.target-3 { right: 42%; bottom: 18%; animation-delay: -2s; }
 
 .eyebrow {
   display: flex;
@@ -386,6 +457,8 @@ section {
   border-radius: var(--radius-lg);
   background: var(--surface);
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.2);
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
 }
 
 .hero-instrument::after {
@@ -461,27 +534,91 @@ section {
   line-height: 1;
 }
 
-.trace {
-  height: 62px;
-  padding: 30px 18px 0;
+.proof-spine {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  min-height: 112px;
+  align-items: center;
+  margin: 0 18px;
+  border-bottom: 1px solid var(--line);
 }
 
-.trace::before {
+.proof-rail {
+  position: absolute;
+  z-index: 0;
+  top: 37px;
+  right: 12.5%;
+  left: 12.5%;
+  height: 1px;
+  overflow: visible;
+  background: var(--line-strong);
+}
+
+.proof-rail-live {
   display: block;
   width: 100%;
   height: 1px;
-  background: var(--line);
+  background: linear-gradient(90deg, var(--signal), var(--verified), var(--caution));
+  opacity: 0.6;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--signal) 52%, transparent);
+}
+
+.proof-packet {
+  position: absolute;
+  z-index: 3;
+  top: 33px;
+  left: calc(12.5% - 4px);
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--surface);
+  border-radius: 50%;
+  background: var(--route-accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--route-accent) 12%, transparent), 0 0 18px var(--route-accent);
+  will-change: transform, opacity;
+}
+
+.proof-stage {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  will-change: transform, opacity;
+}
+
+.proof-stage::before {
+  width: 11px;
+  height: 11px;
+  margin-bottom: 10px;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  background: var(--route-accent);
+  box-shadow: 0 0 0 1px var(--line-strong), 0 0 16px color-mix(in srgb, var(--route-accent) 40%, transparent);
   content: "";
 }
 
-.trace span {
-  display: block;
-  width: 72px;
-  height: 2px;
-  margin-top: -1px;
-  background: var(--signal);
-  box-shadow: 0 0 16px var(--signal);
-  animation: trace 4.8s linear infinite;
+.proof-stage small,
+.proof-stage span {
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.proof-stage small {
+  position: absolute;
+  top: -1px;
+  transform: translateY(-100%);
+}
+
+.proof-stage strong {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
 }
 
 .hero-instrument > p {
@@ -1600,9 +1737,13 @@ footer {
   72%, 100% { transform: translateX(120%); }
 }
 
-@keyframes trace {
-  from { transform: translateX(-72px); }
-  to { transform: translateX(520px); }
+@keyframes radar-sweep {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes radar-target {
+  0%, 100% { opacity: 0.38; transform: scale(0.76); }
+  52% { opacity: 1; transform: scale(1); }
 }
 
 @keyframes dialog-in {
@@ -1611,9 +1752,22 @@ footer {
 
 @media (max-width: 1440px) {
   .health-rail {
-    right: 12px;
-    bottom: 12px;
-    width: 210px;
+    position: static;
+    display: grid;
+    width: min(calc(100% - 48px), var(--max));
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin: 64px auto 0;
+    border-radius: var(--radius-md);
+  }
+
+  .health-heading {
+    padding: 0;
+    border: 0;
+  }
+
+  .health-rail dl {
+    margin: 0;
   }
 }
 
@@ -1721,6 +1875,13 @@ footer {
 
   .hero-instrument {
     max-width: 620px;
+  }
+
+  .hero-radar {
+    top: 29%;
+    right: -44vw;
+    width: 130vw;
+    opacity: 0.24;
   }
 
   .theater-selector {
@@ -2094,5 +2255,17 @@ footer {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .hero-radar,
+  .hero-instrument,
+  .proof-stage,
+  .proof-packet {
+    transform: none !important;
+  }
+
+  .proof-stage,
+  .proof-packet {
+    opacity: 1 !important;
   }
 }
