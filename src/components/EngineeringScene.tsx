@@ -49,6 +49,7 @@ export default function EngineeringScene({ activeTrack }: Props) {
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.75));
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       host.appendChild(renderer.domElement);
+      host.dataset.rendered = "true";
 
       const root = new THREE.Group();
       root.rotation.x = -0.12;
@@ -206,6 +207,7 @@ export default function EngineeringScene({ activeTrack }: Props) {
         lineMaterial.dispose();
         renderer.dispose();
         renderer.domElement.remove();
+        delete host.dataset.rendered;
       };
     };
 

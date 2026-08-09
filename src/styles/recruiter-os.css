@@ -249,7 +249,7 @@
     linear-gradient(90deg, transparent 10%, rgba(var(--os-accent-rgb), 0.3) 10% 90%, transparent 90%);
   opacity: 0.35;
 }
-.os-scene canvas + .os-scene-fallback { display: none; }
+.os-scene[data-rendered="true"] .os-scene-fallback { display: none; }
 
 .os-route-question {
   position: absolute;
