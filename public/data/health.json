@@ -1,14 +1,14 @@
 {
-  "measuredSystems": 23,
-  "publicRepositories": 25,
-  "testFunctions": 806,
-  "sourceFiles": 485,
+  "measuredSystems": 24,
+  "publicRepositories": 34,
+  "testFunctions": 815,
+  "sourceFiles": 501,
   "languages": 8,
-  "liveLabs": 4,
-  "trackedWorkflows": 11,
-  "lastVerified": "2026-07-31",
+  "liveLabs": 5,
+  "trackedWorkflows": 12,
+  "lastVerified": "2026-08-09",
   "evidenceVersion": 2,
-  "evidenceVerified": "2026-07-31",
-  "generated": "2026-07-31T19:04:46.581Z",
+  "evidenceVerified": "2026-08-09",
+  "generated": "2026-08-09T21:33:14.050Z",
   "status": "passing"
 }

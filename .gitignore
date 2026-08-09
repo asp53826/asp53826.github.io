@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .astro/
+.venv-build/
 .DS_Store
 tmp/
 *.log

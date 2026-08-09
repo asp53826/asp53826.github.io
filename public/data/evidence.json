@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated": "2026-07-31",
+  "generated": "2026-08-09",
   "owner": {
     "name": "Aaryan Patel",
     "email": "aaryansp26@gmail.com",
@@ -14,24 +14,24 @@
   "thesis": "I build systems that survive faults, bad data, and dishonest benchmarks.",
   "contract": "Build the mechanism. Attack the assumptions. Measure against a real baseline. Publish where it loses.",
   "health": {
-    "measuredSystems": 23,
-    "publicRepositories": 25,
-    "testFunctions": 806,
-    "sourceFiles": 485,
+    "measuredSystems": 24,
+    "publicRepositories": 34,
+    "testFunctions": 815,
+    "sourceFiles": 501,
     "languages": 8,
-    "liveLabs": 4,
-    "trackedWorkflows": 11,
-    "lastVerified": "2026-07-31"
+    "liveLabs": 5,
+    "trackedWorkflows": 12,
+    "lastVerified": "2026-08-09"
   },
   "current": {
-    "title": "Evidence infrastructure for technical portfolios",
-    "repo": "asp53826.github.io",
-    "status": "active",
-    "summary": "A single source of truth that generates the recruiter site, GitHub profile surfaces, proof cards, social artwork, and resume.",
-    "proof": "Every public claim resolves to a command, source, oracle, and limitation."
+    "title": "TensorForge visual WebGPU compiler",
+    "repo": "tensorforge-webgpu",
+    "status": "live",
+    "summary": "An inspectable tensor compiler that rewrites a typed graph, generates WGSL, executes it on the visitor's GPU, and verifies the result against a CPU oracle.",
+    "proof": "Nine tests plus browser QA cover the lowering pipeline, memory slots, generated kernels, and numerical agreement."
   },
   "experience": {
-    "verifiedOn": "2026-07-31",
+    "verifiedOn": "2026-08-09",
     "disclosure": "Interactive replays are deterministic narrative checkpoints derived from published tests and benchmark tables. They are not live production telemetry.",
     "flagships": [
       {
@@ -585,6 +585,28 @@
         "torch.distributed oracle",
         "cost model",
         "scaling sweep"
+      ]
+    },
+    {
+      "id": "tensorforge-webgpu",
+      "name": "tensorforge-webgpu",
+      "track": "ml-infrastructure",
+      "language": "TypeScript + WGSL",
+      "tagline": "A visual tensor compiler that lowers live graphs into browser-native GPU kernels.",
+      "problem": "Compiler and GPU portfolio work is difficult to evaluate when the optimization pipeline is hidden behind build logs or requires a local toolchain.",
+      "mechanism": "Typed tensor IR, shape inference, identity canonicalization, operator fusion, output-rooted dead-code elimination, liveness-aware buffer reuse, and three generated WebGPU compute kernels.",
+      "attack": "Deterministic CPU/GPU comparison, incompatible-shape rejection, persistent-slot isolation, fusion toggles, memory-plan tests, and responsive browser QA.",
+      "metric": "8 → 3",
+      "metricLabel": "primitive kernels to GPU dispatches",
+      "proof": "9 tests; the default graph lowers from 13 to 8 nodes and the live GPU result is checked against a seeded CPU oracle.",
+      "limitation": "A narrow dense-f32 MLP experiment: kernels favor readability over autotuning, softmax is not a parallel reduction, and timing is hardware-local queue wall time.",
+      "command": "git clone https://github.com/asp53826/tensorforge-webgpu && cd tensorforge-webgpu && npm ci && npm run check",
+      "repo": "https://github.com/asp53826/tensorforge-webgpu",
+      "live": "https://asp53826.github.io/tensorforge-webgpu/",
+      "methods": [
+        "CPU oracle",
+        "compiler pass tests",
+        "browser GPU validation"
       ]
     }
   ]

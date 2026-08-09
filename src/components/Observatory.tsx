@@ -200,6 +200,7 @@ export default function Observatory({ evidence, initialTrack }: Props) {
   const projectA = evidence.projects.find((project) => project.id === compareA)!;
   const projectB = evidence.projects.find((project) => project.id === compareB)!;
   const liveLabs = evidence.projects.filter((project) => project.live);
+  const currentProject = evidence.projects.find((project) => project.id === evidence.current.repo);
 
   const chooseTrack = (id: TrackId) => {
     setActiveTrack(id);
@@ -410,12 +411,45 @@ export default function Observatory({ evidence, initialTrack }: Props) {
           </div>
         </section>
 
-        <section className="current-strip" aria-label="Currently building">
+        <section className="current-strip" aria-label="Latest build">
           <span className="live-dot" aria-hidden="true" />
-          <p><strong>Currently building:</strong> {evidence.current.title}</p>
+          <p><strong>Latest build:</strong> {evidence.current.title}</p>
           <span>{evidence.current.summary}</span>
-          <a href="https://github.com/asp53826/asp53826.github.io">Open source <ArrowUpRight aria-hidden="true" /></a>
+          <a href={currentProject?.repo ?? evidence.owner.github} target="_blank" rel="noreferrer">Open source <ArrowUpRight aria-hidden="true" /></a>
         </section>
+
+        {currentProject && (
+          <section className="latest-build" aria-labelledby="latest-build-title">
+            <div className="latest-build-copy">
+              <p className="eyebrow"><Activity aria-hidden="true" /> NEW INTERACTIVE SYSTEM</p>
+              <h2 id="latest-build-title">A compiler recruiters can operate.</h2>
+              <p>{currentProject.tagline} Change the graph shape, bypass fusion, inspect every IR pass, read the generated WGSL, and benchmark it on your own hardware.</p>
+              <div className="latest-metrics" aria-label="TensorForge verification summary">
+                <div><strong>13 → 8</strong><span>graph nodes</span></div>
+                <div><strong>{currentProject.metric}</strong><span>{currentProject.metricLabel}</span></div>
+                <div><strong>9</strong><span>automated tests</span></div>
+              </div>
+              <div className="latest-actions">
+                <a className="button primary" href={currentProject.live} target="_blank" rel="noreferrer">Launch TensorForge <ExternalLink aria-hidden="true" /></a>
+                <a className="button" href={currentProject.repo} target="_blank" rel="noreferrer"><Code2 aria-hidden="true" /> Inspect source</a>
+              </div>
+              <p className="latest-boundary"><strong>Published boundary:</strong> {currentProject.limitation}</p>
+            </div>
+            <a className="compiler-preview" href={currentProject.live} target="_blank" rel="noreferrer" aria-label="Launch the live TensorForge compiler">
+              <div className="preview-toolbar"><span><i /> TENSORFORGE // MEMORY PLANNING</span><span>8 NODES · 3 KERNELS</span></div>
+              <div className="preview-canvas" aria-hidden="true">
+                <span className="preview-node source">INPUT<small>tokens [8,128]</small></span>
+                <span className="preview-node parameter one">PARAM<small>projection W₁</small></span>
+                <span className="preview-node fused one">FUSED + GELU<small>linear_gelu.wgsl</small></span>
+                <span className="preview-node parameter two">PARAM<small>projection W₂</small></span>
+                <span className="preview-node fused two">FUSED LINEAR<small>linear.wgsl</small></span>
+                <span className="preview-node output">SOFTMAX<small>probabilities</small></span>
+                <svg viewBox="0 0 700 380" preserveAspectRatio="none"><path d="M120 190C180 190 180 105 242 105M120 190C180 190 180 275 242 275M345 105C405 105 405 190 460 190M345 275C405 275 405 190 460 190M560 190H630" /></svg>
+              </div>
+              <div className="preview-footer"><span>LIVE WEBGPU TARGET</span><strong>OPEN WORKBENCH <ArrowUpRight aria-hidden="true" /></strong></div>
+            </a>
+          </section>
+        )}
 
         <VerificationTheater evidence={evidence} />
 
@@ -511,7 +545,7 @@ export default function Observatory({ evidence, initialTrack }: Props) {
         <section className="live-section" aria-labelledby="live-title">
           <div className="section-heading compact-heading">
             <div><p className="eyebrow">INTERACTIVE RESULTS</p><h2 id="live-title">Drive the variables yourself.</h2></div>
-            <p>Four static-first labs with every figure traceable to the benchmark that produced it.</p>
+            <p>{liveLabs.length} browser-accessible labs with every claim traceable to the source or benchmark that produced it.</p>
           </div>
           <div className="live-grid">
             {liveLabs.map((project) => (
