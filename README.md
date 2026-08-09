@@ -16,7 +16,7 @@ manifest drives:
 - the portfolio health surface and current-building strip;
 - the machine-readable evidence endpoint and four one-page recruiter PDF packets;
 - seventeen matching social-preview cards;
-- the downloadable one-page systems resume.
+- downloadable one-page ATS resume files in PDF and editable DOCX formats.
 
 ## Local verification
 
@@ -26,6 +26,11 @@ python3 -m pip install -r requirements-build.txt
 npm run build
 npm run dev
 ```
+
+The build regenerates the evidence-backed recruiter packets plus the primary
+single-column resume from `data/resume.json`. The public resume URLs are
+`/resume/Aaryan-Patel-Systems-Resume.pdf` and
+`/resume/Aaryan-Patel-Systems-Resume.docx`.
 
 The implementation is static-first: no visitor-side GitHub API calls, no
 third-party badge service, no generative chatbot, and no runtime database.

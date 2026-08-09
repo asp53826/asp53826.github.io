@@ -1,0 +1,103 @@
+{
+  "version": 1,
+  "verifiedOn": "2026-08-09",
+  "contact": {
+    "name": "Aaryan Patel",
+    "title": "Systems & Software Engineer",
+    "location": "Bogart, Georgia",
+    "email": "aaryansp26@gmail.com",
+    "portfolioLabel": "asp53826.github.io",
+    "portfolioUrl": "https://asp53826.github.io",
+    "githubLabel": "github.com/asp53826",
+    "githubUrl": "https://github.com/asp53826",
+    "linkedinLabel": "linkedin.com/in/aaryanpatelsystems",
+    "linkedinUrl": "https://www.linkedin.com/in/aaryanpatelsystems/"
+  },
+  "summary": "Computer Science senior graduating December 2026 and Industrial IoT/Data Engineering intern with more than one year of experience building production data workflows, operational analytics, fault-tested distributed systems, and ML infrastructure. C++17, Python, and SQL work spans Raft/MVCC, vectorized query execution, paged-KV scheduling, SEC data services, predictive maintenance, and Power BI.",
+  "skills": [
+    {
+      "label": "Languages",
+      "value": "C++17, Python, SQL, TypeScript/JavaScript, R"
+    },
+    {
+      "label": "Systems",
+      "value": "Distributed systems, Raft, MVCC, WAL/LSM trees, concurrency, vectorized execution, fault injection, linearizability"
+    },
+    {
+      "label": "ML & Data",
+      "value": "PyTorch, HNSW/FAISS, LLM inference, ETL, data modeling, time-series and sensor analytics, signal processing"
+    },
+    {
+      "label": "Tools",
+      "value": "Linux, Git/GitHub Actions, Docker, Power BI, Microsoft M1 ERP, PLC and Industrial IoT integration"
+    }
+  ],
+  "experience": [
+    {
+      "organization": "MP Equipment",
+      "location": "Gainesville, Georgia",
+      "role": "Industrial IoT & Data Engineer Intern",
+      "dates": "May 2025 - Present",
+      "progression": "Computer Science Intern -> Industrial IoT & Data Engineering Intern -> current role",
+      "bullets": [
+        "Build Python and SQL pipelines that combine IoT sensor streams, equipment alarm history, and M1 ERP records; standardize assets, measurements, missing values, and outlier handling for reliable reporting.",
+        "Develop predictive-maintenance workflows from vibration, temperature, humidity, and machine-state signals to surface abnormal behavior and support maintenance decisions.",
+        "Design Power BI dashboards for OEE, downtime, on-time delivery, vendor performance, production KPIs, and equipment health used by engineering and operations.",
+        "Integrate PLC-connected machinery with real-time monitoring and automate recurring operational reports."
+      ]
+    },
+    {
+      "organization": "Georgia State University - Department of Computer Science",
+      "location": "Atlanta, Georgia",
+      "role": "Undergraduate Research Assistant",
+      "dates": "Aug 2022 - May 2023",
+      "bullets": [
+        "Analyzed Reddit social-network data for patterns in group relationships and maintained research data models.",
+        "Built date-range controls and public-facing views for machine-learning and data-mining research data."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "raft-mvcc",
+      "name": "Raft + MVCC Database Lab",
+      "stack": "C++17",
+      "url": "https://github.com/asp53826/raft-mvcc",
+      "bullet": "Built five-node Raft consensus, serializable MVCC/OCC, and a linearizability checker; 598 assertions across seeded faults, 11-logical-tick failover, and minority leaders prevented from committing."
+    },
+    {
+      "id": "vllm-lite",
+      "name": "Paged LLM Inference Scheduler",
+      "stack": "Python, PyTorch",
+      "url": "https://github.com/asp53826/vllm-lite",
+      "bullet": "Implemented paged KV caching, continuous batching, chunked prefill, and prefix caching; 90 tests, 94% vs. 21% KV utilization, 2.9x sequential throughput, and 5.5x better median TTFT in a CPU-scale benchmark."
+    },
+    {
+      "id": "edgar-mcp",
+      "name": "SEC EDGAR MCP Server",
+      "stack": "Python, MCP, XBRL",
+      "url": "https://github.com/asp53826/edgar-mcp",
+      "bullet": "Built filing search, identity resolution, bounded text windows, XBRL discovery, global request pacing, and host-aware caching; 32 offline tests and a measured 138x warm 10-K read improvement."
+    },
+    {
+      "id": "columnar-engine",
+      "name": "Vectorized Columnar Engine",
+      "stack": "C++17",
+      "url": "https://github.com/asp53826/columnar-engine",
+      "bullet": "Built null-aware vectorized filters, joins, aggregation, and TPC-H Q1; measured 53.1M rows/second with 6,288 assertions and 1.94x scalar-filter throughput."
+    }
+  ],
+  "education": [
+    {
+      "school": "University of Georgia",
+      "degree": "Bachelor of Science in Computer Science",
+      "dates": "Expected December 2026",
+      "detail": "Systems-focused work in distributed computing, ML infrastructure, data engineering, and signal processing."
+    },
+    {
+      "school": "Georgia State University",
+      "degree": "Prior coursework in Data Science",
+      "dates": "Aug 2022 - Apr 2024"
+    }
+  ]
+}

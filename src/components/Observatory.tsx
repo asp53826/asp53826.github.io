@@ -241,10 +241,17 @@ export default function Observatory({ evidence, initialTrack }: Props) {
       ...projectCommands,
       {
         id: "resume",
-        label: "Download systems resume",
-        detail: "One-page PDF with selected systems and measured results.",
+        label: "Download ATS systems resume",
+        detail: "One-page recruiter resume with experience, skills, and measured engineering results.",
         keywords: "resume cv pdf recruiter download",
         run: () => { window.location.href = "/resume/Aaryan-Patel-Systems-Resume.pdf"; }
+      },
+      {
+        id: "resume-docx",
+        label: "Download editable resume",
+        detail: "ATS-friendly Microsoft Word version for applications that request DOCX.",
+        keywords: "resume cv docx word editable recruiter download",
+        run: () => { window.location.href = "/resume/Aaryan-Patel-Systems-Resume.docx"; }
       },
       {
         id: "manifest",
@@ -337,6 +344,7 @@ export default function Observatory({ evidence, initialTrack }: Props) {
           <a href="#map">System map</a>
           <a href="#evidence-desk">Ask evidence</a>
           <a href="/data/evidence.json" target="_blank" rel="noreferrer">Evidence</a>
+          <a href="/resume/Aaryan-Patel-Systems-Resume.pdf" target="_blank" rel="noreferrer">Resume</a>
         </nav>
         <div className="topbar-actions">
           <button ref={commandButtonRef} className="command-trigger" type="button" onClick={openPalette} aria-label="Search portfolio evidence">
@@ -368,7 +376,7 @@ export default function Observatory({ evidence, initialTrack }: Props) {
               <a className="button primary" href="#routes">Choose a recruiter route <ChevronRight aria-hidden="true" /></a>
               <RecruiterTour evidence={evidence} activeTrack={activeTrack} onSelectTrack={chooseTrack} />
               <a className="button" href="/resume/Aaryan-Patel-Systems-Resume.pdf" download>
-                <Download aria-hidden="true" /> Download resume
+                <Download aria-hidden="true" /> Download ATS resume
               </a>
             </div>
           </div>

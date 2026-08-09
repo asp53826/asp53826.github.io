@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "generate": "node scripts/generate-assets.mjs && ${PYTHON:-python3} scripts/generate_resume.py",
+    "generate": "node scripts/generate-assets.mjs && ${PYTHON:-python3} scripts/generate_resume.py && ${PYTHON:-python3} scripts/generate_ats_resume.py",
     "check": "astro check && node scripts/validate.mjs",
     "build": "npm run generate && astro build && node scripts/validate.mjs",
     "preview": "astro preview"
