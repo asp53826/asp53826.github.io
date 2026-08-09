@@ -348,6 +348,7 @@ export default function Observatory({ evidence, initialTrack }: Props) {
           <span><strong>Aaryan Patel</strong><small>Systems Observatory</small></span>
         </a>
         <nav aria-label="Primary">
+          <a href="/recruiter/">Recruiter OS</a>
           <a href="#theater">Verification theater</a>
           <a href="#map">System map</a>
           <a href="#evidence-desk">Ask evidence</a>

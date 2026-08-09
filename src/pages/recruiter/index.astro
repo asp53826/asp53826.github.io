@@ -1,0 +1,15 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import RecruiterOS from "../../components/RecruiterOS";
+import type { Evidence } from "../../components/Observatory";
+import evidence from "../../../data/evidence.json";
+import "../../styles/recruiter-os.css";
+---
+
+<BaseLayout
+  title="Aaryan Patel — Engineering OS"
+  description="A 90-second, evidence-first recruiter command center for Aaryan Patel's systems and ML infrastructure work."
+  image="/linkedin/featured/engineering-os.png"
+>
+  <RecruiterOS client:idle evidence={evidence as Evidence} />
+</BaseLayout>

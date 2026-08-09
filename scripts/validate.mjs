@@ -39,6 +39,14 @@ await Promise.all([
   access(path.join(root, "public/resume/Aaryan-Patel-Systems-Resume.pdf")),
   access(path.join(root, "public/resume/Aaryan-Patel-Systems-Resume.docx")),
   access(path.join(root, "public/resume/Aaryan-Patel-Professional-Resume.pdf")),
-  access(path.join(root, "public/resume/Aaryan-Patel-Professional-Resume.docx"))
+  access(path.join(root, "public/resume/Aaryan-Patel-Professional-Resume.docx")),
+  access(path.join(root, "public/linkedin/banner/aaryan-engineering-os.png")),
+  access(path.join(root, "public/linkedin/banner/aaryan-proof-matrix.png")),
+  access(path.join(root, "public/linkedin/banner/aaryan-signal-map.png")),
+  access(path.join(root, "public/linkedin/featured/engineering-os.png")),
+  access(path.join(root, "public/linkedin/featured/tensorforge.png")),
+  access(path.join(root, "public/linkedin/featured/vllm-lite.png")),
+  access(path.join(root, "public/linkedin/featured/annlite.png")),
+  access(path.join(root, "public/linkedin/featured/sdr-receiver.png"))
 ]);
-console.log(`validated ${evidence.projects.length} projects, ${evidence.routes.length} routes, social cards, packets, evidence, and both resume editions`);
+console.log(`validated ${evidence.projects.length} projects, ${evidence.routes.length} routes, social cards, LinkedIn visual kit, packets, evidence, and both resume editions`);
