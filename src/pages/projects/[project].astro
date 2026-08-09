@@ -1,0 +1,290 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import type { Project, Route } from "../../components/Observatory";
+import evidence from "../../../data/evidence.json";
+
+export function getStaticPaths() {
+  return evidence.projects.map((project) => ({
+    params: { project: project.id },
+    props: {
+      project,
+      route: evidence.routes.find((route) => route.id === project.track)
+    }
+  }));
+}
+
+const { project, route } = Astro.props as { project: Project; route: Route };
+const title = `${project.name} — ${project.tagline} | Aaryan Patel`;
+const description = `${project.proof} ${project.limitation}`;
+const hasLiveDemo = Boolean(project.live);
+---
+
+<BaseLayout title={title} description={description} image={`/social/${project.id}.png`}>
+  <main class="project-passport" data-track={project.track}>
+    <header class="passport-bar">
+      <a class="passport-brand" href="/" aria-label="Aaryan Systems Observatory home">
+        <span class="brand-mark" aria-hidden="true">AP</span>
+        <span>
+          <strong>Systems Observatory</strong>
+          <small>Project evidence passport</small>
+        </span>
+      </a>
+      <a class="route-link" href={`/${project.track}/#${project.id}`}>
+        View {route.label} track <span aria-hidden="true">↗</span>
+      </a>
+    </header>
+
+    <section class="passport-hero" aria-labelledby="project-title">
+      <div class="hero-copy">
+        <p class="classification"><span>{project.language}</span><span>{route.short}</span></p>
+        <h1 id="project-title">{project.name}</h1>
+        <p class="tagline">{project.tagline}</p>
+        <p class="proof-statement">{project.proof}</p>
+        <div class="hero-actions">
+          <a class="primary-action" href={project.repo} target="_blank" rel="noreferrer">Inspect source <span aria-hidden="true">↗</span></a>
+          {hasLiveDemo && <a class="secondary-action" href={project.live} target="_blank" rel="noreferrer">Open live demo <span aria-hidden="true">↗</span></a>}
+        </div>
+      </div>
+
+      <figure class="project-plate">
+        <img src={`/social/${project.id}.png`} alt={`${project.name} project overview`} width="1280" height="640" loading="eager" />
+        <figcaption>
+          <span>Verified result</span>
+          <strong>{project.metric}</strong>
+          <small>{project.metricLabel}</small>
+        </figcaption>
+      </figure>
+    </section>
+
+    <section class="evidence-spine" aria-labelledby="evidence-title">
+      <div class="section-intro">
+        <p class="eyebrow">Evidence chain</p>
+        <h2 id="evidence-title">The claim, with its attack surface exposed.</h2>
+        <p>Recruiters can scan the result. Engineers can inspect how it was produced and where it stops being valid.</p>
+      </div>
+      <ol>
+        <li>
+          <span class="spine-label">Problem</span>
+          <p>{project.problem}</p>
+        </li>
+        <li>
+          <span class="spine-label">Mechanism</span>
+          <p>{project.mechanism}</p>
+        </li>
+        <li>
+          <span class="spine-label">Attack</span>
+          <p>{project.attack}</p>
+        </li>
+        <li class="boundary">
+          <span class="spine-label">Boundary</span>
+          <p>{project.limitation}</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="reproduction" aria-labelledby="reproduce-title">
+      <div>
+        <p class="eyebrow">Reproduce it</p>
+        <h2 id="reproduce-title">One command to the test boundary.</h2>
+        <p>The repository contains the implementation, tests, benchmark harness, and documented limitations behind this page.</p>
+      </div>
+      <div class="terminal-card">
+        <div class="terminal-head" aria-hidden="true"><i></i><i></i><i></i><span>verification shell</span></div>
+        <code><span aria-hidden="true">$ </span>{project.command}</code>
+        <button type="button" class="copy-command" data-command={project.command}>Copy command</button>
+      </div>
+    </section>
+
+    <section class="method-strip" aria-label="Verification methods">
+      <span>Verified with</span>
+      {project.methods.map((method) => <strong>{method}</strong>)}
+    </section>
+
+    <footer class="passport-footer">
+      <p>Built and measured by <strong>Aaryan Patel</strong>.</p>
+      <nav aria-label="Project links">
+        <a href={project.repo} target="_blank" rel="noreferrer">GitHub</a>
+        <a href={`/${project.track}/#${project.id}`}>Full evidence</a>
+        <a href="mailto:aaryansp26@gmail.com">Contact</a>
+      </nav>
+    </footer>
+  </main>
+
+  <script>
+    document.querySelectorAll<HTMLButtonElement>(".copy-command").forEach((button) => {
+      button.addEventListener("click", async () => {
+        await navigator.clipboard.writeText(button.dataset.command || "");
+        button.textContent = "Copied";
+        window.setTimeout(() => { button.textContent = "Copy command"; }, 1600);
+      });
+    });
+  </script>
+</BaseLayout>
+
+<style>
+  .project-passport {
+    --project-accent: #39d9f9;
+    --project-accent-soft: rgba(57, 217, 249, 0.13);
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  .project-passport[data-track="quant"] { --project-accent: #f2b84b; --project-accent-soft: rgba(242, 184, 75, 0.13); }
+  .project-passport[data-track="defense"] { --project-accent: #65e6a7; --project-accent-soft: rgba(101, 230, 167, 0.12); }
+  .project-passport[data-track="ml-infrastructure"] { --project-accent: #a99bff; --project-accent-soft: rgba(169, 155, 255, 0.13); }
+
+  .passport-bar,
+  .passport-hero,
+  .evidence-spine,
+  .reproduction,
+  .method-strip,
+  .passport-footer {
+    width: min(1180px, calc(100% - 48px));
+    margin-inline: auto;
+  }
+
+  .passport-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 82px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .passport-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+
+  .passport-brand > span:last-child { display: flex; flex-direction: column; line-height: 1.15; }
+  .passport-brand strong { font-family: var(--display); font-size: 15px; }
+  .passport-brand small,
+  .route-link,
+  .classification,
+  .eyebrow,
+  .spine-label,
+  .method-strip > span { font-family: var(--mono); text-transform: uppercase; letter-spacing: .1em; }
+  .passport-brand small { color: var(--text-muted); font-size: 9px; }
+
+  .route-link {
+    color: var(--text-secondary);
+    font-size: 10px;
+    text-decoration: none;
+  }
+  .route-link:hover { color: var(--project-accent); }
+
+  .passport-hero {
+    display: grid;
+    grid-template-columns: minmax(0, .86fr) minmax(420px, 1.14fr);
+    gap: clamp(40px, 7vw, 92px);
+    align-items: center;
+    min-height: 650px;
+    padding: 72px 0;
+  }
+
+  .classification { display: flex; gap: 10px; margin: 0 0 26px; color: var(--project-accent); font-size: 10px; }
+  .classification span { padding: 7px 9px; border: 1px solid color-mix(in srgb, var(--project-accent) 40%, transparent); background: var(--project-accent-soft); }
+  .hero-copy h1 { margin: 0; font-family: var(--display); font-size: clamp(64px, 9vw, 132px); line-height: .78; letter-spacing: -.075em; }
+  .tagline { max-width: 650px; margin: 35px 0 0; color: var(--text); font-family: var(--display); font-size: clamp(24px, 3.2vw, 42px); line-height: 1.02; letter-spacing: -.035em; }
+  .proof-statement { max-width: 610px; margin: 30px 0 0; padding-left: 18px; border-left: 2px solid var(--project-accent); color: var(--text-secondary); font-size: 18px; }
+
+  .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 38px; }
+  .hero-actions a { display: inline-flex; gap: 12px; align-items: center; justify-content: center; min-height: 48px; padding: 0 18px; border: 1px solid var(--line-strong); font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-decoration: none; text-transform: uppercase; }
+  .primary-action { background: var(--project-accent); color: #050913; border-color: var(--project-accent) !important; }
+  .secondary-action:hover { border-color: var(--project-accent); color: var(--project-accent); }
+
+  .project-plate {
+    position: relative;
+    margin: 0;
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    box-shadow: 28px 28px 0 var(--project-accent-soft);
+    transform: rotate(1.2deg);
+  }
+  .project-plate::before { content: "PROJECT / VERIFIED"; position: absolute; z-index: 2; top: -25px; right: 0; color: var(--text-muted); font-family: var(--mono); font-size: 9px; letter-spacing: .16em; }
+  .project-plate img { display: block; width: 100%; height: auto; aspect-ratio: 2 / 1; object-fit: cover; }
+  .project-plate figcaption { display: grid; grid-template-columns: 1fr auto; gap: 3px 18px; align-items: end; padding: 18px 20px; border-top: 1px solid var(--line); }
+  .project-plate figcaption span,
+  .project-plate figcaption small { color: var(--text-muted); font-family: var(--mono); font-size: 9px; letter-spacing: .1em; text-transform: uppercase; }
+  .project-plate figcaption strong { grid-row: 1 / 3; grid-column: 2; color: var(--project-accent); font-family: var(--display); font-size: 48px; line-height: .9; letter-spacing: -.06em; }
+
+  .evidence-spine {
+    display: grid;
+    grid-template-columns: minmax(240px, .7fr) minmax(0, 1.3fr);
+    gap: clamp(50px, 9vw, 120px);
+    padding: 110px 0;
+    border-top: 1px solid var(--line);
+  }
+  .eyebrow { margin: 0 0 14px; color: var(--project-accent); font-size: 10px; }
+  .section-intro h2,
+  .reproduction h2 { max-width: 600px; margin: 0; font-family: var(--display); font-size: clamp(36px, 5vw, 64px); line-height: .96; letter-spacing: -.045em; }
+  .section-intro > p:last-child,
+  .reproduction > div:first-child > p:last-child { max-width: 500px; margin-top: 24px; color: var(--text-secondary); font-size: 18px; }
+
+  .evidence-spine ol { position: relative; margin: 0; padding: 0; list-style: none; counter-reset: evidence; }
+  .evidence-spine ol::before { content: ""; position: absolute; top: 10px; bottom: 10px; left: 8px; width: 1px; background: linear-gradient(var(--project-accent), var(--line-strong)); }
+  .evidence-spine li { position: relative; display: grid; grid-template-columns: 128px 1fr; gap: 24px; padding: 0 0 42px 38px; counter-increment: evidence; }
+  .evidence-spine li::before { content: counter(evidence, decimal-leading-zero); position: absolute; left: 0; top: 4px; display: grid; width: 17px; height: 17px; place-items: center; border: 1px solid var(--project-accent); border-radius: 50%; background: var(--canvas); color: transparent; }
+  .spine-label { color: var(--text-muted); font-size: 9px; }
+  .evidence-spine li p { margin: -3px 0 0; color: var(--text); font-size: 19px; line-height: 1.42; }
+  .evidence-spine li.boundary { margin-top: 8px; padding-top: 26px; border-top: 1px solid rgba(242, 184, 75, .28); }
+  .evidence-spine li.boundary::before { top: 32px; border-color: var(--caution); }
+  .boundary .spine-label { color: var(--caution); }
+
+  .reproduction { display: grid; grid-template-columns: .75fr 1.25fr; gap: clamp(50px, 8vw, 100px); align-items: center; padding: 100px 0; border-top: 1px solid var(--line); }
+  .terminal-card { border: 1px solid var(--line-strong); background: #03070d; box-shadow: 12px 12px 0 var(--project-accent-soft); }
+  .terminal-head { display: flex; align-items: center; gap: 6px; min-height: 38px; padding: 0 13px; border-bottom: 1px solid var(--line); }
+  .terminal-head i { width: 7px; height: 7px; border: 1px solid var(--text-muted); border-radius: 50%; }
+  .terminal-head span { margin-left: auto; color: var(--text-muted); font-family: var(--mono); font-size: 9px; letter-spacing: .12em; text-transform: uppercase; }
+  .terminal-card code { display: block; overflow-wrap: anywhere; padding: 28px; color: #c8f7e1; font-family: var(--mono); font-size: 13px; line-height: 1.8; }
+  .terminal-card code span { color: var(--project-accent); }
+  .copy-command { width: 100%; min-height: 45px; border: 0; border-top: 1px solid var(--line); background: transparent; color: var(--text-secondary); cursor: pointer; font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+  .copy-command:hover { background: var(--project-accent-soft); color: var(--project-accent); }
+
+  .method-strip { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; padding: 30px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .method-strip > span { margin-right: 8px; color: var(--text-muted); font-size: 9px; }
+  .method-strip strong { padding: 7px 10px; border: 1px solid var(--line); color: var(--text-secondary); font-family: var(--mono); font-size: 10px; font-weight: 400; text-transform: uppercase; }
+
+  .passport-footer { display: flex; align-items: center; justify-content: space-between; padding: 42px 0 64px; color: var(--text-muted); }
+  .passport-footer p { margin: 0; }
+  .passport-footer nav { display: flex; gap: 22px; }
+  .passport-footer a { color: var(--text-secondary); text-decoration: none; }
+  .passport-footer a:hover { color: var(--project-accent); }
+
+  @media (max-width: 900px) {
+    .passport-hero { grid-template-columns: 1fr; padding-top: 56px; }
+    .project-plate { max-width: 720px; transform: none; }
+    .evidence-spine,
+    .reproduction { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 620px) {
+    .passport-bar,
+    .passport-hero,
+    .evidence-spine,
+    .reproduction,
+    .method-strip,
+    .passport-footer { width: min(100% - 28px, 1180px); }
+    .passport-bar { min-height: 72px; }
+    .route-link { max-width: 112px; text-align: right; }
+    .passport-brand small { display: none; }
+    .passport-hero { min-height: auto; padding: 52px 0 80px; }
+    .hero-copy h1 { font-size: clamp(58px, 22vw, 92px); overflow-wrap: anywhere; }
+    .tagline { margin-top: 26px; }
+    .project-plate { box-shadow: 10px 10px 0 var(--project-accent-soft); }
+    .project-plate figcaption strong { font-size: 36px; }
+    .evidence-spine,
+    .reproduction { padding: 76px 0; }
+    .evidence-spine li { grid-template-columns: 1fr; gap: 8px; padding-left: 32px; }
+    .passport-footer { flex-direction: column; align-items: flex-start; gap: 20px; }
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-copy { animation: reveal-copy 600ms cubic-bezier(.2,.8,.2,1) both; }
+    .project-plate { animation: reveal-plate 700ms 100ms cubic-bezier(.2,.8,.2,1) both; }
+    @keyframes reveal-copy { from { opacity: 0; transform: translateY(18px); } }
+    @keyframes reveal-plate { from { opacity: 0; transform: translateY(22px) rotate(1.2deg); } }
+  }
+</style>
