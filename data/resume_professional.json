@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "verifiedOn": "2026-08-09",
+  "contact": {
+    "name": "Aaryan Patel",
+    "title": "Systems, Software & ML Infrastructure Engineer",
+    "location": "Bogart, Georgia",
+    "email": "aaryansp26@gmail.com",
+    "portfolioLabel": "asp53826.github.io",
+    "portfolioUrl": "https://asp53826.github.io",
+    "githubLabel": "github.com/asp53826",
+    "githubUrl": "https://github.com/asp53826",
+    "linkedinLabel": "linkedin.com/in/aaryanpatelsystems",
+    "linkedinUrl": "https://www.linkedin.com/in/aaryanpatelsystems/"
+  },
+  "profile": "Computer Science senior graduating December 2026 with more than one year of industrial data and IoT engineering experience. Builds production data workflows at MP Equipment and public systems software from first principles, including Raft/MVCC databases, vectorized execution, LLM inference scheduling, retrieval infrastructure, and financial-data services. Work emphasizes reproducible benchmarks, failure injection, independent correctness oracles, and clearly documented limits.",
+  "skills": [
+    {"label": "Languages", "value": "C++17, Python, SQL, TypeScript/JavaScript, R"},
+    {"label": "Systems", "value": "Distributed systems, Raft, MVCC/OCC, WAL and LSM trees, concurrency, vectorized execution, linearizability"},
+    {"label": "ML / Data", "value": "PyTorch, HNSW and FAISS, LLM inference, ETL, data modeling, sensor analytics, signal processing"},
+    {"label": "Platforms", "value": "Linux, Git and GitHub Actions, Docker, Power BI, M1 ERP, PLC and Industrial IoT integration"}
+  ],
+  "experience": [
+    {
+      "organization": "MP Equipment",
+      "location": "Gainesville, Georgia",
+      "role": "Industrial IoT & Data Engineer Intern",
+      "dates": "May 2025 - Present",
+      "progression": "Promoted from Computer Science Intern into a broader Industrial IoT and data engineering role.",
+      "bullets": [
+        "Build Python and SQL pipelines that combine IoT sensor streams, equipment alarm history, and M1 ERP production records into reliable operational datasets.",
+        "Standardize asset identifiers, measurement units, missing-value handling, and outlier treatment so engineering and operations reports remain consistent across sources.",
+        "Develop predictive-maintenance workflows from vibration, temperature, humidity, and machine-state signals to surface abnormal equipment behavior.",
+        "Design Power BI dashboards for OEE, downtime, on-time delivery, vendor performance, production KPIs, and equipment health.",
+        "Connect PLC-controlled machinery to real-time monitoring workflows that expose machine state and alarm behavior for troubleshooting.",
+        "Automate recurring operational reports to reduce manual data preparation and keep performance views current."
+      ]
+    },
+    {
+      "organization": "Georgia State University - Department of Computer Science",
+      "location": "Atlanta, Georgia",
+      "role": "Undergraduate Research Assistant",
+      "dates": "Aug 2022 - May 2023",
+      "bullets": [
+        "Analyzed Reddit social-network data to study group relationships and maintained research data models used in the analysis.",
+        "Built date-range controls and public-facing views for machine-learning and data-mining research data."
+      ]
+    }
+  ],
+  "projects": [
+    {
+      "id": "raft-mvcc",
+      "name": "Raft + MVCC Database Lab",
+      "stack": "C++17",
+      "url": "https://github.com/asp53826/raft-mvcc",
+      "bullets": [
+        "Implemented Raft elections and conflict repair with MVCC snapshots, serializable optimistic concurrency control, safe-point garbage collection, and P-compositional linearizability checking.",
+        "Verified 598 assertions across seeded partitions, stale candidates, minority leaders, transaction conflicts, and invalid histories; five-node failover completed in 11 logical ticks without minority commits."
+      ]
+    },
+    {
+      "id": "vllm-lite",
+      "name": "Paged LLM Inference Scheduler",
+      "stack": "Python, PyTorch",
+      "url": "https://github.com/asp53826/vllm-lite",
+      "bullets": [
+        "Built paged KV caching, continuous batching, chunked prefill, prefix caching, and speculative decoding around a small-model inference simulator.",
+        "Reached 94% KV-slot utilization versus 21%, 2.9x sequential throughput, and 5.5x better median time-to-first-token across 90 tests under a controlled CPU-scale benchmark."
+      ]
+    },
+    {
+      "id": "edgar-mcp",
+      "name": "SEC EDGAR MCP Server",
+      "stack": "Python, MCP, XBRL",
+      "url": "https://github.com/asp53826/edgar-mcp",
+      "bullets": [
+        "Developed issuer identity resolution, filing history, bounded text windows, XBRL discovery, per-host cache validation, and a global SEC request pacer.",
+        "Measured a 138x warm 10-K read improvement with 32 offline tests while keeping peak request windows at the SEC 10-requests-per-second ceiling."
+      ]
+    },
+    {
+      "id": "columnar-engine",
+      "name": "Vectorized Columnar Engine",
+      "stack": "C++17",
+      "url": "https://github.com/asp53826/columnar-engine",
+      "bullets": [
+        "Implemented null bitmaps, selection vectors, vectorized filters, joins, aggregation, and TPC-H Q1 with scalar reference implementations as independent oracles.",
+        "Measured 53.1 million TPC-H Q1 rows per second and 1.94x scalar-filter throughput with 6,288 assertions covering null and selection semantics."
+      ]
+    },
+    {
+      "id": "track-fusion",
+      "name": "Multi-Target Tracking and Sensor Fusion",
+      "stack": "Python",
+      "url": "https://github.com/asp53826/track-fusion",
+      "bullets": [
+        "Built an IMM motion bank, exact JPDA enumeration with bounded fallback, Wald track scoring, and OSPA decomposition for estimation, association, and track-existence analysis.",
+        "Reduced localization error by 47% and raised IMM coverage from 0.893 to 0.960 across 67 tests; published the turn-rate regimes where the configured model bank loses."
+      ]
+    },
+    {
+      "id": "annlite",
+      "name": "HNSW Vector Search Engine",
+      "stack": "C++17, Python",
+      "url": "https://github.com/asp53826/annlite",
+      "bullets": [
+        "Implemented a layered HNSW graph, diversity-aware neighbor selection, SIMD distance kernels, persistence, Python bindings, and GIL-free concurrent search.",
+        "Reached 1.83x FAISS queries per second at 0.999 recall; at 98.5% recall, performed 26x fewer distance computations than exact scan across 51 tests."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "school": "University of Georgia",
+      "degree": "Bachelor of Science in Computer Science",
+      "dates": "Expected December 2026",
+      "detail": "Systems-focused engineering across distributed computing, ML infrastructure, data engineering, and signal processing."
+    },
+    {
+      "school": "Georgia State University",
+      "degree": "Prior coursework in Data Science",
+      "dates": "Aug 2022 - Apr 2024"
+    }
+  ]
+}

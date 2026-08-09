@@ -16,7 +16,7 @@ manifest drives:
 - the portfolio health surface and current-building strip;
 - the machine-readable evidence endpoint and four one-page recruiter PDF packets;
 - seventeen matching social-preview cards;
-- downloadable one-page ATS resume files in PDF and editable DOCX formats.
+- a polished two-page professional resume plus a compact one-page ATS edition, both in PDF and editable DOCX formats.
 
 ## Local verification
 
@@ -27,8 +27,12 @@ npm run build
 npm run dev
 ```
 
-The build regenerates the evidence-backed recruiter packets plus the primary
-single-column resume from `data/resume.json`. The public resume URLs are
+The build regenerates the evidence-backed recruiter packets plus the one-page
+ATS resume from `data/resume.json`. `scripts/generate_professional_resume.py`
+builds the fuller two-page recruiter edition from `data/resume_professional.json`
+and the same source-backed evidence manifest. The primary public resume URLs are
+`/resume/Aaryan-Patel-Professional-Resume.pdf` and
+`/resume/Aaryan-Patel-Professional-Resume.docx`; the one-page ATS files remain at
 `/resume/Aaryan-Patel-Systems-Resume.pdf` and
 `/resume/Aaryan-Patel-Systems-Resume.docx`.
 

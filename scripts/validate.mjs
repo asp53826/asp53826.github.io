@@ -37,6 +37,8 @@ await Promise.all([
   access(path.join(root, "public/data/evidence.json")),
   access(path.join(root, "public/data/health.json")),
   access(path.join(root, "public/resume/Aaryan-Patel-Systems-Resume.pdf")),
-  access(path.join(root, "public/resume/Aaryan-Patel-Systems-Resume.docx"))
+  access(path.join(root, "public/resume/Aaryan-Patel-Systems-Resume.docx")),
+  access(path.join(root, "public/resume/Aaryan-Patel-Professional-Resume.pdf")),
+  access(path.join(root, "public/resume/Aaryan-Patel-Professional-Resume.docx"))
 ]);
-console.log(`validated ${evidence.projects.length} projects, ${evidence.routes.length} routes, social cards, packets, evidence, and ATS resume files`);
+console.log(`validated ${evidence.projects.length} projects, ${evidence.routes.length} routes, social cards, packets, evidence, and both resume editions`);

@@ -241,17 +241,24 @@ export default function Observatory({ evidence, initialTrack }: Props) {
       ...projectCommands,
       {
         id: "resume",
-        label: "Download ATS systems resume",
-        detail: "One-page recruiter resume with experience, skills, and measured engineering results.",
-        keywords: "resume cv pdf recruiter download",
+        label: "Open full professional resume",
+        detail: "Polished two-page recruiter edition with deeper experience and six verified engineering projects.",
+        keywords: "resume cv pdf recruiter professional full download",
+        run: () => { window.location.href = "/resume/Aaryan-Patel-Professional-Resume.pdf"; }
+      },
+      {
+        id: "resume-ats",
+        label: "Download one-page ATS resume",
+        detail: "Compact single-column version for portals and fast screening.",
+        keywords: "resume cv ats one page pdf recruiter download",
         run: () => { window.location.href = "/resume/Aaryan-Patel-Systems-Resume.pdf"; }
       },
       {
         id: "resume-docx",
-        label: "Download editable resume",
-        detail: "ATS-friendly Microsoft Word version for applications that request DOCX.",
-        keywords: "resume cv docx word editable recruiter download",
-        run: () => { window.location.href = "/resume/Aaryan-Patel-Systems-Resume.docx"; }
+        label: "Download editable professional resume",
+        detail: "Editable Microsoft Word version of the full recruiter edition.",
+        keywords: "resume cv docx word editable recruiter professional download",
+        run: () => { window.location.href = "/resume/Aaryan-Patel-Professional-Resume.docx"; }
       },
       {
         id: "manifest",
@@ -344,7 +351,7 @@ export default function Observatory({ evidence, initialTrack }: Props) {
           <a href="#map">System map</a>
           <a href="#evidence-desk">Ask evidence</a>
           <a href="/data/evidence.json" target="_blank" rel="noreferrer">Evidence</a>
-          <a href="/resume/Aaryan-Patel-Systems-Resume.pdf" target="_blank" rel="noreferrer">Resume</a>
+          <a href="/resume/Aaryan-Patel-Professional-Resume.pdf" target="_blank" rel="noreferrer">Resume</a>
         </nav>
         <div className="topbar-actions">
           <button ref={commandButtonRef} className="command-trigger" type="button" onClick={openPalette} aria-label="Search portfolio evidence">
@@ -375,8 +382,8 @@ export default function Observatory({ evidence, initialTrack }: Props) {
             <div className="hero-actions">
               <a className="button primary" href="#routes">Choose a recruiter route <ChevronRight aria-hidden="true" /></a>
               <RecruiterTour evidence={evidence} activeTrack={activeTrack} onSelectTrack={chooseTrack} />
-              <a className="button" href="/resume/Aaryan-Patel-Systems-Resume.pdf" download>
-                <Download aria-hidden="true" /> Download ATS resume
+              <a className="button" href="/resume/Aaryan-Patel-Professional-Resume.pdf" target="_blank" rel="noreferrer">
+                <Download aria-hidden="true" /> View full resume
               </a>
             </div>
           </div>
