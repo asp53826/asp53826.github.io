@@ -4,13 +4,25 @@ import type { Project, Route } from "../../components/Observatory";
 import evidence from "../../../data/evidence.json";
 
 export function getStaticPaths() {
-  return evidence.projects.map((project) => ({
+  const projectPaths = evidence.projects.map((project) => ({
     params: { project: project.id },
     props: {
       project,
       route: evidence.routes.find((route) => route.id === project.track)
     }
   }));
+
+  const vllm = evidence.projects.find((project) => project.id === "vllm-lite")!;
+  return [
+    ...projectPaths,
+    {
+      params: { project: "vllm" },
+      props: {
+        project: vllm,
+        route: evidence.routes.find((route) => route.id === vllm.track)
+      }
+    }
+  ];
 }
 
 const { project, route } = Astro.props as { project: Project; route: Route };
