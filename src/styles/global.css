@@ -975,6 +975,7 @@ section {
   display: flex;
   min-width: 0;
   flex-direction: column;
+  scroll-margin-top: 96px;
   padding: 22px;
   border: 1px solid var(--line);
   border-radius: var(--radius-md);

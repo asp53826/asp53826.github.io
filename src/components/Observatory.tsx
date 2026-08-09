@@ -147,7 +147,7 @@ function CopyCommand({ command, compact = false }: { command: string; compact?: 
 
 function ProjectCard({ project, featured = false, verifiedOn }: { project: Project; featured?: boolean; verifiedOn: string }) {
   return (
-    <article className={`project-card${featured ? " featured" : ""}`}>
+    <article id={project.id} className={`project-card${featured ? " featured" : ""}`}>
       <header>
         <div>
           <p className="project-language">{project.language}</p>
