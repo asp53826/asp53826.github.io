@@ -1,0 +1,43 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ecosystem from "../../../data/ecosystem.json";
+import "../../styles/proof-labs.css";
+
+const accentMap: Record<string, string> = {
+  cyan: "57, 217, 249",
+  green: "101, 230, 167",
+  amber: "242, 184, 75",
+  violet: "159, 140, 255"
+};
+---
+
+<BaseLayout
+  title="Aaryan Patel — Proof Laboratory"
+  description="Four interactive laboratories connecting distributed systems, autonomy, markets, and GPU compiler evidence."
+  image="/social/proof-laboratory.png"
+>
+  <div class="lab-app">
+    <header class="lab-topbar">
+      <a class="lab-wordmark" href="/"><span>AP</span><strong>Proof Laboratory</strong></a>
+      <nav aria-label="Laboratory navigation">
+        {ecosystem.labs.map((lab) => <a href={lab.route}>{lab.name}</a>)}
+      </nav>
+      <a class="lab-back" href="/recruiter/">Recruiter OS</a>
+    </header>
+    <main class="labs-index">
+      <section class="labs-index-header" aria-labelledby="labs-title">
+        <div><p class="lab-kicker">PUBLIC ENGINEERING LABORATORY / FOUR CHANNELS</p><h1 id="labs-title">Run the<br />evidence.</h1></div>
+        <p>{ecosystem.thesis} Each experience connects its live state to the source, reproduction command, measured result, and failure boundary.</p>
+      </section>
+      <section class="lab-directory" aria-label="Interactive laboratory directory">
+        {ecosystem.labs.map((lab) => (
+          <a href={lab.route} style={`--lab-accent-rgb:${accentMap[lab.accent]};--lab-accent:rgb(${accentMap[lab.accent]})`}>
+            <small>{lab.channel} / {lab.status.toUpperCase()}</small>
+            <div><h2>{lab.name}</h2><p>{lab.summary}</p></div>
+            <span>{lab.engine}</span>
+          </a>
+        ))}
+      </section>
+    </main>
+  </div>
+</BaseLayout>

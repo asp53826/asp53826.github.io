@@ -1,0 +1,16 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:10.000
+KERNELARENA opens TensorForge itself, with typed tensor shapes checked before any G P U work begins.
+
+00:00:10.000 --> 00:00:20.000
+Replay canonicalization, operator fusion, dead code elimination, and liveness aware buffer reuse.
+
+00:00:20.000 --> 00:00:30.000
+Every visible node count, memory slot, dispatch, and W G S L kernel comes from the running compiler.
+
+00:00:30.000 --> 00:00:40.000
+The browser executes an equivalent C P U path, probes Web G P U when available, and compares numerical output.
+
+00:00:40.000 --> 00:00:51.000
+Structural improvements are compiler facts. Wall time belongs to the visitor's adapter and is never claimed as universal speedup.

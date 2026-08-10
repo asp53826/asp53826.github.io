@@ -81,8 +81,9 @@ export default function RecruiterOS({ evidence }: Props) {
         </a>
         <nav aria-label="Recruiter navigation">
           <a href="#proof">Proof</a>
-          <a href="#frontier">Live build</a>
-          <a href="/data/evidence.json" target="_blank" rel="noreferrer">Evidence</a>
+          <a href="/labs/">Live labs</a>
+          <a href="/tours/">3-minute tours</a>
+          <a href="/cinema/">Cinema</a>
         </nav>
         <a className="os-top-cta" href="/resume/Aaryan-Patel-Professional-Resume.pdf" target="_blank" rel="noreferrer"><Download aria-hidden="true" /> Resume</a>
       </header>
@@ -94,7 +95,7 @@ export default function RecruiterOS({ evidence }: Props) {
             <h1 id="os-title">I build the layer<br />underneath <em>the model.</em></h1>
             <p className="os-lede">Systems and ML infrastructure engineered with explicit failure modes, reproducible commands, and the benchmark boundary published beside the result.</p>
             <div className="os-primary-actions">
-              <a className="os-button primary" href="#proof">Enter proof path <ArrowDown aria-hidden="true" /></a>
+              <a className="os-button primary" href="/labs/">Enter live proof lab <ArrowDown aria-hidden="true" /></a>
               <a className="os-button" href={evidence.owner.github} target="_blank" rel="noreferrer"><Code2 aria-hidden="true" /> Inspect GitHub</a>
             </div>
             <dl className="os-health" aria-label="Verified portfolio summary">

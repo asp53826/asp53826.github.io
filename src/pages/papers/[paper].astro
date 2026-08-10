@@ -1,0 +1,7 @@
+---
+import { papers } from "../../data/papers";
+import "../../styles/evidence-pages.css";
+export function getStaticPaths() { return papers.map((paper) => ({ params: { paper: paper.id }, props: { paper } })); }
+const { paper } = Astro.props;
+---
+<!doctype html><html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width" /><title>{paper.title} — Aaryan Patel</title><meta name="description" content={paper.dek} /></head><body><div class="evidence-page"><header class="lab-topbar"><a class="lab-wordmark" href="/"><span>AP</span><strong>Engineering Papers</strong></a><nav><a href="/labs/">Laboratories</a><a href="/benchmarks/">Benchmarks</a><a aria-current="page" href="/papers/">All papers</a></nav><a class="lab-back" href="/recruiter/">Recruiter route ↗</a></header><main class="paper-article"><header><p class="evidence-kicker">{paper.lab} / {paper.minutes} MIN READ</p><h1>{paper.title}</h1><p class="dek">{paper.dek}</p></header>{paper.sections.map((section) => <section><h2>{section.heading}</h2><div>{section.paragraphs.map((paragraph) => <p>{paragraph}</p>)}</div></section>)}<p class="evidence-note">Reproduce the linked benchmark records before quoting a number outside its stated environment. The laboratory pages make the mechanism visible; repository tests and output remain the authority.</p></main></div></body></html>

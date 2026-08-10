@@ -1,0 +1,16 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:10.000
+On a maneuvering target, I M M lowers localization error from twenty six point nine two to fourteen point four zero.
+
+00:00:10.000 --> 00:00:20.000
+The same filter loses on straight motion and on a turn outside its configured rate hypotheses.
+
+00:00:20.000 --> 00:00:30.000
+J P D A localizes a crossing slightly better, yet total O S P A is worse because it sustains more false tracks.
+
+00:00:30.000 --> 00:00:40.000
+During hover, visual inertial odometry becomes thirteen times worse than dead reckoning because translation and parallax disappear.
+
+00:00:40.000 --> 00:00:51.000
+SIGNALROOM visualizes committed benchmark regimes. The drawn dots explain geometry; they are not fresh numerical measurements.

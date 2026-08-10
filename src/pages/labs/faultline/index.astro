@@ -1,0 +1,13 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import FaultlineLab from "../../../components/FaultlineLab";
+import "../../../styles/proof-labs.css";
+---
+
+<BaseLayout
+  title="FAULTLINE — Distributed Systems Failure Laboratory"
+  description="Operate Aaryan Patel's real C++17 Raft, MVCC, and linearizability engine in the browser through deterministic WebAssembly failure scenarios."
+  image="/media/cinema/faultline-poster.png"
+>
+  <FaultlineLab client:load />
+</BaseLayout>

@@ -1,0 +1,224 @@
+{
+  "version": 1,
+  "generated": "2026-08-09",
+  "thesis": "Four live laboratories. One evidence contract: mechanism, attack, oracle, boundary.",
+  "labs": [
+    {
+      "id": "faultline",
+      "channel": "CONSENSUS / STORAGE",
+      "name": "FAULTLINE",
+      "title": "Distributed Systems Failure Laboratory",
+      "accent": "cyan",
+      "engine": "C++17 compiled to WebAssembly",
+      "summary": "Operate a real five-node Raft + MVCC simulator, inject partitions, replay deterministic failover, and ask the linearizability checker for a witness.",
+      "route": "/labs/faultline/",
+      "repo": "https://github.com/asp53826/raft-mvcc",
+      "status": "live"
+    },
+    {
+      "id": "signalroom",
+      "channel": "SENSING / AUTONOMY",
+      "name": "SIGNALROOM",
+      "title": "Autonomy Mission Control",
+      "accent": "green",
+      "engine": "Measured replay from track-fusion, SAR, and VIO",
+      "summary": "Replay maneuvering targets, sensor dropouts, VIO observability loss, and SAR autofocus boundaries with the published measurements kept visible.",
+      "route": "/labs/signalroom/",
+      "repo": "https://github.com/asp53826/track-fusion",
+      "status": "live"
+    },
+    {
+      "id": "marketwire",
+      "channel": "MARKETS / RISK",
+      "name": "MARKETWIRE",
+      "title": "Exchange and Risk Simulator",
+      "accent": "amber",
+      "engine": "Deterministic order-flow and AAD evidence replay",
+      "summary": "Submit orders, change toxicity, inspect inventory risk, and compare pricing sensitivities without hiding the regime where a strategy loses.",
+      "route": "/labs/marketwire/",
+      "repo": "https://github.com/asp53826/lob-market-making",
+      "status": "live"
+    },
+    {
+      "id": "kernelarena",
+      "channel": "COMPILERS / GPU",
+      "name": "KERNELARENA",
+      "title": "GPU Optimization Laboratory",
+      "accent": "violet",
+      "engine": "TensorForge TypeScript IR and generated WGSL",
+      "summary": "Compare graph shapes, compiler passes, liveness-aware memory plans, generated kernels, and browser-local timing in one inspectable arena.",
+      "route": "/labs/kernelarena/",
+      "repo": "https://github.com/asp53826/tensorforge-webgpu",
+      "status": "live"
+    }
+  ],
+  "benchmarks": [
+    {
+      "id": "raft-3",
+      "lab": "faultline",
+      "metric": "3-node replication",
+      "value": 746301.1,
+      "unit": "ops/s",
+      "commit": "5bdba04",
+      "command": "make clean test benchmark",
+      "environment": "Apple M2 Pro, 16 GB, in-process simulator",
+      "boundary": "No sockets, serialization, fsync, scheduling, persistence, snapshots, or membership changes."
+    },
+    {
+      "id": "raft-5",
+      "lab": "faultline",
+      "metric": "5-node replication",
+      "value": 413382.6,
+      "unit": "ops/s",
+      "commit": "5bdba04",
+      "command": "make clean test benchmark",
+      "environment": "Apple M2 Pro, 16 GB, in-process simulator",
+      "boundary": "A protocol microbenchmark, not production database throughput."
+    },
+    {
+      "id": "raft-failover",
+      "lab": "faultline",
+      "metric": "5-node failover",
+      "value": 11,
+      "unit": "logical ticks",
+      "commit": "5bdba04",
+      "command": "make clean test benchmark",
+      "environment": "Deterministic virtual transport",
+      "boundary": "Logical ticks are not wall-clock milliseconds."
+    },
+    {
+      "id": "track-imm",
+      "lab": "signalroom",
+      "metric": "IMM localization error",
+      "value": 14.4,
+      "unit": "OSPA loc",
+      "commit": "9a1092b",
+      "command": "python bench/benchmark.py --quick",
+      "environment": "5 paired seeds, configured ±6 degree/s model bank",
+      "boundary": "The bank loses on straight motion and at 12 degree/s."
+    },
+    {
+      "id": "vio-drift",
+      "lab": "signalroom",
+      "metric": "40 s VIO ATE",
+      "value": 0.041,
+      "unit": "m RMSE",
+      "commit": "f38714f",
+      "command": "python bench/benchmark.py --quick",
+      "environment": "3 seeds, 73.3 m repeating figure-eight",
+      "boundary": "The repeating path implicitly re-observes landmarks; hover is a documented failure."
+    },
+    {
+      "id": "sar-resolution",
+      "lab": "signalroom",
+      "metric": "SAR range IRW error",
+      "value": 0.02,
+      "unit": "%",
+      "commit": "8304157",
+      "command": "python bench/benchmark.py --quick",
+      "environment": "200 MHz bandwidth, 200 m aperture",
+      "boundary": "Synthetic point targets and time-domain backprojection."
+    },
+    {
+      "id": "aad-accuracy",
+      "lab": "marketwire",
+      "metric": "AAD delta relative error",
+      "value": 5.56e-16,
+      "unit": "relative error",
+      "commit": "c26ef7a",
+      "command": "make bench",
+      "environment": "Black-Scholes analytic comparison",
+      "boundary": "Pathwise AAD returns zero for a sharp digital payoff; smoothing is required."
+    },
+    {
+      "id": "aad-speed",
+      "lab": "marketwire",
+      "metric": "50-input AAD speedup",
+      "value": 57.6,
+      "unit": "x vs bump-and-revalue",
+      "commit": "c26ef7a",
+      "command": "make bench",
+      "environment": "Apple M2 Pro local run; 26.5 ms AAD vs 1524.5 ms bump-and-revalue",
+      "boundary": "One workload and machine; not a general performance claim. AAD tape cost was 2.00 times pricing."
+    },
+    {
+      "id": "lob-skew-inventory",
+      "lab": "marketwire",
+      "metric": "Inventory-skew dispersion",
+      "value": 12,
+      "unit": "inventory SD",
+      "commit": "82c75a1",
+      "command": "make bench",
+      "environment": "20,000 steps across 12 seeds; inventory-skew strategy",
+      "boundary": "The strategy reduced inventory dispersion from 88.1 but also reduced P&L from 20,853 to 15,448."
+    },
+    {
+      "id": "tensor-tests",
+      "lab": "kernelarena",
+      "metric": "Compiler/runtime tests",
+      "value": 9,
+      "unit": "passing tests",
+      "commit": "ba2beaf",
+      "command": "npm test -- --run && npm run build",
+      "environment": "Vitest compiler and runtime suite",
+      "boundary": "Browser timing depends on the visitor's GPU and is never presented as a universal speedup."
+    }
+  ],
+  "papers": [
+    {
+      "id": "consensus-under-partition",
+      "lab": "faultline",
+      "title": "Consensus Under Partition: What the Animation Must Not Hide",
+      "dek": "A visual failure laboratory is useful only when message loss, quorum boundaries, and simulator limits remain inspectable.",
+      "minutes": 8
+    },
+    {
+      "id": "sensor-fusion-loses",
+      "lab": "signalroom",
+      "title": "When Sensor Fusion Loses",
+      "dek": "IMM, JPDA, VIO, and autofocus each fail for different observability and model-mismatch reasons.",
+      "minutes": 10
+    },
+    {
+      "id": "benchmarks-that-fight-back",
+      "lab": "marketwire",
+      "title": "Benchmarks That Fight Back",
+      "dek": "A market simulator, an AAD engine, and a GPU compiler are credible only when the losing regime travels with the headline metric.",
+      "minutes": 9
+    }
+  ],
+  "contributions": [
+    {
+      "repository": "jdodegard/4050-project",
+      "number": 7,
+      "title": "Make docker compose work on a fresh clone",
+      "url": "https://github.com/jdodegard/4050-project/pull/7",
+      "merged": "2026-07-30",
+      "signal": "Reproducible onboarding"
+    },
+    {
+      "repository": "jdodegard/4050-project",
+      "number": 8,
+      "title": "Add Manage Subscribers to the admin portal",
+      "url": "https://github.com/jdodegard/4050-project/pull/8",
+      "merged": "2026-07-30",
+      "signal": "Product implementation"
+    },
+    {
+      "repository": "jdodegard/4050-project",
+      "number": 9,
+      "title": "Make Manage Users functional",
+      "url": "https://github.com/jdodegard/4050-project/pull/9",
+      "merged": "2026-07-30",
+      "signal": "Full-stack workflow repair"
+    },
+    {
+      "repository": "jdodegard/4050-project",
+      "number": 10,
+      "title": "Fix invisible trailers, make the show date filter work",
+      "url": "https://github.com/jdodegard/4050-project/pull/10",
+      "merged": "2026-07-30",
+      "signal": "UI debugging and data correctness"
+    }
+  ]
+}

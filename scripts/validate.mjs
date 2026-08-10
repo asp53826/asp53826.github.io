@@ -3,6 +3,7 @@ import path from "node:path";
 
 const root = process.cwd();
 const evidence = JSON.parse(await readFile(path.join(root, "data/evidence.json"), "utf8"));
+const ecosystem = JSON.parse(await readFile(path.join(root, "data/ecosystem.json"), "utf8"));
 const ids = new Set(evidence.projects.map((project) => project.id));
 
 if (ids.size !== evidence.projects.length) throw new Error("project ids must be unique");
@@ -30,6 +31,21 @@ for (const experience of evidence.experience.flagships) {
   if (experience.events.length !== 6) throw new Error(`${experience.projectId} must include six 10-second replay checkpoints`);
   if (!experience.commit || !experience.benchmarkCommand || experience.sourceFiles.length < 2) throw new Error(`${experience.projectId} missing provenance`);
 }
+if (ecosystem.labs.length !== 4) throw new Error("proof ecosystem must contain four flagship laboratories");
+if (new Set(ecosystem.labs.map((lab) => lab.id)).size !== 4) throw new Error("laboratory ids must be unique");
+const labIds = new Set(ecosystem.labs.map((lab) => lab.id));
+for (const benchmark of ecosystem.benchmarks) {
+  if (!labIds.has(benchmark.lab)) throw new Error(`${benchmark.id} references an unknown lab`);
+  for (const field of ["metric", "value", "unit", "commit", "command", "environment", "boundary"]) if (benchmark[field] === undefined || benchmark[field] === "") throw new Error(`${benchmark.id} missing ${field}`);
+}
+for (const contribution of ecosystem.contributions) {
+  if (!/^https:\/\/github\.com\/[^/]+\/[^/]+\/pull\/\d+$/.test(contribution.url)) throw new Error(`invalid contribution URL ${contribution.url}`);
+}
+const wasm = await readFile(path.join(root, "public/wasm/faultline/faultline-engine.wasm"));
+if (!wasm.subarray(0, 4).equals(Buffer.from([0, 97, 115, 109]))) throw new Error("FAULTLINE engine is not a WebAssembly binary");
+for (const film of ["faultline", "signalroom", "marketwire", "kernelarena"]) {
+  for (const suffix of ["mp4", "vtt", "svg", "png"]) await access(path.join(root, `public/media/cinema/${film}${["svg", "png"].includes(suffix) ? "-poster" : ""}.${suffix}`));
+}
 await Promise.all([
   access(path.join(root, "public/social/observatory.png")),
   access(path.join(root, "public/.nojekyll")),
@@ -49,4 +65,4 @@ await Promise.all([
   access(path.join(root, "public/linkedin/featured/annlite.png")),
   access(path.join(root, "public/linkedin/featured/sdr-receiver.png"))
 ]);
-console.log(`validated ${evidence.projects.length} projects, ${evidence.routes.length} routes, social cards, LinkedIn visual kit, packets, evidence, and both resume editions`);
+console.log(`validated ${evidence.projects.length} projects, ${ecosystem.labs.length} proof labs, ${ecosystem.benchmarks.length} benchmark records, ${ecosystem.contributions.length} merged contributions, four narrated films, packets, evidence, and both resume editions`);

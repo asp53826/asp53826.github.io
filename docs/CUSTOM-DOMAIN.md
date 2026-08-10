@@ -8,6 +8,11 @@ Recommended naming order:
 2. `patelsystems.dev`
 3. `systemsobservatory.dev`
 
+Decision required from Aaryan: purchase/confirm exactly one of the names above
+and provide the owned domain. Domain registration is a paid external action,
+so the repository intentionally stops before creating `public/CNAME` or
+changing the Pages setting. Everything else in this checklist is ready.
+
 Activation checklist:
 
 1. Purchase and verify the selected domain.
@@ -22,4 +27,3 @@ Official references:
 
 - https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/managing-a-custom-domain-for-your-github-pages-site
 - https://docs.github.com/en/pages/configuring-a-custom-domain-for-your-github-pages-site/verifying-your-custom-domain-for-github-pages
-

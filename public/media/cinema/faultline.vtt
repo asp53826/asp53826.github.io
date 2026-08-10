@@ -1,0 +1,16 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:10.000
+FAULTLINE runs the repository's C plus plus seventeen Raft and M V C C engine after compilation to WebAssembly.
+
+00:00:10.000 --> 00:00:20.000
+Campaign node one, commit a baseline transaction, then isolate that leader from the other four nodes.
+
+00:00:20.000 --> 00:00:30.000
+The isolated leader may look alive, but without a quorum it cannot turn a new proposal into a committed fact.
+
+00:00:30.000 --> 00:00:40.000
+Heal the network, inspect terms and logs, then ask the linearizability checker for a legal witness order.
+
+00:00:40.000 --> 00:00:51.000
+This proves simulator-level protocol behavior. Logical ticks are not production latency, and the engine has no disk or sockets.

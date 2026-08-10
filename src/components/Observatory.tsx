@@ -349,10 +349,9 @@ export default function Observatory({ evidence, initialTrack }: Props) {
         </a>
         <nav aria-label="Primary">
           <a href="/recruiter/">Recruiter OS</a>
+          <a href="/labs/">Proof labs</a>
+          <a href="/tours/">3-minute tours</a>
           <a href="#theater">Verification theater</a>
-          <a href="#map">System map</a>
-          <a href="#evidence-desk">Ask evidence</a>
-          <a href="/data/evidence.json" target="_blank" rel="noreferrer">Evidence</a>
           <a href="/resume/Aaryan-Patel-Professional-Resume.pdf" target="_blank" rel="noreferrer">Resume</a>
         </nav>
         <div className="topbar-actions">
@@ -382,7 +381,7 @@ export default function Observatory({ evidence, initialTrack }: Props) {
             <h1 id="hero-title">{evidence.thesis}</h1>
             <p className="hero-contract">{evidence.contract}</p>
             <div className="hero-actions">
-              <a className="button primary" href="#routes">Choose a recruiter route <ChevronRight aria-hidden="true" /></a>
+              <a className="button primary" href="/labs/">Enter Proof Laboratory <ChevronRight aria-hidden="true" /></a>
               <RecruiterTour evidence={evidence} activeTrack={activeTrack} onSelectTrack={chooseTrack} />
               <a className="button" href="/resume/Aaryan-Patel-Professional-Resume.pdf" target="_blank" rel="noreferrer">
                 <Download aria-hidden="true" /> View full resume
@@ -417,6 +416,18 @@ export default function Observatory({ evidence, initialTrack }: Props) {
           <p><strong>Latest build:</strong> {evidence.current.title}</p>
           <span>{evidence.current.summary}</span>
           <a href={currentProject?.repo ?? evidence.owner.github} target="_blank" rel="noreferrer">Open source <ArrowUpRight aria-hidden="true" /></a>
+        </section>
+
+        <section className="ecosystem-launch" aria-labelledby="ecosystem-title">
+          <div className="ecosystem-launch-copy"><p className="eyebrow"><Activity aria-hidden="true" /> NEW / CONNECTED PROOF ECOSYSTEM</p><h2 id="ecosystem-title">Four laboratories.<br />One evidence contract.</h2><p>Operate the mechanism, trigger its losing regime, inspect an oracle, then follow the claim into code, benchmarks, papers, and a one-minute film.</p><a className="button primary" href="/labs/">Open laboratory directory <ArrowUpRight aria-hidden="true" /></a></div>
+          <div className="ecosystem-launch-grid">
+            <a href="/labs/faultline/"><small>01 / C++17 + WASM</small><strong>FAULTLINE</strong><span>Break consensus and ask the checker for a witness.</span></a>
+            <a href="/labs/signalroom/"><small>02 / AUTONOMY</small><strong>SIGNALROOM</strong><span>Replay where fusion and observability fail.</span></a>
+            <a href="/labs/marketwire/"><small>03 / QUANT</small><strong>MARKETWIRE</strong><span>Trade profit against inventory and sharp-payoff risk.</span></a>
+            <a href="/labs/kernelarena/"><small>04 / GPU COMPILER</small><strong>KERNELARENA</strong><span>Interrogate every graph and memory rewrite.</span></a>
+            <a href="/benchmarks/"><small>LEDGER</small><strong>Benchmark Observatory</strong><span>Commit, command, machine, and boundary.</span></a>
+            <a href="/cinema/"><small>WATCH</small><strong>Demo Cinema</strong><span>Four narrated, captioned films under one minute.</span></a>
+          </div>
         </section>
 
         {currentProject && (
