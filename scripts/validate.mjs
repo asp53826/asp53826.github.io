@@ -38,6 +38,10 @@ for (const benchmark of ecosystem.benchmarks) {
   if (!labIds.has(benchmark.lab)) throw new Error(`${benchmark.id} references an unknown lab`);
   for (const field of ["metric", "value", "unit", "commit", "command", "environment", "boundary"]) if (benchmark[field] === undefined || benchmark[field] === "") throw new Error(`${benchmark.id} missing ${field}`);
 }
+for (const history of ecosystem.histories) {
+  if (!labIds.has(history.lab) || history.points.length < 2) throw new Error(`${history.id} needs a known lab and at least two points`);
+  for (const point of history.points) if (!point.commit || !point.date || !Number.isFinite(point.value)) throw new Error(`${history.id} has an invalid point`);
+}
 for (const contribution of ecosystem.contributions) {
   if (!/^https:\/\/github\.com\/[^/]+\/[^/]+\/pull\/\d+$/.test(contribution.url)) throw new Error(`invalid contribution URL ${contribution.url}`);
 }
@@ -65,4 +69,4 @@ await Promise.all([
   access(path.join(root, "public/linkedin/featured/annlite.png")),
   access(path.join(root, "public/linkedin/featured/sdr-receiver.png"))
 ]);
-console.log(`validated ${evidence.projects.length} projects, ${ecosystem.labs.length} proof labs, ${ecosystem.benchmarks.length} benchmark records, ${ecosystem.contributions.length} merged contributions, four narrated films, packets, evidence, and both resume editions`);
+console.log(`validated ${evidence.projects.length} projects, ${ecosystem.labs.length} proof labs, ${ecosystem.benchmarks.length} benchmark records, ${ecosystem.histories.length} cross-commit histories, ${ecosystem.contributions.length} merged contributions, four narrated films, packets, evidence, and both resume editions`);
