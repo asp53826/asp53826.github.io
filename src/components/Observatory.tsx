@@ -349,6 +349,7 @@ export default function Observatory({ evidence, initialTrack }: Props) {
         </a>
         <nav aria-label="Primary">
           <a href="/recruiter/">Recruiter OS</a>
+          <a href="https://asp53826.github.io/counterexample/" target="_blank" rel="noreferrer">Failure museum</a>
           <a href="/labs/">Proof labs</a>
           <a href="/tours/">3-minute tours</a>
           <a href="#theater">Verification theater</a>
@@ -419,8 +420,9 @@ export default function Observatory({ evidence, initialTrack }: Props) {
         </section>
 
         <section className="ecosystem-launch" aria-labelledby="ecosystem-title">
-          <div className="ecosystem-launch-copy"><p className="eyebrow"><Activity aria-hidden="true" /> NEW / CONNECTED PROOF ECOSYSTEM</p><h2 id="ecosystem-title">Four laboratories.<br />One evidence contract.</h2><p>Operate the mechanism, trigger its losing regime, inspect an oracle, then follow the claim into code, benchmarks, papers, and a one-minute film.</p><a className="button primary" href="/labs/">Open laboratory directory <ArrowUpRight aria-hidden="true" /></a></div>
+          <div className="ecosystem-launch-copy"><p className="eyebrow"><Activity aria-hidden="true" /> NEW / CONNECTED PROOF ECOSYSTEM</p><h2 id="ecosystem-title">Four laboratories.<br />One public failure register.</h2><p>Operate the mechanism, trigger its losing regime, inspect an oracle, then preserve the counterexample with exact source evidence and a signed receipt.</p><a className="button primary" href="https://asp53826.github.io/counterexample/" target="_blank" rel="noreferrer">Enter COUNTEREXAMPLE <ArrowUpRight aria-hidden="true" /></a></div>
           <div className="ecosystem-launch-grid">
+            <a href="https://asp53826.github.io/counterexample/" target="_blank" rel="noreferrer"><small>00 / PUBLIC INSTITUTION</small><strong>COUNTEREXAMPLE</strong><span>Operate twelve admitted failures and verify their signed receipts.</span></a>
             <a href="/labs/faultline/"><small>01 / C++17 + WASM</small><strong>FAULTLINE</strong><span>Break consensus and ask the checker for a witness.</span></a>
             <a href="/labs/signalroom/"><small>02 / AUTONOMY</small><strong>SIGNALROOM</strong><span>Replay where fusion and observability fail.</span></a>
             <a href="/labs/marketwire/"><small>03 / QUANT</small><strong>MARKETWIRE</strong><span>Trade profit against inventory and sharp-payoff risk.</span></a>
