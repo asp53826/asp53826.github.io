@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aaryan Patel | Systems & Data Engineering</title>
+  <meta name="description" content="Resume of Aaryan Patel, a Computer Science student at the University of Georgia.">
+  <script src="theme.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="cv.js" defer></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <nav aria-label="Primary navigation">
+    <p><a class="wordmark" href="index.html">AP<span> / Aaryan Patel</span></a></p>
+    <div class="nav-actions"><a href="contact.html">Contact Aaryan Patel</a><button type="button" class="theme-toggle" aria-label="Dark mode" aria-pressed="false" hidden><svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.3A8.6 8.6 0 0 1 9.7 4 8.6 8.6 0 1 0 20 14.3Z"/></svg><svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.4 1.4m11.2 11.2L19 19M5 19l1.4-1.4M17.6 6.4 19 5"/></svg><span>Dark mode</span></button></div>
+  </nav>
+
+  <header class="profile-header">
+    <div class="portrait">
+      <img src="images/headshot.jpg" alt="Headshot of Aaryan Patel" width="160" height="160">
+    </div>
+    <div class="intro">
+      <p class="specialty">Systems &amp; data engineering</p>
+      <h1>Aaryan Patel</h1>
+      <p class="hero-statement">From machine data<br>to reliable systems.</p>
+      <p class="address">1415 Avalon Ct, Bogart, GA &bull; <a href="tel:+17067732915">(706) 773-2915</a> &bull; <a href="mailto:aaryansp26@gmail.com">aaryansp26@gmail.com</a></p>
+      <p class="tagline">I build data pipelines and equipment monitoring tools at MP Equipment. My projects explore distributed databases, financial data tools, and sensor fusion.</p>
+      <div class="hero-actions"><a class="button" href="#projects">Explore my projects</a><a href="https://www.linkedin.com/in/aaryanpatelsystems/">LinkedIn profile ↗</a></div>
+    </div>
+  </header>
+
+  <hr>
+
+  <div class="section-nav" aria-label="CV sections">
+    <a href="#experience">Experience</a><a href="#projects">Projects</a><a href="#education">Education</a><a href="#skills">Skills</a>
+  </div>
+  <main id="main">
+    <section id="experience">
+      <div class="section-heading"><h2>Experience</h2><p>Engineering, research, and the people behind the work.</p></div>
+      <dl class="experience-list">
+        <dt><a href="https://www.mpequipment.com/">MP Equipment</a><span>Gainesville, Georgia</span></dt>
+        <dd>
+          <details open><summary><span>Industrial IoT &amp; Data Engineer Intern<small>May 2026–Present</small></span></summary><ul><li>Build pipelines combining IoT sensor streams, equipment alarm history, M1 ERP data, and operational reporting.</li><li>Develop maintenance workflows using vibration, temperature, and machine-state signals to identify abnormal behavior.</li><li>Design Power BI dashboards for OEE, downtime, production KPIs, and equipment health.</li></ul></details>
+          <details><summary><span>Industrial IoT &amp; Data Engineering Intern<small>January–May 2026</small></span></summary><ul><li>Developed ETL pipelines for sensor data, including cleaning, missing-value handling, and outlier analysis.</li><li>Analyzed alarm history and built machine-level Power BI views to support maintenance decisions.</li></ul></details>
+          <details><summary><span>Computer Science Intern<small>May–December 2025</small></span></summary><ul><li>Built Python and SQL pipelines for IoT sensor data and M1 ERP records.</li><li>Created reporting for delivery, vendor performance, production, and equipment monitoring.</li><li>Automated recurring reports and resolved data-quality issues with engineering and operations.</li></ul></details>
+        </dd>
+        <dt>Gooder AI<span>Remote</span></dt>
+        <dd><h3>Data Analyst Intern</h3><p class="date">February–June 2024</p><p>Worked with Python and data warehousing.</p></dd>
+        <dt><a href="https://csds.gsu.edu/">Georgia State University</a><span>Atlanta, Georgia</span></dt>
+        <dd>
+          <details><summary><span>Honors College Mentor<small>August 2023–May 2024</small></span></summary><p>Mentored honors students through academic challenges and supported educational and leadership initiatives.</p></details>
+          <details><summary><span>Undergraduate Research Assistant<small>January–May 2023</small></span></summary><p>Worked on data mining and machine learning research, managing data models and building a frontend for viewing data over a selected date range.</p></details>
+          <details><summary><span>University Research Assistant<small>August–December 2022</small></span></summary><p>Mined social-network data, including Reddit, and analyzed patterns of relationships within groups.</p></details>
+        </dd>
+      </dl>
+    </section>
+
+    <section id="projects">
+      <div class="section-heading"><div><h2>Projects</h2><p>Systems, data, and ideas put into practice.</p></div><a class="text-link" href="https://github.com/asp53826?tab=repositories">GitHub collection ↗</a></div>
+      <div class="project-tools" hidden>
+        <div class="project-filters" role="group" aria-label="Filter projects">
+          <button type="button" data-filter="All" aria-pressed="true">All</button>
+          <button type="button" data-filter="Systems" aria-pressed="false">Systems</button>
+          <button type="button" data-filter="ML infrastructure" aria-pressed="false">ML infrastructure</button>
+          <button type="button" data-filter="Data &amp; finance" aria-pressed="false">Data &amp; finance</button>
+          <button type="button" data-filter="Signals &amp; autonomy" aria-pressed="false">Signals &amp; autonomy</button>
+          <button type="button" data-filter="Portfolio tools" aria-pressed="false">Portfolio tools</button>
+        </div>
+        <label class="project-search">Find a project<input id="project-search" type="search" placeholder="Search name or technology" autocomplete="off"></label>
+      </div>
+      <div class="project-rail" id="project-rail" role="region" aria-label="Project collection" tabindex="0">
+      <div class="three-col" role="group" aria-label="Project group 1">
+        <div class="card" data-category="Systems" data-project="raft-mvcc">
+          <img src="images/projects/raft-mvcc.svg" alt="Systems concept illustration for Raft &amp; MVCC" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Systems <span>C++</span></p>
+            <h3><a href="https://github.com/asp53826/raft-mvcc">Raft &amp; MVCC</a></h3>
+            <p class="project-description">Raft consensus and serializable MVCC in C++17, with linearizability checks and a WebAssembly demo.</p>
+            <a class="project-link" href="https://github.com/asp53826/raft-mvcc">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="Data &amp; finance" data-project="edgar-mcp">
+          <img src="images/projects/edgar-mcp.svg" alt="Data &amp; finance concept illustration for SEC EDGAR MCP" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Data &amp; finance <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/edgar-mcp">SEC EDGAR MCP</a></h3>
+            <p class="project-description">An MCP server for searching SEC filings and retrieving XBRL financial facts.</p>
+            <a class="project-link" href="https://github.com/asp53826/edgar-mcp">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="Signals &amp; autonomy" data-project="track-fusion">
+          <img src="images/projects/track-fusion.svg" alt="Signals &amp; autonomy concept illustration for Track Fusion" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Signals &amp; autonomy <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/track-fusion">Track Fusion</a></h3>
+            <p class="project-description">Multi-target tracking with IMM estimation, JPDA association, and OSPA evaluation.</p>
+            <a class="project-link" href="https://github.com/asp53826/track-fusion">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="three-col" role="group" aria-label="Project group 2">
+        <div class="card" data-category="ML infrastructure" data-project="tensorforge-webgpu">
+          <img src="images/projects/tensorforge-webgpu.svg" alt="ML infrastructure concept illustration for TensorForge WebGPU" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">ML infrastructure <span>TypeScript</span></p>
+            <h3><a href="https://github.com/asp53826/tensorforge-webgpu">TensorForge WebGPU</a></h3>
+            <p class="project-description">A typed tensor compiler with optimization passes, WGSL generation, and a live WebGPU correctness lab.</p>
+            <a class="project-link" href="https://github.com/asp53826/tensorforge-webgpu">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="Systems" data-project="faultgraph">
+          <img src="images/projects/faultgraph.svg" alt="Systems concept illustration for Faultgraph" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Systems <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/faultgraph">Faultgraph</a></h3>
+            <p class="project-description">Causal incident analysis with counterfactual replay and a React investigation workbench.</p>
+            <a class="project-link" href="https://github.com/asp53826/faultgraph">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="Portfolio tools" data-project="counterexample">
+          <img src="images/projects/counterexample.svg" alt="Portfolio tools concept illustration for Counterexample" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Portfolio tools <span>CSS</span></p>
+            <h3><a href="https://github.com/asp53826/counterexample">Counterexample</a></h3>
+            <p class="project-description">A collection of reproducible engineering failures with exact commits and signed receipts.</p>
+            <a class="project-link" href="https://github.com/asp53826/counterexample">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="three-col" role="group" aria-label="Project group 3">
+        <div class="card" data-category="ML infrastructure" data-project="ptq-budget">
+          <img src="images/projects/ptq-budget.svg" alt="ML infrastructure concept illustration for PTQ Budget" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">ML infrastructure <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/ptq-budget">PTQ Budget</a></h3>
+            <p class="project-description">Post-training quantization evaluated against an exact full-precision reference.</p>
+            <a class="project-link" href="https://github.com/asp53826/ptq-budget">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="ML infrastructure" data-project="rag-eval">
+          <img src="images/projects/rag-eval.svg" alt="ML infrastructure concept illustration for RAG Evaluation" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">ML infrastructure <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/rag-eval">RAG Evaluation</a></h3>
+            <p class="project-description">Hybrid retrieval, reranking, and a reproducible evaluation harness for RAG quality.</p>
+            <a class="project-link" href="https://github.com/asp53826/rag-eval">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="ML infrastructure" data-project="grammar-decode">
+          <img src="images/projects/grammar-decode.svg" alt="ML infrastructure concept illustration for Grammar Decode" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">ML infrastructure <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/grammar-decode">Grammar Decode</a></h3>
+            <p class="project-description">JSON Schema compiled into an automaton for constrained language-model decoding.</p>
+            <a class="project-link" href="https://github.com/asp53826/grammar-decode">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="three-col" role="group" aria-label="Project group 4">
+        <div class="card" data-category="ML infrastructure" data-project="feature-store">
+          <img src="images/projects/feature-store.svg" alt="ML infrastructure concept illustration for Feature Store" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">ML infrastructure <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/feature-store">Feature Store</a></h3>
+            <p class="project-description">Point-in-time training data, streaming materialization, and train/serve consistency.</p>
+            <a class="project-link" href="https://github.com/asp53826/feature-store">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="Portfolio tools" data-project="asp53826.github.io">
+          <img src="images/projects/asp53826.github.io.svg" alt="Portfolio tools concept illustration for Systems Portfolio" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Portfolio tools <span>TypeScript</span></p>
+            <h3><a href="https://github.com/asp53826/asp53826.github.io">Systems Portfolio</a></h3>
+            <p class="project-description">A systems portfolio connecting technical claims to source code and reproducible benchmarks.</p>
+            <a class="project-link" href="https://github.com/asp53826/asp53826.github.io">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="Systems" data-project="cdcl-sat">
+          <img src="images/projects/cdcl-sat.svg" alt="Systems concept illustration for CDCL SAT Solver" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Systems <span>C++</span></p>
+            <h3><a href="https://github.com/asp53826/cdcl-sat">CDCL SAT Solver</a></h3>
+            <p class="project-description">A C++17 SAT solver that emits DRAT proofs for independent verification.</p>
+            <a class="project-link" href="https://github.com/asp53826/cdcl-sat">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="three-col" role="group" aria-label="Project group 5">
+        <div class="card" data-category="Systems" data-project="query-planner">
+          <img src="images/projects/query-planner.svg" alt="Systems concept illustration for Query Planner" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Systems <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/query-planner">Query Planner</a></h3>
+            <p class="project-description">Join ordering, cost models, and cardinality estimation compared with a perfect-information oracle.</p>
+            <a class="project-link" href="https://github.com/asp53826/query-planner">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="Data &amp; finance" data-project="aad-greeks">
+          <img src="images/projects/aad-greeks.svg" alt="Data &amp; finance concept illustration for AAD Greeks" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Data &amp; finance <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/aad-greeks">AAD Greeks</a></h3>
+            <p class="project-description">Automatic differentiation for option Greeks, checked against analytic formulas and bumped baselines.</p>
+            <a class="project-link" href="https://github.com/asp53826/aad-greeks">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="Portfolio tools" data-project="portfolio-ops">
+          <img src="images/projects/portfolio-ops.svg" alt="Portfolio tools concept illustration for Portfolio Operations" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Portfolio tools <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/portfolio-ops">Portfolio Operations</a></h3>
+            <p class="project-description">Automation for benchmark, documentation, release, and maintenance workflows.</p>
+            <a class="project-link" href="https://github.com/asp53826/portfolio-ops">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="three-col" role="group" aria-label="Project group 6">
+        <div class="card" data-category="ML infrastructure" data-project="annlite">
+          <img src="images/projects/annlite.svg" alt="ML infrastructure concept illustration for ANNLite" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">ML infrastructure <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/annlite">ANNLite</a></h3>
+            <p class="project-description">An HNSW vector index with SIMD distance kernels, Python bindings, and an HTTP service.</p>
+            <a class="project-link" href="https://github.com/asp53826/annlite">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="Portfolio tools" data-project="witness">
+          <img src="images/projects/witness.svg" alt="Portfolio tools concept illustration for Witness" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Portfolio tools <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/witness">Witness</a></h3>
+            <p class="project-description">A reproducibility workbench for systems, machine-learning, autonomy, and finance counterexamples.</p>
+            <a class="project-link" href="https://github.com/asp53826/witness">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="Portfolio tools" data-project="proofgraph">
+          <img src="images/projects/proofgraph.svg" alt="Portfolio tools concept illustration for Proofgraph" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Portfolio tools <span>TypeScript</span></p>
+            <h3><a href="https://github.com/asp53826/proofgraph">Proofgraph</a></h3>
+            <p class="project-description">An interactive way to navigate claims, measurements, boundaries, source code, and evidence.</p>
+            <a class="project-link" href="https://github.com/asp53826/proofgraph">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="three-col" role="group" aria-label="Project group 7">
+        <div class="card" data-category="Systems" data-project="sampling-profiler">
+          <img src="images/projects/sampling-profiler.svg" alt="Systems concept illustration for Sampling Profiler" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Systems <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/sampling-profiler">Sampling Profiler</a></h3>
+            <p class="project-description">A sampling profiler evaluated against workloads with known CPU shares.</p>
+            <a class="project-link" href="https://github.com/asp53826/sampling-profiler">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="Systems" data-project="dst-harness">
+          <img src="images/projects/dst-harness.svg" alt="Systems concept illustration for Simulation Test Harness" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Systems <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/dst-harness">Simulation Test Harness</a></h3>
+            <p class="project-description">Virtual clocks, networks, and disks for seeded fault injection and linearizability testing.</p>
+            <a class="project-link" href="https://github.com/asp53826/dst-harness">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="Data &amp; finance" data-project="backtest-honest">
+          <img src="images/projects/backtest-honest.svg" alt="Data &amp; finance concept illustration for Backtest Honest" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Data &amp; finance <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/backtest-honest">Backtest Honest</a></h3>
+            <p class="project-description">A backtester that measures selection bias using deflated Sharpe and purged cross-validation.</p>
+            <a class="project-link" href="https://github.com/asp53826/backtest-honest">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="three-col" role="group" aria-label="Project group 8">
+        <div class="card" data-category="Signals &amp; autonomy" data-project="vio-nav">
+          <img src="images/projects/vio-nav.svg" alt="Signals &amp; autonomy concept illustration for Visual-Inertial Navigation" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Signals &amp; autonomy <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/vio-nav">Visual-Inertial Navigation</a></h3>
+            <p class="project-description">Visual-inertial odometry using IMU preintegration and feature marginalization.</p>
+            <a class="project-link" href="https://github.com/asp53826/vio-nav">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="ML infrastructure" data-project="codebase-qa">
+          <img src="images/projects/codebase-qa.svg" alt="ML infrastructure concept illustration for Codebase Q&amp;A" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">ML infrastructure <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/codebase-qa">Codebase Q&amp;A</a></h3>
+            <p class="project-description">Codebase question answering with authentication, rate limits, a durable queue, and tracing.</p>
+            <a class="project-link" href="https://github.com/asp53826/codebase-qa">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="Data &amp; finance" data-project="lob-market-making">
+          <img src="images/projects/lob-market-making.svg" alt="Data &amp; finance concept illustration for Limit Order Book" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Data &amp; finance <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/lob-market-making">Limit Order Book</a></h3>
+            <p class="project-description">A limit order book with market-making strategies and adverse-selection measurement.</p>
+            <a class="project-link" href="https://github.com/asp53826/lob-market-making">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="three-col" role="group" aria-label="Project group 9">
+        <div class="card" data-category="Systems" data-project="lsm-tree">
+          <img src="images/projects/lsm-tree.svg" alt="Systems concept illustration for LSM Tree" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Systems <span>C++</span></p>
+            <h3><a href="https://github.com/asp53826/lsm-tree">LSM Tree</a></h3>
+            <p class="project-description">A dependency-free C++17 storage engine with SSTables, Bloom filters, tombstones, and compaction.</p>
+            <a class="project-link" href="https://github.com/asp53826/lsm-tree">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="Signals &amp; autonomy" data-project="sar-focus">
+          <img src="images/projects/sar-focus.svg" alt="Signals &amp; autonomy concept illustration for SAR Focus" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Signals &amp; autonomy <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/sar-focus">SAR Focus</a></h3>
+            <p class="project-description">Synthetic aperture radar image formation with pulse compression, backprojection, and autofocus.</p>
+            <a class="project-link" href="https://github.com/asp53826/sar-focus">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="Data &amp; finance" data-project="xbrl-normalize">
+          <img src="images/projects/xbrl-normalize.svg" alt="Data &amp; finance concept illustration for XBRL Normalize" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Data &amp; finance <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/xbrl-normalize">XBRL Normalize</a></h3>
+            <p class="project-description">Normalizes SEC XBRL company facts into comparable financial statements.</p>
+            <a class="project-link" href="https://github.com/asp53826/xbrl-normalize">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="three-col" role="group" aria-label="Project group 10">
+        <div class="card" data-category="Systems" data-project="columnar-engine">
+          <img src="images/projects/columnar-engine.svg" alt="Systems concept illustration for Columnar Engine" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Systems <span>C++</span></p>
+            <h3><a href="https://github.com/asp53826/columnar-engine">Columnar Engine</a></h3>
+            <p class="project-description">A C++17 analytical engine with vector processing, hash aggregation, joins, and differential tests.</p>
+            <a class="project-link" href="https://github.com/asp53826/columnar-engine">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="Systems" data-project="wal-recovery">
+          <img src="images/projects/wal-recovery.svg" alt="Systems concept illustration for WAL Recovery" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Systems <span>C++</span></p>
+            <h3><a href="https://github.com/asp53826/wal-recovery">WAL Recovery</a></h3>
+            <p class="project-description">A C++17 write-ahead log with checksums, atomic recovery, and torn-write detection.</p>
+            <a class="project-link" href="https://github.com/asp53826/wal-recovery">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="ML infrastructure" data-project="vllm-lite">
+          <img src="images/projects/vllm-lite.svg" alt="ML infrastructure concept illustration for vLLM Lite" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">ML infrastructure <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/vllm-lite">vLLM Lite</a></h3>
+            <p class="project-description">An inference server with paged KV cache, continuous batching, and speculative decoding.</p>
+            <a class="project-link" href="https://github.com/asp53826/vllm-lite">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="three-col" role="group" aria-label="Project group 11">
+        <div class="card" data-category="Systems" data-project="hotstuff-bft">
+          <img src="images/projects/hotstuff-bft.svg" alt="Systems concept illustration for HotStuff BFT" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Systems <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/hotstuff-bft">HotStuff BFT</a></h3>
+            <p class="project-description">Chained HotStuff consensus evaluated under an adversarial scheduler.</p>
+            <a class="project-link" href="https://github.com/asp53826/hotstuff-bft">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="ML infrastructure" data-project="dist-train">
+          <img src="images/projects/dist-train.svg" alt="ML infrastructure concept illustration for Distributed Training" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">ML infrastructure <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/dist-train">Distributed Training</a></h3>
+            <p class="project-description">Ring all-reduce and data, tensor, and pipeline parallelism built from send/receive primitives.</p>
+            <a class="project-link" href="https://github.com/asp53826/dist-train">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        <div class="card" data-category="ML infrastructure" data-project="agent-harness">
+          <img src="images/projects/agent-harness.svg" alt="ML infrastructure concept illustration for Agent Harness" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">ML infrastructure <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/agent-harness">Agent Harness</a></h3>
+            <p class="project-description">An agent runtime with sandboxed execution, attack tests, and a deterministic benchmark.</p>
+            <a class="project-link" href="https://github.com/asp53826/agent-harness">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </div>
+      <div class="three-col" role="group" aria-label="Project group 12">
+        <div class="card" data-category="Signals &amp; autonomy" data-project="sdr-receiver">
+          <img src="images/projects/sdr-receiver.svg" alt="Signals &amp; autonomy concept illustration for SDR Receiver" width="640" height="360" loading="lazy">
+          <div class="card-body">
+            <p class="project-stack">Signals &amp; autonomy <span>Python</span></p>
+            <h3><a href="https://github.com/asp53826/sdr-receiver">SDR Receiver</a></h3>
+            <p class="project-description">A QPSK radio receiver with timing acquisition, soft decisions, and LDPC decoding.</p>
+            <a class="project-link" href="https://github.com/asp53826/sdr-receiver">Explore repository <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+      </div>
+      </div>
+      <p class="empty-projects" hidden>No projects match. Try another search or select All.</p>
+      <div class="project-controls" hidden>
+        <p id="project-position" role="status" aria-live="polite"></p>
+        <div class="project-paging"><button type="button" id="previous-projects" aria-label="Previous projects" aria-controls="project-rail">←</button><button type="button" id="next-projects" aria-label="Next projects" aria-controls="project-rail">→</button></div>
+      </div>
+    </section>
+
+    <section id="education">
+      <h2>Education</h2>
+      <dl>
+        <dt>University of Georgia</dt>
+        <dd>GPA: 3.86</dd>
+        <dt>Bachelor of Science in Computer Science</dt>
+        <dd>Expected December 2026</dd>
+      </dl>
+    </section>
+
+    <section id="honors">
+      <h2>Honors and Awards</h2>
+      <dl>
+        <dt>Dean's List</dt>
+        <dd>2024&ndash;2026</dd>
+      </dl>
+    </section>
+
+    <section id="skills">
+      <h2>Skills</h2>
+      <ul class="skills-list">
+        <li>C++17</li>
+        <li>Python</li>
+        <li>SQL</li>
+        <li>JavaScript and TypeScript</li>
+        <li>R</li>
+        <li>HTML and CSS</li>
+        <li>Power BI</li>
+        <li>Data pipelines</li>
+        <li>Industrial IoT</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 <a href="contact.html">Aaryan Patel</a></p>
+    <p><a href="https://www.linkedin.com/in/aaryanpatelsystems/" target="_blank" rel="noopener noreferrer" aria-label="Aaryan Patel on LinkedIn"><i class="fa-brands fa-linkedin" aria-hidden="true"></i> LinkedIn</a></p>
+  </footer>
+</body>
+</html>
