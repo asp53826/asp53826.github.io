@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07090A">
+<meta property="og:title" content="Aaryan Patel — Systems & Software Engineer">
+<meta property="og:description" content="I build systems, then I try to break them. Databases, consensus, ML inference and quant tooling, measured honestly.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230A0C0B%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-family=%27monospace%27 font-weight=%27700%27 font-size=%2726%27 fill=%27%238BE59A%27 text-anchor=%27middle%27%3EAP%3C/text%3E%3C/svg%3E">
+<title>aad-greeks · Aaryan Patel</title>
+<meta name="description" content="Adjoint automatic differentiation for option Greeks: 49x faster than bumping at 50 inputs, verified to two ulps, and exactly wrong on a digital payoff.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+/* Layout: same lab readout as the home page; one long case study, amber marks where the method fails. */
+:root{
+  --bg:#0A0C0B; --surface:#111513; --surface-2:#151A17; --line:#202624; --line-2:#3A443E;
+  --fg:#E9ECE8; --fg-2:#BDC5BF; --muted:#A3ACA6; --dim:#8E978F;
+  --accent:#8BE59A; --warn:#F0B556; --hot:#FF4FD8; --cyan:#3BE8FF; --on-accent:#0A0C0B;
+  --warn-bg:#16130D; --warn-line:#3A3324; --warn-fg:#D3CAB7;
+  --display:'Schibsted Grotesk', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--display);font-size:17px;line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--bg)}
+a{color:var(--fg);text-decoration:none}
+a:hover{color:#fff}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+h1,h2{text-wrap:balance;margin:0}
+p{margin:0}
+.wrap{max-width:1040px;margin-inline:auto;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+@media (max-width:520px){.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}}
+.eyebrow{font-family:var(--mono);font-size:13px;color:var(--accent)}
+.h2{font-size:clamp(28px,3.6vw,40px);line-height:1.12;letter-spacing:-.025em;font-weight:800}
+.lede{color:var(--fg-2);max-width:64ch}
+.btn{display:inline-flex;align-items:center;min-height:44px;padding:10px 16px;border-radius:10px;border:1px solid var(--line-2);font-weight:600;font-size:15px}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:800}
+.btn.primary:hover{color:var(--on-accent)}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;background:rgba(10,12,11,.82);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.nav{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding-block:12px}
+.back{font:13px var(--mono);color:var(--muted);min-height:44px;display:flex;align-items:center}
+.sec{padding-block:0 88px;display:flex;flex-direction:column;gap:22px}
+.title{padding-block:80px 48px;display:flex;flex-direction:column;gap:24px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;font:12px var(--mono)}
+.tags span{padding:6px 10px;border:1px solid var(--line-2);border-radius:999px;color:var(--fg-2)}
+h1{font-size:clamp(40px,6vw,72px);line-height:1.02;letter-spacing:-.04em;font-weight:900}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.stats div{background:var(--surface);padding:24px;display:flex;flex-direction:column;gap:6px}
+.stats b{font:700 32px var(--mono);color:var(--accent);font-variant-numeric:tabular-nums}
+.stats span{font-size:14px;color:var(--muted);line-height:1.45}
+figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:16px}
+.legend{display:flex;flex-wrap:wrap;gap:20px;font:13px var(--mono)}
+.legend span{display:flex;align-items:center;gap:8px}
+figcaption{font-size:13px;color:var(--dim)}
+code{font-family:var(--mono);color:var(--fg)}
+.draw{stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 2.4s cubic-bezier(.3,.7,.2,1) .3s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.two{display:flex;flex-wrap:wrap;gap:40px}
+.two>div{flex:1 1 360px;min-width:0;display:flex;flex-direction:column;gap:16px}
+pre{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;font:13px/1.7 var(--mono);overflow-x:auto;color:var(--fg-2)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font:14px var(--mono);font-variant-numeric:tabular-nums}
+caption{text-align:left;font:14px var(--display);color:var(--muted);padding-bottom:12px}
+th{text-align:left;color:var(--dim);font-weight:500;padding:10px 12px;border-bottom:1px solid var(--line-2)}
+td{padding:10px 12px;border-bottom:1px solid #1C2120;color:var(--fg-2)}
+th:last-child,td:last-child{text-align:right}
+tr.best td{color:var(--accent);font-weight:700}
+.loses{background:var(--warn-bg);border-top:1px solid var(--warn-line);border-bottom:1px solid var(--warn-line)}
+.loses .in{padding-block:80px;display:flex;flex-direction:column;gap:26px}
+.loses .eyebrow{color:var(--warn)}
+.loses p{color:var(--warn-fg)}
+.meth{display:flex;flex-wrap:wrap;gap:8px}
+.meth button{min-height:44px;padding:10px 16px;border-radius:999px;border:1px solid #4A412E;background:transparent;color:var(--warn-fg);font:13px var(--mono);cursor:pointer}
+.meth button[aria-pressed="true"]{background:var(--warn);border-color:var(--warn);color:#15130E;font-weight:700}
+.res{display:flex;flex-wrap:wrap;gap:16px}
+.res .box{flex:1 1 260px;background:#1C1912;border:1px solid var(--warn-line);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:6px}
+.res .box b{font:700 46px var(--mono);font-variant-numeric:tabular-nums}
+.res .box span{font:14px var(--mono);color:var(--warn-fg)}
+.res .bar{flex:2 1 340px;display:flex;flex-direction:column;justify-content:center;gap:10px;min-width:0}
+.trk{height:14px;background:#2A2519;border-radius:999px;overflow:hidden}
+.trk div{height:100%;border-radius:999px;transition:width .5s cubic-bezier(.3,.7,.2,1),background .3s}
+.ticks{display:flex;justify-content:space-between;font:12px var(--mono);color:#A89F8C}
+.ledger{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:12px}
+.ledger li{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:6px}
+.ledger strong{font-size:16px}
+.ledger span{font-size:14px;color:var(--muted);line-height:1.5}
+.repro{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:28px;display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between}
+.repro pre{background:transparent;border:0;padding:0;color:var(--accent);font-size:14px}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}.draw{stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+
+<header><nav class="wrap nav" aria-label="Primary">
+  <a class="back" href="index.html">← back to all work</a>
+  <div style="display:flex;flex-wrap:wrap;gap:10px">
+    <a class="btn primary" href="https://asp53826.github.io/aad-greeks/">Run it live ↗</a>
+    <a class="btn" href="https://github.com/asp53826/aad-greeks">Source ↗</a>
+  </div>
+</nav></header>
+
+<main>
+  <section class="wrap title">
+    <div class="tags"><span>quant</span><span>Python 3.11+</span><span>1 runtime dependency</span><span style="color:var(--accent);border-color:#2F4A35">● CI passing</span></div>
+    <h1>Adjoint Greeks, and the payoff where they lie.</h1>
+    <p class="lede" style="font-size:20px">A finite difference needs one revaluation per input. A reverse sweep produces every partial derivative at a constant multiple of the forward cost. This repo measures that claim, then measures the case where the derivative it returns is exactly zero and exactly wrong.</p>
+  </section>
+
+  <section class="wrap sec" aria-label="Key results">
+    <div class="stats">
+      <div><b>49×</b><span>faster than bumped finite differences at 50 inputs</span></div>
+      <div><b>1.7–2.4×</b><span>AAD cost over one pricing, flat across a 50× input range</span></div>
+      <div><b>5.6e-16</b><span>relative error vs. closed-form Black-Scholes delta</span></div>
+      <div><b style="color:var(--warn)">100%</b><span>error on a digital payoff, without smoothing</span></div>
+    </div>
+  </section>
+
+  <section class="wrap sec">
+    <span class="eyebrow">the cost claim</span>
+    <h2 class="h2">Flat against linear.</h2>
+    <p class="lede">One arithmetic basket, 40,000 paths. As the asset count grows 50×, AAD's cost relative to one pricing stays between 1.7× and 2.4×. Bumping grows close to the 2n+1 its construction implies.</p>
+    <figure>
+      <div class="legend"><span><i style="width:18px;height:3px;background:var(--accent)"></i>AAD / price</span><span><i style="width:18px;border-top:3px dashed var(--warn)"></i>bump / price</span></div>
+      <svg viewBox="0 0 720 300" width="100%" role="img" aria-label="Cost relative to one pricing: AAD stays near 2x from 1 to 50 assets while bumped finite differences rise from 10x to 103x" style="display:block;max-height:340px">
+        <g stroke="#202624" stroke-width="1"><line x1="52" y1="20" x2="700" y2="20"/><line x1="52" y1="80" x2="700" y2="80"/><line x1="52" y1="140" x2="700" y2="140"/><line x1="52" y1="200" x2="700" y2="200"/><line x1="52" y1="260" x2="700" y2="260" stroke="#3A443E"/></g>
+        <g fill="#8E978F" font-family="JetBrains Mono, monospace" font-size="12" text-anchor="end"><text x="44" y="264">0×</text><text x="44" y="204">25×</text><text x="44" y="144">50×</text><text x="44" y="84">75×</text><text x="44" y="24">100×</text></g>
+        <g fill="#8E978F" font-family="JetBrains Mono, monospace" font-size="12" text-anchor="middle"><text x="65" y="286">1</text><text x="113" y="286">5</text><text x="178" y="286">10</text><text x="374" y="286">25</text><text x="672" y="286">50 assets</text></g>
+        <polyline class="draw" fill="none" stroke="#F0B556" stroke-width="2.5" stroke-dasharray="6 5" points="65,236 78,223 113,213 178,187 374,119 700,13" style="stroke-dasharray:none"/>
+        <polyline class="draw" fill="none" stroke="#8BE59A" stroke-width="3" points="65,254 78,254 113,255 178,255 374,256 700,255"/>
+        <circle cx="700" cy="13" r="4" fill="#F0B556"/><circle cx="700" cy="255" r="4" fill="#8BE59A"/>
+        <text x="690" y="40" text-anchor="end" fill="#F0B556" font-family="JetBrains Mono, monospace" font-size="13">103.1×</text>
+        <text x="690" y="244" text-anchor="end" fill="#8BE59A" font-family="JetBrains Mono, monospace" font-size="13">2.1×</text>
+      </svg>
+      <figcaption>Apple M-series, Python 3.13, numpy. Timings vary about ±10% run to run; the shape is the result, not the third significant figure. Reproduce with <code>make bench</code>.</figcaption>
+    </figure>
+  </section>
+
+  <section class="wrap sec">
+    <div class="two">
+      <div>
+        <span class="eyebrow">the accuracy claim</span>
+        <h2 class="h2">Two ulps from the closed form.</h2>
+        <p class="lede">The oracle is the textbook Black-Scholes formulas typed out by hand. It shares no code with the AD engine, which is the only reason agreement means anything. Finite differences have a sweet spot you can't know in advance. AAD has no bump to tune.</p>
+        <pre>analytic  0.5987063256829237
+AAD       0.5987063256829240
+<span style="color:var(--accent)">rel err   5.6e-16</span></pre>
+      </div>
+      <div class="tw">
+        <table>
+          <caption>Central-difference delta error as the bump shrinks</caption>
+          <thead><tr><th scope="col">bump h</th><th scope="col">relative error</th></tr></thead>
+          <tbody>
+            <tr><td>1e+01</td><td>1.16e-02</td></tr>
+            <tr><td>1e-01</td><td>1.21e-06</td></tr>
+            <tr class="best"><td>1e-03</td><td>1.13e-10 ← best</td></tr>
+            <tr><td>1e-06</td><td>4.64e-10</td></tr>
+            <tr><td>1e-08</td><td>1.48e-06</td></tr>
+            <tr><td>1e-10</td><td>1.14e-04</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="loses">
+    <div class="wrap in">
+      <span class="eyebrow">where it loses</span>
+      <h2 class="h2" style="max-width:780px">On a digital option, pathwise AAD returns delta 0.000000. No NaN, no warning, no clue.</h2>
+      <p class="lede" style="color:var(--warn-fg)">The payoff is a step function, so its derivative is zero almost everywhere and the reverse sweep faithfully propagates zero. The crude method this repo argues against gets it right to 0.1%. Smoothing into a call spread fixes it, and brings back a bias you now have to choose.</p>
+      <div class="meth" role="group" aria-label="Choose an estimator" id="meth"></div>
+      <div class="res">
+        <div class="box"><span id="mName"></span><b id="mDelta"></b><span>true delta 0.019333 · error <span id="mErr"></span></span></div>
+        <div class="bar">
+          <div class="trk"><div id="mBar"></div></div>
+          <div class="ticks"><span>0</span><span>true value 0.019333</span></div>
+          <p id="mVerdict" style="font-size:15px"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap sec" style="padding-top:80px">
+    <span class="eyebrow">the ledger</span>
+    <h2 class="h2">What this doesn't do.</h2>
+    <ul class="ledger">
+      <li><strong>No second-order Greeks</strong><span>Gamma needs forward-over-reverse or a bump of the adjoint. The flat cost claim stops at first derivatives.</span></li>
+      <li><strong>Full tape in memory</strong><span>96 bytes per path, 48 MB at 500k paths. Production engines checkpoint instead.</span></li>
+      <li><strong>Flattered by numpy</strong><span>The ~1.8× constant factor benefits from vectorized C. A scalar C++ tape would show more overhead.</span></li>
+      <li><strong>European payoffs only</strong><span>No early exercise or path dependence. American options need regression-based continuation values.</span></li>
+      <li><strong>Common random numbers</strong><span>Reusing normals across bumps is the favourable case for finite differences, so the baseline is the strongest one on purpose.</span></li>
+    </ul>
+  </section>
+
+  <section class="wrap sec">
+    <div class="repro">
+      <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+        <strong style="font-size:20px">Reproduce every number on this page</strong>
+        <pre>git clone https://github.com/asp53826/aad-greeks
+cd aad-greeks &amp;&amp; make test &amp;&amp; make bench</pre>
+      </div>
+      <a class="btn" href="index.html#work">More projects →</a>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const M = [
+    ['pathwise AAD', 'Pathwise AAD, sharp payoff', 0, '0.000000', '100.0%', 'Exactly zero, exactly wrong. The tape differentiates the program faithfully; the program just has no slope.'],
+    ['central diff h=0.5', 'Central difference, h = 0.5', 0.019317, '0.019317', '0.1%', 'The method the repo argues against wins here, because it steps over the discontinuity.'],
+    ['smoothed h=1.0', 'AAD, call-spread smoothing h = 1.0', 0.019341, '0.019341', '0.0%', 'Smoothing restores a usable gradient. The width trades price bias against derivative variance.'],
+    ['smoothed h=0.25', 'AAD, call-spread smoothing h = 0.25', 0.019356, '0.019356', '0.1%', 'Narrower spread, less bias, more variance. A choice, not a solution.']
+  ];
+  const box = document.getElementById('meth');
+  const pick = (i) => {
+    const [, name, v, d, err, verdict] = M[i], wrong = i === 0, col = wrong ? 'var(--warn)' : 'var(--accent)';
+    document.getElementById('mName').textContent = name;
+    const dl = document.getElementById('mDelta'); dl.textContent = d; dl.style.color = col;
+    document.getElementById('mErr').textContent = err;
+    document.getElementById('mVerdict').textContent = verdict;
+    const b = document.getElementById('mBar'); b.style.width = Math.max(1.5, Math.min(100, v / 0.019333 * 100)) + '%'; b.style.background = col;
+    [...box.children].forEach((x, k) => x.setAttribute('aria-pressed', String(k === i)));
+  };
+  M.forEach((m, i) => { const b = document.createElement('button'); b.type = 'button'; b.textContent = m[0]; b.onclick = () => pick(i); box.append(b); });
+  pick(0);
+})();
+</script>
+
+</body>
+</html>
