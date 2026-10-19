@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05070A">
+<title>edgar-mcp · Aaryan Patel</title>
+<meta name="description" content="An MCP server over SEC EDGAR: filings, XBRL facts and full-text search for an LLM, behind a pacer that never exceeds the SEC's 10 requests per second.">
+<meta property="og:title" content="edgar-mcp · Aaryan Patel">
+<meta property="og:description" content="A token bucket let 19 requests through one second against a 10-per-second ceiling. The pacer that replaced it peaks at 10.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230A0C0B%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-family=%27monospace%27 font-weight=%27700%27 font-size=%2726%27 fill=%27%238BE59A%27 text-anchor=%27middle%27%3EAP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="../css/case.css">
+<style>
+#tl{width:100%;height:auto;aspect-ratio:1000/300;display:block;border-radius:12px;background:rgba(5,7,10,.55);border:1px solid var(--line)}
+.split2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:860px){.split2{grid-template-columns:1fr}}
+@media (max-width:640px){#tl{aspect-ratio:1000/720}}
+.bars{display:flex;flex-direction:column;gap:12px}
+.bar{display:grid;grid-template-columns:112px 1fr 76px;gap:10px;align-items:center;font:12px var(--mono);color:var(--fg-2)}
+.bar .track{height:12px;border-radius:999px;background:#141a18;overflow:hidden}
+.bar .track i{display:block;height:100%;border-radius:999px;transition:width .6s cubic-bezier(.2,.8,.2,1)}
+.bar .v{text-align:right;font-variant-numeric:tabular-nums}
+.segs{display:flex;gap:3px;height:34px;margin-top:10px}
+.segs span{flex:1 1 0;border-radius:6px;background:color-mix(in srgb,var(--tint) 30%,transparent);border:1px solid color-mix(in srgb,var(--tint) 55%,transparent);display:grid;place-items:center;font:11px var(--mono);color:var(--fg);min-width:0;overflow:hidden}
+.segs span.part{background:color-mix(in srgb,var(--warn) 18%,transparent);border-color:color-mix(in srgb,var(--warn) 50%,transparent)}
+input[type=range]{width:100%;accent-color:var(--tint)}
+</style>
+</head>
+<body style="--tint:#B9A6FF">
+<div class="grain" aria-hidden="true"></div>
+<header class="cnav"><div class="wrap">
+  <a class="brand" href="../index.html#workHS"><span class="mark">AP</span><span>Aaryan Patel</span></a>
+  <nav aria-label="Case study"><a href="../index.html#workHS">← all work</a><a class="pill" href="https://github.com/asp53826/edgar-mcp">Source ↗</a></nav>
+</div></header>
+
+<main>
+  <section class="wrap chero">
+    <p class="eyebrow">case study · quant tooling · Python · Model Context Protocol</p>
+    <h1 class="ctitle" style="view-transition-name:vt-edgar-mcp">edgar-mcp</h1>
+    <p class="thesis">Give a model SEC filings and XBRL facts as tools, and stay a polite client of a government API while it hammers them.</p>
+    <dl class="cstats">
+      <div class="loss"><dt>requests the first version sent in a single second, against a ceiling of 10</dt><dd data-n="19">19</dd></div>
+      <div><dt>the peak in any one-second window once the pacer replaced the bucket</dt><dd data-n="10">10</dd></div>
+      <div><dt>faster on a warm 10-K read than a cold one, measured</dt><dd data-n="138" data-suf="×">138×</dd></div>
+      <div><dt>tests, including the one that caught the burst</dt><dd data-n="32">32</dd></div>
+    </dl>
+  </section>
+
+  <section class="wrap cdemo">
+    <div class="dhead reveal">
+      <div>
+        <span class="badge sim"><i aria-hidden="true"></i>simulation of both limiters · the 19 and the 10 are measured</span>
+        <h2>A token bucket is not a rate limit.</h2>
+        <p class="lede">A bucket of 10 refilling at 10 per second averages 10/s, but it starts full. A burst spends all 10 tokens at once and then keeps taking one every 100 ms, so the first second carries 19. The SEC counts per second, not on average. The fix spaces every request at least ~104 ms after the last.</p>
+      </div>
+      <div class="row">
+        <span class="label">workload</span>
+        <button class="chip" type="button" data-load="burst" aria-pressed="true">burst of 30</button>
+        <button class="chip" type="button" data-load="two">two bursts</button>
+        <button class="chip" type="button" data-load="steady">steady 14/s</button>
+        <button class="chip" type="button" id="replay">↻ Replay</button>
+      </div>
+    </div>
+    <div class="demo reveal" style="display:flex;flex-direction:column;gap:14px">
+      <canvas id="tl" role="img" aria-label="Timeline of admitted requests under a token bucket and under a fixed-interval pacer, with a sliding one-second window"></canvas>
+      <div class="readout">
+        <div><b class="warn" id="pkB">0</b><span>token bucket: most in any 1 s</span></div>
+        <div><b id="pkP">0</b><span>pacer: most in any 1 s</span></div>
+        <div><b id="winB" class="warn">0</b><span>bucket, in the highlighted second</span></div>
+        <div><b id="winP">0</b><span>pacer, in the highlighted second</span></div>
+      </div>
+    </div>
+
+    <div class="split2">
+      <div class="demo reveal">
+        <span class="label">measured · cache, cold against warm</span>
+        <div class="bars" id="bars" style="margin-top:14px"></div>
+        <div class="row" style="margin-top:14px">
+          <button class="chip" type="button" data-cache="cold" aria-pressed="true">cold</button>
+          <button class="chip" type="button" data-cache="warm">warm</button>
+          <span class="label" id="cacheNote"></span>
+        </div>
+      </div>
+      <div class="demo reveal">
+        <label class="label" for="win">a 10-K is ~206,000 characters · window size <b id="winOut" style="color:var(--tint)">40,000</b></label>
+        <input id="win" type="range" min="10000" max="100000" step="5000" value="40000">
+        <div class="segs" id="segs" aria-hidden="true"></div>
+        <p class="label" id="segNote" style="margin-top:10px"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap cbody">
+    <div class="prose reveal">
+      <span class="eyebrow">how it works</span>
+      <h2 class="h2">Eight tools, one polite client.</h2>
+      <p>The server exposes <code>lookup_company</code>, <code>list_filings</code>, <code>get_filing_text</code>, <code>list_concepts</code>, <code>get_concept</code>, <code>compare_concept</code>, <code>search_filings</code> and <code>cache_stats</code>. Every one of them goes through the same pacer and the same on-disk cache.</p>
+      <h3>The bug a test caught</h3>
+      <p>The first benchmark run reported 19 requests inside one second, and a 3.75 MB "cache hit" that was really a full re-download. A class named <code>RateLimiter</code> or <code>Cache</code> proves nothing by itself, so the benchmark now counts grants inside a real one-second window and bytes on the wire.</p>
+      <h3>Filings a model can read</h3>
+      <p>Inline XBRL is stripped to text at 23.4 MB/s. A 10-K is still around 206K characters, so it's served in 40K windows the model can page through instead of one context-filling blob.</p>
+      <h3>Facts, not prose</h3>
+      <p>XBRL company facts answer "what was revenue in FY2023" from structured data, and <code>compare_concept</code> lines the same concept up across companies.</p>
+    </div>
+    <div class="measured reveal">
+      <span class="eyebrow">measured · Apple M-series · Python 3.13 · live EDGAR</span>
+      <div class="tw"><table>
+        <caption>Cache, cold against warm</caption>
+        <thead><tr><th>request</th><th class="r">cold</th><th class="r">warm</th><th class="r">gain</th></tr></thead>
+        <tbody>
+          <tr><td>companyfacts (3.75 MB)</td><td class="r">97 ms</td><td class="r">1.4 ms</td><td class="r">68×</td></tr>
+          <tr class="hi"><td>10-K text (1.52 MB)</td><td class="r">154 ms</td><td class="r">1.1 ms</td><td class="r">138×</td></tr>
+          <tr><td>submissions</td><td class="r">–</td><td class="r">0.2 ms</td><td class="r">755×</td></tr>
+        </tbody>
+      </table></div>
+      <div class="tw"><table>
+        <caption>Rate limiting against the SEC's 10 req/s</caption>
+        <thead><tr><th>limiter</th><th class="r">sustained</th><th class="r">peak in 1 s</th></tr></thead>
+        <tbody>
+          <tr class="lo"><td>token bucket, capacity 10</td><td class="r">~10 req/s</td><td class="r">19</td></tr>
+          <tr class="hi"><td>fixed-interval pacer</td><td class="r">9.2 req/s</td><td class="r">10</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section class="loses">
+    <div class="wrap">
+      <span class="eyebrow reveal">where it stops holding</span>
+      <h2 class="h2 reveal">The known gaps, written down.</h2>
+      <ul>
+        <li class="reveal"><strong>Freshness is a guess</strong><span>data.sec.gov sends no ETag or Last-Modified, so freshness falls back to a 1-hour TTL. A filing that lands mid-TTL is invisible until it expires.</span></li>
+        <li class="reveal"><strong>Windows re-read</strong><span>EDGAR honors HTTP Range, but partial HTML can't be parsed reliably, so the whole document is fetched once and windowed from cache. The first call on a large filing pays the full download.</span></li>
+        <li class="reveal"><strong>Search isn't cached</strong><span>Results are query-shaped and the endpoint offers no validators, so every search is a live round trip against the 9 req/s budget. It also only reaches back to 2001.</span></li>
+        <li class="reveal"><strong>One pacer for everything</strong><span>Ten companies queried in parallel serialize at ~9 req/s. Correct, not fast. And XBRL values are consolidated totals: segment and geography breakdowns aren't surfaced.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap repro">
+    <div class="reveal">
+      <span class="eyebrow">reproduce</span>
+      <pre>git clone https://github.com/asp53826/edgar-mcp
+cd edgar-mcp
+make test    # 32 tests, no network
+export EDGAR_USER_AGENT="your-project you@example.com"
+make bench   # live EDGAR, prints the table</pre>
+    </div>
+    <div class="next reveal">
+      <span class="eyebrow">next case study</span>
+      <a class="big" href="raft-mvcc.html">raft-mvcc →</a>
+      <span class="lede">Raft and MVCC in C++, running in your browser as WebAssembly.</span>
+    </div>
+  </section>
+</main>
+<footer><div class="wrap"><span>© 2026 Aaryan Patel</span><a href="../index.html">← back to the lab</a></div></footer>
+
+<script src="../vendor/lab-motion.js"></script>
+<script type="module" src="../js/case.js"></script>
+<script type="module" src="../js/demo-edgar.js"></script>
+</body>
+</html>

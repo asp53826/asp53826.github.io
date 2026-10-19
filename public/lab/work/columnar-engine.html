@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05070A">
+<title>columnar-engine · Aaryan Patel</title>
+<meta name="description" content="A dependency-free C++17 vector-at-a-time query engine: null bitmaps, selection vectors, hash aggregation and joins, and the measured crossover where vectorization stops paying.">
+<meta property="og:title" content="columnar-engine · Aaryan Patel">
+<meta property="og:description" content="53.1M rows/s on TPC-H Q1, 6,288 differential assertions, and the inputs where vectorization loses.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230A0C0B%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-family=%27monospace%27 font-weight=%27700%27 font-size=%2726%27 fill=%27%238BE59A%27 text-anchor=%27middle%27%3EAP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="../css/case.css">
+<style>
+.ops{display:flex;flex-wrap:wrap;gap:14px 28px;align-items:center}
+.batch{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:rgba(5,7,10,.5)}
+.grid{display:grid;grid-template-columns:118px repeat(32,minmax(26px,1fr));min-width:980px;font:11.5px var(--mono)}
+.grid>div{padding:7px 2px;text-align:center;border-bottom:1px solid #141a18;font-variant-numeric:tabular-nums;transition:background .35s,color .35s}
+.grid>.h{text-align:left;padding-left:12px;color:var(--dim);position:sticky;left:0;background:#0a0e0c;z-index:1}
+.grid .null{color:#5a625d}
+.grid .bit1{color:var(--tint)}
+.grid .bit0{color:#4a524d}
+.grid .m1{background:color-mix(in srgb,var(--tint) 22%,transparent);color:var(--fg)}
+.grid .m0{color:#3e4641}
+.grid .sel{background:color-mix(in srgb,var(--tint) 34%,transparent);color:#05070a;font-weight:700}
+.grid .skip{color:#2d3430}
+.grid .bound{box-shadow:inset 2px 0 0 var(--warn)}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px}
+.flow .panel b{display:block;font:12px var(--mono);color:var(--dim);margin-bottom:6px}
+.flow .panel code{font:13px/1.6 var(--mono);color:var(--fg);word-break:break-all}
+.ok{color:var(--tint)} .bad{color:var(--danger)}
+#xover{width:100%;height:auto;display:block}
+</style>
+</head>
+<body style="--tint:#8BE59A">
+<div class="grain" aria-hidden="true"></div>
+<header class="cnav"><div class="wrap">
+  <a class="brand" href="../index.html#workHS"><span class="mark">AP</span><span>Aaryan Patel</span></a>
+  <nav aria-label="Case study"><a href="../index.html#workHS">← all work</a><a class="pill" href="https://github.com/asp53826/columnar-engine">Source ↗</a></nav>
+</div></header>
+
+<main>
+  <section class="wrap chero">
+    <p class="eyebrow">case study · systems · C++17 · dependency-free</p>
+    <h1 class="ctitle" style="view-transition-name:vt-columnar-engine">columnar-engine</h1>
+    <p class="thesis">A vector-at-a-time analytical engine. The useful benchmark is not where vectorization wins. It's where the crossover happens, and why.</p>
+    <dl class="cstats">
+      <div><dt>rows per second on TPC-H Q1, 1,024-row batches, median of five</dt><dd data-n="53.1" data-suf="M">53.1M</dd></div>
+      <div><dt>differential assertions, vector against an independent scalar reference</dt><dd data-n="6288">6,288</dd></div>
+      <div><dt>best speedup on the chained filter + group-by pipeline</dt><dd data-n="1.94" data-suf="×">1.94×</dd></div>
+      <div class="loss"><dt>at 1,000 rows the vector path is slower: the mask costs more than it saves</dt><dd data-n="0.87" data-suf="×">0.87×</dd></div>
+    </dl>
+  </section>
+
+  <section class="wrap cdemo">
+    <div class="dhead reveal">
+      <div>
+        <span class="badge sim"><i aria-hidden="true"></i>runs in your browser · the operator's semantics on a 32-row batch</span>
+        <h2>Mask, then compact. Watch NULL never match.</h2>
+        <p class="lede">A JavaScript rendition of the engine's two-phase filter: compare a contiguous column into a byte mask, respecting the validity bitmap, then compact true lanes into row IDs. The second predicate walks only the surviving IDs. An independently written row-at-a-time loop checks every result, like the repo's differential oracle.</p>
+      </div>
+    </div>
+    <div class="demo reveal" style="display:flex;flex-direction:column;gap:16px">
+      <div class="ops">
+        <div class="row" role="group" aria-label="First predicate"><span class="label">WHERE region =</span><span id="regBtns" class="row"></span></div>
+        <div style="flex:1 1 260px;min-width:220px"><label class="label" for="thr">AND revenue ≥ <b id="thrOut" style="color:var(--tint)">250</b></label><input id="thr" type="range" min="0" max="500" step="10" value="250"></div>
+        <div class="row" role="group" aria-label="Batch size"><span class="label">batch size</span><span id="bsBtns" class="row"></span></div>
+        <button class="chip" type="button" id="reroll">New random batch</button>
+      </div>
+      <div class="batch" data-lenis-prevent><div class="grid" id="grid"></div></div>
+      <div class="flow">
+        <div class="panel"><b>selection vector after region</b><code id="s1"></code></div>
+        <div class="panel"><b>after revenue, walking only those IDs</b><code id="s2"></code></div>
+        <div class="panel"><b>group_sum(revenue) by region</b><code id="agg"></code></div>
+        <div class="panel"><b>scalar reference, written separately</b><code id="oracle"></code></div>
+      </div>
+    </div>
+
+    <div class="demo reveal" style="display:flex;flex-direction:column;gap:12px">
+      <div class="row" style="justify-content:space-between"><span class="label">measured crossover · chained filters + grouped sum · Apple M2 Pro · median wall-clock</span><span class="label"><span style="color:#7d8781">■</span> scalar &nbsp; <span style="color:var(--tint)">■</span> vector</span></div>
+      <svg id="xover" viewBox="0 0 1000 360" role="img" aria-label="Scalar and vector times for six measured configurations; vector loses at 1,000 and 10,000 rows with low survival and wins by up to 1.94 times elsewhere."></svg>
+      <p class="label" id="xnote">Hover or tap a configuration.</p>
+    </div>
+  </section>
+
+  <section class="wrap cbody">
+    <div class="prose reveal">
+      <span class="eyebrow">how it works</span>
+      <h2 class="h2">Selection vectors, not copied rows.</h2>
+      <p>Filters return 32-bit physical row IDs. The next operator walks only those rows, input order is preserved, and every incoming ID is bounds-checked: a corrupt selection is an error, not an out-of-bounds read.</p>
+      <h3>Validity bitmaps</h3>
+      <p>Nullness lives beside the values, one bit per row packed into 64-bit words, so value arrays stay dense and typed. A comparison with NULL is unknown, and unknown is never selected. Inner joins never match null keys, not even null against null.</p>
+      <h3>Why the vector path can lose</h3>
+      <p>Each batch writes a byte mask, then rereads it to compact. That gives the compiler a straight numeric loop to vectorize, and it's also a cost a scalar loop never pays. At small inputs or very selective scans, the mask costs more than it saves. Both sides are reported.</p>
+      <h3>TPC-H Q1, fused</h3>
+      <p>The vector executor builds one validity/predicate mask per batch, then updates all six aggregate states in a single pass, without materializing an intermediate table.</p>
+    </div>
+    <div class="measured reveal">
+      <span class="eyebrow">measured · Apple M2 Pro, Apple Clang 17</span>
+      <div class="tw"><table>
+        <caption>TPC-H Q1 at one million rows, median of five</caption>
+        <thead><tr><th>executor</th><th class="r">time</th><th class="r">rows/s</th></tr></thead>
+        <tbody>
+          <tr><td>tuple-at-a-time</td><td class="r">23.51 ms</td><td class="r">42.5M</td></tr>
+          <tr class="hi"><td>vector, 1,024 rows/batch</td><td class="r">18.85 ms</td><td class="r">53.1M</td></tr>
+        </tbody>
+      </table></div>
+      <p class="lede" style="font-size:14.5px">That's 1.25×, smaller than the filter pipeline's best. Q1 spends more time on arithmetic and hash-table work per surviving row, so scan dispatch is a smaller share of the total.</p>
+      <div class="tw"><table>
+        <caption>Differential verification</caption>
+        <thead><tr><th>check</th><th class="r">result</th></tr></thead>
+        <tbody>
+          <tr class="hi"><td>correctness assertions</td><td class="r">6,288</td></tr>
+          <tr><td>random filter/aggregate trials</td><td class="r">120</td></tr>
+          <tr><td>random join trials</td><td class="r">100</td></tr>
+          <tr><td>batch sizes per filter trial</td><td class="r">1, 7, 64, 1,024</td></tr>
+          <tr class="hi"><td>scalar/vector disagreements</td><td class="r">0</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section class="loses">
+    <div class="wrap">
+      <span class="eyebrow reveal">where it stops holding</span>
+      <h2 class="h2 reveal">Vectorization is a trade, and the table shows both sides.</h2>
+      <ul>
+        <li class="reveal"><strong>Small inputs lose</strong><span>At 1,000 rows the vector path runs at 0.87× and at 10,000 rows with 7% survival at 0.93×. The mask and compaction pass cost more than they save.</span></li>
+        <li class="reveal"><strong>Selective scans cross over late</strong><span>At a million rows with 7.4% survival the gain is only 1.10×. Few surviving rows leave little work to amortize the mask over.</span></li>
+        <li class="reveal"><strong>Q1 gains less than filters</strong><span>1.25× on TPC-H Q1 against 1.94× on the filter pipeline, because arithmetic and hashing dominate once rows survive.</span></li>
+        <li class="reveal"><strong>One core, one machine</strong><span>Single-threaded medians on an M2 Pro. No parallel scan, no SIMD intrinsics written by hand: what the compiler auto-vectorizes is what you get.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap repro">
+    <div class="reveal">
+      <span class="eyebrow">reproduce</span>
+      <pre>git clone https://github.com/asp53826/columnar-engine
+cd columnar-engine
+make test       # 6,288 assertions
+make benchmark  # CSV, then the Q1 result</pre>
+    </div>
+    <div class="next reveal">
+      <span class="eyebrow">next case study</span>
+      <a class="big" href="vllm-lite.html">vllm-lite →</a>
+      <span class="lede">Paged KV cache and continuous batching: 21% to 94% of the same memory.</span>
+    </div>
+  </section>
+</main>
+<footer><div class="wrap"><span>© 2026 Aaryan Patel</span><a href="../index.html">← back to the lab</a></div></footer>
+
+<script src="../vendor/lab-motion.js"></script>
+<script type="module" src="../js/case.js"></script>
+<script type="module" src="../js/demo-columnar.js"></script>
+</body>
+</html>
