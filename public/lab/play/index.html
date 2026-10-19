@@ -324,6 +324,15 @@ select{background:var(--panel2);border:1px solid var(--line2);border-radius:6px;
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.fl .lf{display:none}}
 </style>
+<style id="vt">
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:vt-out .45s cubic-bezier(.4,0,.2,1) both}
+::view-transition-new(root){animation:vt-in .6s cubic-bezier(.2,.8,.2,1) both}
+::view-transition-group(*){animation-duration:.6s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+@keyframes vt-out{to{opacity:0;transform:scale(.97);filter:blur(6px)}}
+@keyframes vt-in{from{opacity:0;transform:translateY(28px)}}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+</style>
 </head>
 <body>
 

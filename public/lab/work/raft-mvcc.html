@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05070A">
+<title>raft-mvcc · Aaryan Patel</title>
+<meta name="description" content="Raft consensus and serializable MVCC in C++17, with a linearizability checker. Run the real engine in your browser, compiled to WebAssembly.">
+<meta property="og:title" content="raft-mvcc · Aaryan Patel">
+<meta property="og:description" content="598 assertions across seeded faults, five-node failover in 11 logical ticks. Break the cluster in your browser.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230A0C0B%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-family=%27monospace%27 font-weight=%27700%27 font-size=%2726%27 fill=%27%238BE59A%27 text-anchor=%27middle%27%3EAP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="../css/case.css">
+<style>
+.console{display:grid;grid-template-columns:minmax(0,230px) minmax(0,1fr) minmax(0,280px);gap:16px}
+@media (max-width:1000px){.console{grid-template-columns:1fr}}
+.deck{display:flex;flex-direction:column;gap:8px}
+.deck button.scn{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:2px;padding:11px 13px;border-radius:12px;border:1px solid var(--line);cursor:pointer;transition:border-color .2s,background .2s}
+.deck button.scn:hover{border-color:var(--line-2)}
+.deck button.scn[aria-pressed="true"]{border-color:var(--tint);background:rgba(139,229,154,.06)}
+.deck button.scn strong{font-size:14.5px}
+.deck button.scn small{font:11.5px var(--mono);color:var(--dim)}
+.deck button.scn:focus-visible{outline:2px solid var(--tint)}
+.stage{display:flex;flex-direction:column;gap:10px;min-width:0}
+.stage-top{display:flex;flex-wrap:wrap;gap:6px 16px;font:12px var(--mono);color:var(--dim)}
+.stage-top b{color:var(--fg);font-variant-numeric:tabular-nums}
+#engState{color:var(--tint);margin-right:auto}
+#cv{width:100%;height:400px;display:block;cursor:pointer}
+.event{min-height:2.8em;font:13px/1.45 var(--mono);color:var(--fg-2);border-left:2px solid var(--tint);padding-left:10px}
+.inv{margin:0;display:flex;flex-direction:column;gap:8px}
+.inv div{border:1px solid var(--line);border-radius:10px;padding:9px 11px;background:rgba(5,7,10,.4)}
+.inv dt{font:600 12px var(--mono);display:flex;gap:7px;align-items:center}
+.inv dt i{width:8px;height:8px;border-radius:50%;flex:none}
+.inv dd{margin:3px 0 0;font-size:12.5px;color:var(--muted)}
+.tape{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;font:12px/1.45 var(--mono);max-height:240px;overflow:auto}
+.tape li{display:grid;grid-template-columns:24px 34px 1fr;gap:8px;color:var(--fg-2)}
+.tape li span{color:var(--dim)}
+.tape li code{color:var(--tint)}
+</style>
+</head>
+<body style="--tint:#8BE59A">
+<div class="grain" aria-hidden="true"></div>
+<header class="cnav"><div class="wrap">
+  <a class="brand" href="../index.html#workHS"><span class="mark">AP</span><span>Aaryan Patel</span></a>
+  <nav aria-label="Case study"><a href="../index.html#workHS">← all work</a><a href="https://asp53826.github.io/labs/faultline/">FAULTLINE lab</a><a class="pill" href="https://github.com/asp53826/raft-mvcc">Source ↗</a></nav>
+</div></header>
+
+<main>
+  <section class="wrap chero">
+    <p class="eyebrow">case study · systems · C++17 · zero runtime dependencies</p>
+    <h1 class="ctitle" style="view-transition-name:vt-raft-mvcc">raft-mvcc</h1>
+    <p class="thesis">A deterministic laboratory for the two correctness boundaries inside a distributed database: Raft consensus and multi-version concurrency control.</p>
+    <dl class="cstats">
+      <div><dt>assertions across seeded faults, in 13 targeted and randomized tests</dt><dd data-n="598">598</dd></div>
+      <div><dt>logical ticks for a five-node failover after isolating the leader</dt><dd data-n="11">11</dd></div>
+      <div><dt>MVCC point reads per second across 10,000 retained versions</dt><dd data-n="10.3" data-suf="M">10.3M</dd></div>
+      <div class="loss"><dt>sockets, fsyncs or snapshots in the simulator. Listed as missing, not implied</dt><dd>0</dd></div>
+    </dl>
+  </section>
+
+  <section class="wrap cdemo">
+    <div class="dhead reveal">
+      <div>
+        <span class="badge"><i aria-hidden="true"></i>real engine · C++17 compiled to WebAssembly</span>
+        <h2>Break the cluster. Inspect the proof.</h2>
+        <p class="lede">These controls call the actual raft-mvcc sources, compiled with Emscripten. Every node state, term, log entry and invariant below comes from the engine. Logical ticks are deterministic simulator steps, not milliseconds.</p>
+      </div>
+    </div>
+    <div class="demo reveal">
+      <div class="console">
+        <aside class="deck" aria-label="Failure scenarios">
+          <span class="label">scenario deck</span>
+          <div id="scenarios" class="deck"></div>
+          <span class="label" style="margin-top:8px">target <b id="sel" style="color:var(--tint)">n1</b> · click a node</span>
+          <div class="row">
+            <button class="chip" type="button" data-tok="c">Campaign</button>
+            <button class="chip" type="button" data-tok="i">Isolate</button>
+            <button class="chip" type="button" data-tok="h">Heal</button>
+          </div>
+        </aside>
+        <div class="stage">
+          <div class="stage-top"><span id="engState">loading the engine…</span><span>tick <b id="tick">000</b></span><span><b id="drop">0</b> dropped</span><span><b id="ops">0</b> ops</span></div>
+          <canvas id="cv" role="img" aria-label="Five Raft nodes drawn from the engine state. Click a node to target it."></canvas>
+          <p class="event" id="event" aria-live="polite"></p>
+          <div class="row">
+            <button class="chip" type="button" data-tok="t1">Tick 1</button>
+            <button class="chip" type="button" data-tok="t11">Tick 11</button>
+            <button class="chip" type="button" data-tok="p">Propose a transaction</button>
+            <button class="chip" type="button" data-tok="r">Reset</button>
+          </div>
+        </div>
+        <aside aria-label="Invariants and history oracle" style="display:flex;flex-direction:column;gap:12px;min-width:0">
+          <span class="label">invariant monitor</span>
+          <dl class="inv" id="inv"></dl>
+          <span class="label">linearizability oracle</span>
+          <div class="row">
+            <button class="chip" type="button" data-hist="0">Valid history</button>
+            <button class="chip" type="button" data-hist="1">Stale read</button>
+          </div>
+          <span class="label">causal tape</span>
+          <ol class="tape" id="tape" data-lenis-prevent></ol>
+        </aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap cbody">
+    <div class="prose reveal">
+      <span class="eyebrow">how it works</span>
+      <h2 class="h2">Proposal acceptance is not commit evidence.</h2>
+      <p>The minority leader may append locally, but only a current-term entry replicated to a majority can advance the commit index. The console above shows exactly that: isolate the leader, propose, and the new entry sits outlined in amber, appended but never committed, until a heal repairs it away.</p>
+      <h3>Deterministic transport</h3>
+      <p>The cluster is an in-process transport that can isolate a node, partition, drop messages, heal and drive logical time. Because delivery is deterministic, every failure replays exactly, without sleeping or hoping a race appears.</p>
+      <h3>Serializable OCC on MVCC chains</h3>
+      <p>Each key owns an ordered chain of immutable versions. A transaction commits only if its commit timestamp is later than its read timestamp and every read or written key still has exactly the version it observed. That is stricter than snapshot isolation, so lost updates and read/write anomalies abort.</p>
+      <h3>An offline linearizability checker</h3>
+      <p>It partitions a history by key, enforces real-time precedence, explores legal register states with memoization, and returns a witness when one exists. The oracle buttons above run it on a valid overlapping-write history and on a stale read.</p>
+    </div>
+    <div class="measured reveal">
+      <span class="eyebrow">measured · Apple M2 Pro, Apple Clang 17</span>
+      <div class="tw"><table>
+        <caption>Median of five, in-process simulator</caption>
+        <thead><tr><th>experiment</th><th class="r">result</th></tr></thead>
+        <tbody>
+          <tr><td>3-node replicated writes</td><td class="r">~0.69M ops/s</td></tr>
+          <tr><td>5-node replicated writes</td><td class="r">~0.35M ops/s</td></tr>
+          <tr><td>MVCC point reads</td><td class="r">~10.3M reads/s</td></tr>
+          <tr class="hi"><td>5-node failover</td><td class="r">11 logical ticks</td></tr>
+          <tr class="hi"><td>correctness suite</td><td class="r">598 assertions</td></tr>
+        </tbody>
+      </table></div>
+      <div class="tw"><table>
+        <caption>Safety invariants and where they're enforced</caption>
+        <thead><tr><th>invariant</th><th>enforcement</th></tr></thead>
+        <tbody>
+          <tr><td>election safety</td><td>one vote per term, majority quorum</td></tr>
+          <tr><td>log matching</td><td>matching prev index and term</td></tr>
+          <tr><td>commit safety</td><td>current-term entry on a majority</td></tr>
+          <tr><td>minority safety</td><td>isolated leader can't advance commit</td></tr>
+          <tr><td>OCC serializability</td><td>any version change aborts</td></tr>
+          <tr><td>GC safety</td><td>keeps the anchor at the safe point</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section class="loses">
+    <div class="wrap">
+      <span class="eyebrow reveal">where it stops holding</span>
+      <h2 class="h2 reveal">A protocol laboratory, not a production database.</h2>
+      <ul>
+        <li class="reveal"><strong>No network or disk</strong><span>The throughput excludes sockets, serialization, fsync and scheduler overhead. These are simulator numbers; the useful comparison is 3 nodes against 5.</span></li>
+        <li class="reveal"><strong>No snapshots or membership changes</strong><span>Log compaction, joint consensus and adding or removing nodes are listed as missing instead of being implied.</span></li>
+        <li class="reveal"><strong>Single range only</strong><span>Transactions are atomic within one replicated range. Cross-range transactions would need a commit protocol this does not implement.</span></li>
+        <li class="reveal"><strong>Ticks are not time</strong><span>"11 ticks to failover" is deterministic simulator steps. Wall-clock election timing on a real network is a different measurement.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap repro">
+    <div class="reveal">
+      <span class="eyebrow">reproduce</span>
+      <pre>git clone https://github.com/asp53826/raft-mvcc
+cd raft-mvcc
+make test       # 598 assertions
+make benchmark  # the table above
+make sanitize</pre>
+    </div>
+    <div class="next reveal">
+      <span class="eyebrow">next case study</span>
+      <a class="big" href="columnar-engine.html">columnar-engine →</a>
+      <span class="lede">Vector-at-a-time execution, and where the crossover happens.</span>
+    </div>
+  </section>
+</main>
+<footer><div class="wrap"><span>© 2026 Aaryan Patel</span><a href="../index.html">← back to the lab</a></div></footer>
+
+<script src="../vendor/lab-motion.js"></script>
+<script type="module" src="../js/case.js"></script>
+<script type="module" src="../js/demo-raft.js"></script>
+</body>
+</html>

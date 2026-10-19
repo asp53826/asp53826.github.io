@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05070A">
+<title>Explore the lab · Aaryan Patel</title>
+<meta name="description" content="Walk Aaryan Patel's lab in 3D: every project is a station with a live hologram of what it does.">
+<meta property="og:title" content="Explore the lab · Aaryan Patel">
+<meta property="og:description" content="A 3D walk through the lab: Raft clusters, columnar batches, paged KV caches and order books, one station each.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230A0C0B%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-family=%27monospace%27 font-weight=%27700%27 font-size=%2726%27 fill=%27%238BE59A%27 text-anchor=%27middle%27%3EAP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<style>
+:root{
+  --bg:#05070A; --fg:#E9ECE8; --fg-2:#BDC5BF; --muted:#A3ACA6; --dim:#8E978F; --line:#202624; --line-2:#3A443E;
+  --accent:#5CE1E6; --warn:#F0B556;
+  --mono:'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --display:'Schibsted Grotesk', system-ui, sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--fg);font:16px/1.5 var(--display);overflow:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+@view-transition{navigation:auto}
+::view-transition-old(root){animation:vt-out .45s cubic-bezier(.4,0,.2,1) both}
+::view-transition-new(root){animation:vt-in .6s cubic-bezier(.2,.8,.2,1) both}
+@keyframes vt-out{to{opacity:0;transform:scale(.97);filter:blur(6px)}}
+@keyframes vt-in{from{opacity:0;transform:translateY(28px)}}
+@media (prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}}
+
+#gl{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:grab}
+#gl.drag{cursor:grabbing}
+#gl.hot{cursor:pointer}
+.labels{position:fixed;inset:0;pointer-events:none;z-index:2}
+.lbl{position:absolute;left:0;top:0;transform:translate(-50%,-100%);padding:5px 10px;border-radius:999px;border:1px solid color-mix(in srgb,var(--c) 45%,transparent);background:rgba(5,7,10,.66);backdrop-filter:blur(6px);font:12px var(--mono);color:var(--fg);white-space:nowrap;transition:opacity .25s;will-change:transform}
+.lbl i{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c);margin-right:7px;vertical-align:1px}
+.lbl.dim{opacity:.35}
+
+header{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:max(14px,env(safe-area-inset-top)) clamp(16px,3vw,32px) 14px;pointer-events:none}
+header>*{pointer-events:auto}
+.brand{display:flex;align-items:center;gap:12px;min-height:44px;font-weight:700;view-transition-name:vt-brand}
+.mark{width:34px;height:34px;border:1.5px solid var(--accent);border-radius:8px;display:grid;place-items:center;font:700 13px var(--mono);color:var(--accent)}
+.hint{font:12px var(--mono);color:var(--dim);text-align:right}
+.hint kbd{font:inherit;padding:1px 6px;border-radius:4px;border:1px solid var(--line-2);color:var(--fg-2)}
+.back{display:inline-flex;align-items:center;min-height:44px;padding:10px 16px;border-radius:999px;border:1px solid var(--line-2);background:rgba(5,7,10,.6);font:13px var(--mono);color:var(--fg-2);backdrop-filter:blur(8px)}
+.back:hover{color:var(--fg);border-color:var(--fg-2)}
+
+.intro{position:fixed;left:clamp(16px,3vw,32px);top:50%;transform:translateY(-50%);z-index:3;max-width:min(420px,calc(100vw - 32px));pointer-events:none;transition:opacity .5s,transform .5s}
+.intro.gone{opacity:0;transform:translate(-20px,-50%)}
+.intro h1{font-size:clamp(40px,5.4vw,72px);line-height:.98;letter-spacing:-.04em;font-weight:900}
+.intro h1 span{color:var(--accent)}
+.intro p{margin-top:16px;color:var(--fg-2);font-size:17px;max-width:36ch}
+.eyebrow{font:13px var(--mono);color:var(--accent);margin-bottom:14px}
+
+nav.stations{position:fixed;left:50%;bottom:max(16px,env(safe-area-inset-bottom));transform:translateX(-50%);z-index:5;display:flex;gap:6px;padding:6px;border-radius:999px;border:1px solid var(--line);background:rgba(8,10,12,.72);backdrop-filter:blur(12px);max-width:calc(100vw - 24px);overflow-x:auto;scrollbar-width:none}
+nav.stations::-webkit-scrollbar{display:none}
+nav.stations button{flex:0 0 auto;display:flex;align-items:center;gap:7px;min-height:40px;padding:8px 14px;border-radius:999px;border:1px solid transparent;background:transparent;font:12px var(--mono);color:var(--fg-2);cursor:pointer;white-space:nowrap}
+nav.stations button i{width:7px;height:7px;border-radius:50%;background:var(--c)}
+nav.stations button:hover{color:var(--fg);border-color:var(--line-2)}
+nav.stations button[aria-current="true"]{background:color-mix(in srgb,var(--c) 18%,transparent);border-color:color-mix(in srgb,var(--c) 55%,transparent);color:var(--fg)}
+
+aside.info{position:fixed;right:clamp(12px,2.5vw,32px);top:50%;z-index:6;width:min(380px,calc(100vw - 24px));transform:translate(24px,-50%);opacity:0;pointer-events:none;transition:opacity .35s,transform .45s cubic-bezier(.2,.8,.2,1);padding:24px;border-radius:20px;border:1px solid color-mix(in srgb,var(--c,#5CE1E6) 35%,var(--line));background:rgba(8,11,12,.82);backdrop-filter:blur(16px);display:flex;flex-direction:column;gap:14px;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+aside.info.on{opacity:1;transform:translate(0,-50%);pointer-events:auto}
+aside.info .area{font:12px var(--mono);color:var(--c)}
+aside.info h2{font-size:32px;line-height:1;letter-spacing:-.03em;font-weight:800}
+aside.info p{color:var(--fg-2);font-size:15.5px}
+aside.info .metric{display:flex;align-items:baseline;gap:12px;padding-top:12px;border-top:1px solid var(--line)}
+aside.info .metric b{font:700 34px var(--mono);color:var(--c);letter-spacing:-.03em}
+aside.info .metric span{font:12.5px var(--mono);color:var(--muted)}
+aside.info .acts{display:flex;flex-wrap:wrap;gap:8px}
+aside.info .acts a{display:inline-flex;align-items:center;min-height:44px;padding:10px 16px;border-radius:12px;border:1px solid var(--line-2);font:600 14.5px var(--display)}
+aside.info .acts a.primary{background:var(--c);border-color:var(--c);color:#05070a}
+aside.info .x{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line-2);background:transparent;cursor:pointer;color:var(--fg-2)}
+aside.info .step{display:flex;justify-content:space-between;align-items:center;font:12px var(--mono);color:var(--dim)}
+aside.info .step button{background:none;border:0;color:var(--fg-2);cursor:pointer;min-height:36px;padding:0 4px}
+
+.fallback{position:fixed;inset:0;display:none;place-items:center;padding:24px;z-index:4;text-align:center;color:var(--fg-2)}
+.nogl .fallback{display:grid}
+.nogl #gl,.nogl .labels,.nogl .intro{display:none}
+
+@media (max-width:760px){
+  .hint{display:none}
+  .intro{top:auto;bottom:96px;transform:none}
+  .intro.gone{transform:translateY(12px)}
+  .intro p{font-size:15px}
+  aside.info{top:auto;bottom:80px;right:12px;transform:translateY(24px)}
+  aside.info.on{transform:none}
+  aside.info h2{font-size:26px}
+}
+</style>
+</head>
+<body>
+<canvas id="gl" aria-label="Interactive 3D lab. Use the station list below to visit each project." role="img"></canvas>
+<div class="labels" id="labels" aria-hidden="true"></div>
+
+<header>
+  <a class="brand" href="../index.html"><span class="mark">AP</span><span>Aaryan Patel</span></a>
+  <div style="display:flex;align-items:center;gap:16px">
+    <p class="hint"><kbd>drag</kbd> orbit · <kbd>scroll</kbd> zoom · <kbd>←</kbd><kbd>→</kbd> stations · <kbd>esc</kbd> overview</p>
+    <a class="back" href="../index.html">← the lab</a>
+  </div>
+</header>
+
+<div class="intro" id="intro">
+  <p class="eyebrow">explore · twelve stations</p>
+  <h1>Walk the <span>lab.</span></h1>
+  <p>Every project is a station, and every hologram is a sketch of what that code actually does. Click one to fly in.</p>
+</div>
+
+<nav class="stations" id="stations" aria-label="Stations"></nav>
+
+<aside class="info" id="info" aria-live="polite" aria-label="Station details">
+  <button class="x" type="button" id="close" aria-label="Back to overview">✕</button>
+  <span class="area" id="iArea"></span>
+  <h2 id="iName"></h2>
+  <p id="iClaim"></p>
+  <div class="metric"><b id="iMetric"></b><span id="iLabel"></span></div>
+  <div class="acts" id="iActs"></div>
+  <div class="step"><button type="button" id="prev">← prev</button><span id="iPos"></span><button type="button" id="next">next →</button></div>
+</aside>
+
+<div class="fallback"><div><p style="font:13px var(--mono);color:var(--warn);margin-bottom:10px">WebGL isn't available here</p><p>The station list below still works, and every project is on <a href="../index.html#workHS" style="color:var(--accent)">the main page</a>.</p></div></div>
+
+<script src="../vendor/lab-3d.js"></script>
+<script src="../vendor/lab-motion.js"></script>
+<script type="module" src="../js/explore.js"></script>
+</body>
+</html>

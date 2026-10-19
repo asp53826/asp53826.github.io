@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05070A">
+<title>vllm-lite · Aaryan Patel</title>
+<meta name="description" content="An LLM inference server from scratch: paged KV cache, continuous batching, chunked prefill, prefix caching and speculative decoding, measured against the naive approach.">
+<meta property="og:title" content="vllm-lite · Aaryan Patel">
+<meta property="og:description" content="Paging takes KV utilization from 21% to 94% of the same memory. Watch both schedulers run.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230A0C0B%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-family=%27monospace%27 font-weight=%27700%27 font-size=%2726%27 fill=%27%238BE59A%27 text-anchor=%27middle%27%3EAP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="../css/case.css">
+<style>
+.duo{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+@media (max-width:860px){.duo{grid-template-columns:1fr}}
+.sched{display:flex;flex-direction:column;gap:10px;min-width:0}
+.sched h3{font-size:18px;display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.sched h3 small{font:12px var(--mono);color:var(--dim);font-weight:400}
+.sched canvas{width:100%;height:auto;aspect-ratio:2/1;display:block;border-radius:10px;background:rgba(5,7,10,.55);border:1px solid var(--line)}
+.meter{height:10px;border-radius:999px;background:#141a18;overflow:hidden}
+.meter i{display:block;height:100%;border-radius:999px;transition:width .2s}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font:12px var(--mono);color:var(--dim)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:6px;vertical-align:-1px}
+</style>
+</head>
+<body style="--tint:#5CE1E6">
+<div class="grain" aria-hidden="true"></div>
+<header class="cnav"><div class="wrap">
+  <a class="brand" href="../index.html#workHS"><span class="mark">AP</span><span>Aaryan Patel</span></a>
+  <nav aria-label="Case study"><a href="../index.html#workHS">← all work</a><a class="pill" href="https://github.com/asp53826/vllm-lite">Source ↗</a></nav>
+</div></header>
+
+<main>
+  <section class="wrap chero">
+    <p class="eyebrow">case study · ml infrastructure · Python · numpy</p>
+    <h1 class="ctitle" style="view-transition-name:vt-vllm-lite">vllm-lite</h1>
+    <p class="thesis">The interesting part of LLM serving isn't the model. It's sharing one copy of the weights and one pool of KV memory across many requests without wasting either.</p>
+    <dl class="cstats">
+      <div><dt>of reserved KV cache holding real tokens, paged + continuous batching</dt><dd data-n="94" data-suf="%">94%</dd></div>
+      <div class="loss"><dt>the same number for a 16-wide static batch, from the same memory</dt><dd data-n="21" data-suf="%">21%</dd></div>
+      <div><dt>better median time-to-first-token than sequential serving</dt><dd data-n="5.5" data-suf="×">5.5×</dd></div>
+      <div><dt>tests, most of them asserting that output never changes</dt><dd data-n="90">90</dd></div>
+    </dl>
+  </section>
+
+  <section class="wrap cdemo">
+    <div class="dhead reveal">
+      <div>
+        <span class="badge sim"><i aria-hidden="true"></i>simulation of the two allocation policies · measured numbers below</span>
+        <h2>Same memory. Same requests. Two schedulers.</h2>
+        <p class="lede">48 requests with prompt and output lengths drawn from the repo's lognormal ranges, against a 2,048-token KV budget. Each cell is a 16-token block. Static batching reserves a 512-token slot per sequence and waits for its longest member. Paging allocates blocks on demand and refills a slot the step it frees.</p>
+      </div>
+      <div class="row">
+        <button class="chip" type="button" id="play" aria-pressed="true">❚❚ Pause</button>
+        <button class="chip" type="button" id="reset">New requests</button>
+        <span class="label">speed</span>
+        <button class="chip" type="button" data-speed="1">1×</button>
+        <button class="chip" type="button" data-speed="3" aria-pressed="true">3×</button>
+        <button class="chip" type="button" data-speed="10">10×</button>
+      </div>
+    </div>
+    <div class="demo reveal" style="display:flex;flex-direction:column;gap:14px">
+      <div class="duo">
+        <div class="sched">
+          <h3>static batch of 4 <small>reserve max_model_len per slot</small></h3>
+          <canvas id="cvS" role="img" aria-label="KV memory under static batching"></canvas>
+          <div class="meter"><i id="mS" style="background:var(--warn)"></i></div>
+          <div class="readout">
+            <div><b class="warn" id="uS">0%</b><span>KV in use right now</span></div>
+            <div><b class="warn" id="aS">0%</b><span>average so far</span></div>
+            <div><b id="dS">0</b><span>requests done</span></div>
+            <div><b id="pS">0</b><span>forward passes</span></div>
+          </div>
+        </div>
+        <div class="sched">
+          <h3>paged + continuous <small>16-token blocks on demand</small></h3>
+          <canvas id="cvP" role="img" aria-label="KV memory under paged attention with continuous batching"></canvas>
+          <div class="meter"><i id="mP" style="background:var(--tint)"></i></div>
+          <div class="readout">
+            <div><b id="uP">0%</b><span>KV in use right now</span></div>
+            <div><b id="aP">0%</b><span>average so far</span></div>
+            <div><b id="dP">0</b><span>requests done</span></div>
+            <div><b id="pP">0</b><span>forward passes</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="legend"><span><i style="background:#5CE1E6"></i>a sequence's tokens</span><span><i style="background:repeating-linear-gradient(45deg,#3a3324 0 3px,#1a1813 3px 6px)"></i>reserved, holding nothing</span><span><i style="background:#141a18;border:1px solid #232b28"></i>free</span><span id="verdict" style="color:var(--fg-2)"></span></div>
+    </div>
+  </section>
+
+  <section class="wrap cbody">
+    <div class="prose reveal">
+      <span class="eyebrow">how it works</span>
+      <h2 class="h2">The virtual-memory trick, applied to attention.</h2>
+      <p>The cache is one flat tensor per layer, chopped into 16-token blocks. A sequence doesn't own contiguous memory. It owns a block table, and attention gathers through it. That one indirection lets a sequence grow a block at a time instead of reserving its worst case up front.</p>
+      <h3>Continuous batching</h3>
+      <p>The batch is rebuilt on every forward pass. A finished sequence frees its slot immediately and a queued request takes it on the very next pass. Prefill and decode share one token budget, so a long prompt is sliced across passes instead of stalling everyone else.</p>
+      <h3>Prefix caching</h3>
+      <p>Every full block gets a hash of all tokens up to it, chained through the previous block's hash, and is published the moment it fills. With a 256-token system prompt shared by 48 requests, that bought +49% throughput and 1.8× better TTFT.</p>
+      <h3>Invisible from outside</h3>
+      <p>Greedy decoding has exactly one right answer, so the tests assert identical output across block sizes, prefix caching on and off, chunked prefill budgets, batch composition, forced preemption, and speculative decoding at every k.</p>
+    </div>
+    <div class="measured reveal">
+      <span class="eyebrow">measured · 48 requests · M-series CPU · best of 3</span>
+      <div class="tw"><table>
+        <caption>Same weights, sampling and KV budget in every row</caption>
+        <thead><tr><th>config</th><th class="r">tok/s</th><th class="r">TTFT p50</th><th class="r">passes</th><th class="r">KV use</th></tr></thead>
+        <tbody>
+          <tr><td>sequential (batch 1)</td><td class="r">649</td><td class="r">2849 ms</td><td class="r">3179</td><td class="r">68%</td></tr>
+          <tr><td>static batch 4</td><td class="r">1030</td><td class="r">1792 ms</td><td class="r">1418</td><td class="r">35%</td></tr>
+          <tr class="lo"><td>static batch 16</td><td class="r">1811</td><td class="r">736 ms</td><td class="r">497</td><td class="r">21%</td></tr>
+          <tr class="hi"><td>paged + continuous</td><td class="r">2028</td><td class="r">520 ms</td><td class="r">260</td><td class="r">94%</td></tr>
+        </tbody>
+      </table></div>
+      <div class="tw"><table>
+        <caption>Speculative decoding, n-gram proposer, 96 tokens</caption>
+        <thead><tr><th>k</th><th class="r">passes</th><th class="r">tok/s</th><th class="r">acceptance</th></tr></thead>
+        <tbody>
+          <tr><td>0 (off)</td><td class="r">96</td><td class="r">5301</td><td class="r">–</td></tr>
+          <tr class="hi"><td>2</td><td class="r">58</td><td class="r">7118</td><td class="r">84.5%</td></tr>
+          <tr><td>4</td><td class="r">58</td><td class="r">7190</td><td class="r">76.3%</td></tr>
+          <tr><td>8</td><td class="r">58</td><td class="r">7089</td><td class="r">65.6%</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section class="loses">
+    <div class="wrap">
+      <span class="eyebrow reveal">being straight about what this is</span>
+      <h2 class="h2 reveal">A serving layer, measured honestly.</h2>
+      <ul>
+        <li class="reveal"><strong>The weights are random</strong><span>The text is nonsense on purpose. Random weights do the same arithmetic and move the same bytes, which is what the scheduler and cache are measured on.</span></li>
+        <li class="reveal"><strong>numpy on CPU, not CUDA</strong><span>Ratios between configurations hold because every row runs the same code path. Absolute tok/s means nothing outside this machine.</span></li>
+        <li class="reveal"><strong>Attention loops in Python</strong><span>Projections, MLP and LM head are batched across the step. The per-sequence attention loop is the part a fused GPU kernel would flatten.</span></li>
+        <li class="reveal"><strong>Not implemented</strong><span>Tensor parallelism, CUDA graphs, quantization, LoRA, swap-to-CPU preemption, beam search.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap repro">
+    <div class="reveal">
+      <span class="eyebrow">reproduce</span>
+      <pre>git clone https://github.com/asp53826/vllm-lite
+cd vllm-lite && pip install -r requirements.txt
+python bench/bench.py --requests 48
+pytest                                 # 90 tests</pre>
+    </div>
+    <div class="next reveal">
+      <span class="eyebrow">next case study</span>
+      <a class="big" href="edgar-mcp.html">edgar-mcp →</a>
+      <span class="lede">A rate limiter that let 19 requests through a 10-per-second window, and the fix.</span>
+    </div>
+  </section>
+</main>
+<footer><div class="wrap"><span>© 2026 Aaryan Patel</span><a href="../index.html">← back to the lab</a></div></footer>
+
+<script src="../vendor/lab-motion.js"></script>
+<script type="module" src="../js/case.js"></script>
+<script type="module" src="../js/demo-vllm.js"></script>
+</body>
+</html>
