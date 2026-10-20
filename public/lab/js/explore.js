@@ -1,6 +1,8 @@
 // /lab/explore/: the lab as a place. Twelve stations on a ring, each with a
 // procedural hologram of what the project does. Drag to orbit, scroll or pinch
 // to zoom, click a station (or use the list, or ←/→) to fly in, Esc to leave.
+import { capture } from './flags.js';
+import tilt from './tilt.js';
 const T = window.THREE, gsap = window.gsap;
 const $ = (s) => document.querySelector(s);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -104,6 +106,9 @@ const coreWire = new T.LineSegments(new T.WireframeGeometry(new T.IcosahedronGeo
 const coreIn = new T.Mesh(new T.IcosahedronGeometry(.55, 2), glow(0x5ce1e6, .85)); core.add(coreIn);
 const coreBeam = add(new T.Mesh(new T.CylinderGeometry(.5, .9, 14, 32, 1, true), new T.MeshBasicMaterial({ map: BEAM, color: 0x5ce1e6, transparent: true, opacity: .14, blending: T.AdditiveBlending, depthWrite: false, side: T.DoubleSide })));
 coreBeam.position.y = 7;
+// the core is clickable: five taps capture a flag
+const coreHit = new T.Mesh(new T.SphereGeometry(1.7, 12, 8), new T.MeshBasicMaterial()); coreHit.visible = false; core.add(coreHit);
+let coreTaps = 0, coreKick = 0;
 
 /* ---------- holograms ---------- */
 const H = {
@@ -224,14 +229,16 @@ function go(target) {
   if (reduced || !gsap) { Object.assign(view, target); return; }
   tween = gsap.to(view, { ...target, duration: 1.7, ease: 'power3.inOut' });
 }
-function fly(i) {
+function fly(i, quiet) {
   if (i < 0 || i >= STATIONS.length) return;
   cur = i; const s = STATIONS[i];
   // look in from slightly off-axis so the core isn't right behind the hologram, and
   // shift the target so the station sits clear of the info panel
-  const yaw = s.angle + .32, wide = innerWidth > 760, side = wide ? 1.7 : 0;
-  go({ tx: s.pos.x + Math.sin(yaw) * side, ty: wide ? 2.3 : 1.3, tz: s.pos.z - Math.cos(yaw) * side, yaw, pitch: .26, dist: wide ? 7.6 : 10 });
-  showInfo(i); history.replaceState(null, '', '#' + s.id);
+  // (the tour has no panel, so it centres the station above the caption instead)
+  const yaw = s.angle + .32, wide = innerWidth > 760, side = wide && !quiet ? 1.7 : 0;
+  go({ tx: s.pos.x + Math.sin(yaw) * side, ty: quiet ? 1.5 : wide ? 2.3 : 1.3, tz: s.pos.z - Math.cos(yaw) * side, yaw, pitch: .26, dist: wide ? 7.6 : 10 });
+  if (!quiet) { showInfo(i); history.replaceState(null, '', '#' + s.id); }
+  window.__sfx?.play('note', i);
 }
 function overview() {
   if (cur < 0) return;
@@ -252,7 +259,15 @@ cv.addEventListener('pointermove', (e) => {
 });
 function end(e) {
   const wasDrag = dragged > 6, single = ptrs.size === 1; ptrs.delete(e.pointerId); cv.classList.remove('drag'); if (ptrs.size < 2) pinch0 = 0;
-  if (single && !wasDrag && e.type === 'pointerup') { const i = pick(e.clientX, e.clientY); if (i >= 0) fly(i); else if (cur >= 0) overview(); }
+  if (single && !wasDrag && e.type === 'pointerup') {
+    const i = pick(e.clientX, e.clientY);
+    if (i < 0 && cur < 0 && ray.intersectObject(coreHit, false).length) { tapCore(); return; }
+    if (i >= 0) fly(i); else if (cur >= 0) overview();
+  }
+}
+function tapCore() {
+  coreTaps++; coreKick = 1; window.__sfx?.play('note', coreTaps * 2); window.__sfx?.buzz(20);
+  if (coreTaps === 5) { coreKick = 2.2; window.__sfx?.play('heal'); capture('core'); }
 }
 cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
 function zoom(f) { tween?.kill(); const lo = cur < 0 ? 12 : 3.6, hi = cur < 0 ? 46 : 14; view.dist = Math.min(hi, Math.max(lo, view.dist * f)); idleAt = performance.now(); }
@@ -267,15 +282,17 @@ addEventListener('resize', () => {
 const clock = new T.Clock(), tmp = new T.Vector3();
 function frame() {
   const dt = Math.min(.05, clock.getDelta()), t = clock.elapsedTime;
-  if (!reduced && cur < 0 && !ptrs.size && !tween?.isActive() && performance.now() - idleAt > 2500) view.yaw += dt * .05;
-  const cp = Math.cos(view.pitch);
-  cam.position.set(view.tx + Math.cos(view.yaw) * cp * view.dist, view.ty + Math.sin(view.pitch) * view.dist, view.tz + Math.sin(view.yaw) * cp * view.dist);
+  if (!reduced && cur < 0 && !ptrs.size && !tween?.isActive() && performance.now() - idleAt > 2500) view.yaw += dt * (touring ? .12 : .05);
+  // a tilted phone leans the camera without fighting your drags
+  const lean = tilt.on && !ptrs.size ? 1 : 0, yaw = view.yaw + tilt.x * .7 * lean, pitch = Math.min(1.25, Math.max(.04, view.pitch + tilt.y * .3 * lean));
+  const cp = Math.cos(pitch);
+  cam.position.set(view.tx + Math.cos(yaw) * cp * view.dist, view.ty + Math.sin(pitch) * view.dist, view.tz + Math.sin(yaw) * cp * view.dist);
   cam.lookAt(view.tx, view.ty, view.tz);
   const tt = reduced ? 1.5 : t;
   holos.forEach((h, i) => { h.up(tt + i * .37); h.g.position.y = 2.3 + (reduced ? 0 : Math.sin(t * .9 + i) * .08); });
   STATIONS.forEach((s, i) => { const on = i === hover || i === cur; s.ring.material.opacity = on ? 1 : .55; s.beam.material.opacity = i === cur ? .05 : on ? .16 : .07; });
   if (bloom) bloom.strength += ((cur >= 0 ? .6 : .95) - bloom.strength) * .06;
-  core.rotation.y = tt * .2; coreWire.rotation.x = tt * .13; coreIn.scale.setScalar(1 + Math.sin(tt * 2) * .06);
+  core.rotation.y = tt * .2; coreWire.rotation.x = tt * .13; coreKick *= .93; coreIn.scale.setScalar(1 + Math.sin(tt * 2) * .06 + coreKick * .5); coreWire.scale.setScalar(1 + coreKick * .25);
   if (dust) dust.rotation.y = tt * .01;
   // labels follow their stations; fade the ones you're not looking at
   STATIONS.forEach((s, i) => {
@@ -286,9 +303,67 @@ function frame() {
   });
   if (composer) composer.render(); else renderer.render(scene, cam);
   requestAnimationFrame(frame);
+  if (!frame.shown) { frame.shown = true; setTimeout(() => $('#veil')?.classList.add('gone'), 250); }
 }
 if (renderer) {
   requestAnimationFrame(frame);
   const deep = STATIONS.findIndex((s) => '#' + s.id === location.hash);
-  if (deep >= 0) setTimeout(() => fly(deep), reduced ? 0 : 600);
+  if (/[?&]tour\b/.test(location.search)) setTimeout(tour, reduced ? 0 : 900);
+  else if (deep >= 0) setTimeout(() => fly(deep), reduced ? 0 : 600);
 }
+
+/* ---------- recruiter autopilot: the lab in about sixty seconds ---------- */
+const TOUR = [
+  ['raft-mvcc', 'Raft consensus and MVCC in C++17, checked by 598 assertions under seeded faults. It runs in your browser as WebAssembly.'],
+  ['columnar-engine', 'A vectorized query engine: 53.1M rows a second on TPC-H Q1, and a benchmark that shows exactly where it loses.'],
+  ['vllm-lite', 'LLM serving from scratch. A paged KV cache takes memory use from 21% to 94% of the same budget.'],
+  ['edgar-mcp', 'An MCP server over SEC filings. Its own test caught the rate limiter sending 19 requests into a 10-per-second window.'],
+  ['aad-greeks', 'Adjoint Greeks: every sensitivity in one reverse sweep, 49× faster than bumping at fifty inputs.'],
+  ['order-book-royale', 'An eight-player order book battle. The exchange is a port of the Python matching engine, held to parity in CI.'],
+  ['track-fusion', 'Multi-target tracking with 47% lower localization error, published alongside the regime where it fails.'],
+];
+let touring = 0;
+const capEl = document.createElement('div'); capEl.className = 'cap'; capEl.setAttribute('aria-live', 'polite');
+capEl.innerHTML = '<small></small><p></p><div class="cap-bar"><i></i></div><div class="cap-ctl"><button type="button" class="cap-skip">skip tour ✕</button></div>';
+document.body.append(capEl);
+const card = document.createElement('div'); card.className = 'endcard'; card.setAttribute('role', 'dialog'); card.setAttribute('aria-label', 'Contact');
+card.innerHTML = '<span class="eyebrow">that was the lab</span><h2>Aaryan Patel</h2><p>Systems &amp; software engineer · UGA Computer Science, December 2026. Looking for systems, ML infrastructure or quant roles starting 2027.</p>'
+  + '<div class="acts"><a class="primary" href="mailto:aaryansp26@gmail.com">aaryansp26@gmail.com</a><a href="https://www.linkedin.com/in/aaryanpatelsystems/">LinkedIn ↗</a><a href="https://github.com/asp53826">GitHub ↗</a><a href="https://asp53826.github.io/resume/Aaryan-Patel-Systems-Resume.pdf">Résumé ↗</a></div>'
+  + '<button type="button" class="again">keep exploring</button>';
+document.body.append(card);
+card.querySelector('.again').onclick = () => { card.classList.remove('on'); stopTour(); };
+capEl.querySelector('.cap-skip').onclick = () => { stopTour(); card.classList.add('on'); };
+function caption(title, text, k) {
+  capEl.querySelector('small').textContent = title; capEl.querySelector('p').textContent = text;
+  capEl.querySelector('.cap-bar i').style.width = (k * 100) + '%';
+  capEl.classList.remove('swap'); void capEl.offsetWidth; capEl.classList.add('swap');
+}
+async function tour() {
+  const my = ++touring, n = TOUR.length + 2;
+  const wait = (ms) => new Promise((r) => setTimeout(r, reduced ? Math.min(ms, 2500) : ms)).then(() => { if (my !== touring) throw new Error('stopped'); });
+  card.classList.remove('on'); hideInfo(); $('#intro').classList.add('gone');
+  document.body.classList.add('touring'); capEl.classList.add('on');
+  try {
+    cur = -1; go({ ...OVERVIEW, yaw: view.yaw + .8, pitch: .5, dist: OVERVIEW.dist * 1.08 });
+    caption('the lab · in sixty seconds', 'Aaryan Patel builds systems, then tries to break them. Twelve projects, each with its tests and its measurements.', 1 / n);
+    await wait(5000);
+    for (const [k, [id, text]] of TOUR.entries()) {
+      const i = STATIONS.findIndex((s) => s.id === id);
+      fly(i, true); caption(`${k + 1} / ${TOUR.length} · ${id}`, text, (k + 2) / n);
+      await wait(6600);
+    }
+    cur = -1; go({ ...OVERVIEW, yaw: view.yaw + 1.4, pitch: .7, dist: OVERVIEW.dist * 1.25 });
+    caption('your move', '', 1); window.__sfx?.play('win');
+    await wait(1600);
+    capEl.classList.remove('on'); card.classList.add('on'); card.querySelector('a').focus({ preventScroll: true });
+  } catch (e) { /* stopped by the visitor */ }
+}
+function stopTour() {
+  if (!document.body.classList.contains('touring')) return;
+  touring++; document.body.classList.remove('touring'); capEl.classList.remove('on');
+  if (cur < 0) $('#intro').classList.remove('gone');
+}
+addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (card.classList.contains('on')) card.classList.remove('on'); stopTour(); } });
+cv.addEventListener('pointerdown', () => { if (touring && document.body.classList.contains('touring')) stopTour(); });
+$('#tourBtn')?.addEventListener('click', tour);
+navBtns.forEach((b) => b.addEventListener('click', stopTour, true));

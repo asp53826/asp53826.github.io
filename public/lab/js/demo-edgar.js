@@ -41,11 +41,16 @@ function load(name) {
   $('#pkB').className = pkB > CEIL ? 'warn' : '';
   replay();
 }
-function replay() { cancelAnimationFrame(raf); t0 = performance.now(); raf = requestAnimationFrame(frame); }
+const heard = { b: 0, p: 0 };
+function replay() { cancelAnimationFrame(raf); heard.b = heard.p = 0; t0 = performance.now(); raf = requestAnimationFrame(frame); }
 
 function frame(now) {
   const head = reduced ? SPAN : Math.min(SPAN, ((now - t0) / 4200) * SPAN);
   if (head < SPAN) { draw(head); raf = requestAnimationFrame(frame); } else rest();
+  // the bucket rattles, the pacer ticks: hear the burst
+  const nb = B.filter((a) => a <= head).length, np = P.filter((a) => a <= head).length;
+  if (nb > heard.b) { window.__sfx?.play('tick'); } if (np > heard.p) { window.__sfx?.play('note', 4); }
+  heard.b = nb; heard.p = np;
 }
 
 // when the sweep ends, park the window on the bucket's worst second

@@ -3,7 +3,7 @@
 // the WebAssembly engine's own state after replaying every call up to it, so
 // scrolling backwards is exact, not an undo animation.
 
-import { loadFaultline, invariants } from './faultline.js';
+import { loadFaultline, invariants, sonify } from './faultline.js';
 import { createClusterView } from './cluster-view.js';
 
 const $ = (s) => document.querySelector(s);
@@ -65,6 +65,7 @@ async function main() {
     let s;
     for (let i = 0; i <= k; i++) for (const t of STORY[i].tok) s = eng.run(t);
     show(s, 'engine:');
+    sonify(STORY[k].tok[STORY[k].tok.length - 1], s);
     items.forEach((li, i) => { li.classList.toggle('on', i === k); li.classList.toggle('done', i < k); });
   }
 
@@ -75,7 +76,7 @@ async function main() {
     if (tok === 'c' || tok === 'i') tok += view.selected;
     const s = eng.run(tok);
     if (tok === 'r') step = 0, items.forEach((li, i) => { li.classList.toggle('on', i === 0); li.classList.toggle('done', false); });
-    show(s, 'you ran ' + tok + ':');
+    show(s, 'you ran ' + tok + ':'); sonify(tok, s);
   }));
   document.querySelectorAll('#raft [data-hist]').forEach((b) => b.addEventListener('click', () => {
     const r = eng.history(b.dataset.hist === '1');

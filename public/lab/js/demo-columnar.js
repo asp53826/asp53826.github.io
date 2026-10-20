@@ -67,6 +67,7 @@ function render() {
   const same = JSON.stringify(ref.ids) === JSON.stringify(f2.out) && JSON.stringify(ref.sums) === JSON.stringify(Object.fromEntries([...agg].sort()));
   const o = $('#oracle'); o.textContent = (same ? '✓ agrees: ' : '✗ disagrees: ') + ref.ids.length + ' rows, sums ' + JSON.stringify(ref.sums);
   o.className = same ? 'ok' : 'bad';
+  window.__sfx?.play('tick');
 }
 
 const rb = $('#regBtns');

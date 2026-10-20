@@ -1,5 +1,5 @@
 // raft-mvcc case page: the full FAULTLINE console on the real WebAssembly engine.
-import { loadFaultline, invariants } from './faultline.js';
+import { loadFaultline, invariants, sonify } from './faultline.js';
 import { createClusterView } from './cluster-view.js';
 
 const $ = (s) => document.querySelector(s);
@@ -49,7 +49,7 @@ function run(tok) {
     $('#event').textContent = 'oracle: ' + msg + '.'; tape(tok, msg);
     return;
   }
-  const s = eng.run(tok); ops = tok === 'r' ? 0 : ops + 1; show(s); tape(tok, s.event, s.tick);
+  const s = eng.run(tok); ops = tok === 'r' ? 0 : ops + 1; show(s); tape(tok, s.event, s.tick); sonify(tok, s);
 }
 
 async function runScenario(s, btn) {
