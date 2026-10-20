@@ -31,6 +31,19 @@ jobs:
         run: python3 -m pip install -r requirements-build.txt
       - name: Generate and build
         run: npm run build
+      - name: Point /lab/ at the realtime relay
+        if: ${{ vars.LAB_RELAY_URL != '' }}
+        env:
+          RELAY: ${{ vars.LAB_RELAY_URL }}
+        run: |
+          if ! [[ "$RELAY" =~ ^wss://[A-Za-z0-9.-]+$ ]]; then
+            echo "::warning::LAB_RELAY_URL should look like wss://obr-relay.<subdomain>.workers.dev; skipping."
+            exit 0
+          fi
+          mkdir -p dist/lab/data
+          printf '{"url":"%s"}\n' "$RELAY" > dist/lab/data/relay.json
+          sed -i "s|<meta name=\"obr-relay\" content=\"\">|<meta name=\"obr-relay\" content=\"$RELAY\">|" dist/lab/royale/index.html
+          grep -q "$RELAY" dist/lab/royale/index.html && echo "relay → $RELAY"
       - name: Snapshot GitHub activity for /lab/
         run: node scripts/lab-live.mjs dist/lab/data/live.json
         continue-on-error: true

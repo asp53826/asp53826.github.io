@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05070A">
+<title>The vault · Aaryan Patel's lab</title>
+<meta name="description" content="Five flags are hidden across the lab. Find them all and the vault opens.">
+<meta property="og:title" content="The vault · five flags, one lab">
+<meta property="og:description" content="Five flags are hidden across Aaryan Patel's lab. Find them all and the vault opens.">
+<meta property="og:image" content="https://asp53826.github.io/lab/og/vault.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230A0C0B%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-family=%27monospace%27 font-weight=%27700%27 font-size=%2726%27 fill=%27%238BE59A%27 text-anchor=%27middle%27%3EAP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="../css/case.css">
+<style>
+.vhero{padding-block:clamp(48px,8vw,110px) 28px;display:flex;flex-direction:column;gap:16px}
+.vhero h1{font-size:clamp(48px,8vw,110px);line-height:.92;letter-spacing:-.05em;font-weight:900}
+.vhero h1 span{color:var(--warn)}
+.door{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;padding:clamp(18px,3vw,34px);border-radius:26px;border:1px solid var(--line-2);background:repeating-linear-gradient(135deg,rgba(255,255,255,.015) 0 12px,transparent 12px 24px),rgba(12,14,13,.85);overflow:hidden}
+@media (max-width:760px){.door{grid-template-columns:1fr}}
+.slot{display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:16px;border:1px dashed var(--line-2);min-height:170px}
+.slot .n{font:12px var(--mono);color:var(--dim)}
+.slot b{font-size:20px;letter-spacing:-.02em}
+.slot p{font-size:14px;color:var(--muted)}
+.slot.got{border:1px solid var(--warn);background:rgba(240,181,86,.07)}
+.slot.got .n{color:var(--warn)}
+.slot .ico{font-size:26px;filter:grayscale(1);opacity:.35}
+.slot.got .ico{filter:none;opacity:1}
+.status{font:13px var(--mono);color:var(--fg-2);margin:18px 0 40px}
+.open{display:none;flex-direction:column;gap:28px;padding-bottom:60px}
+body.unlocked .open{display:flex}
+body.unlocked .door{border-color:var(--warn);box-shadow:0 0 0 1px var(--warn),0 0 80px rgba(240,181,86,.15)}
+.ticket{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:24px;align-items:center}
+@media (max-width:860px){.ticket{grid-template-columns:1fr}}
+.ticket canvas{width:100%;height:auto;border-radius:18px;box-shadow:0 30px 80px rgba(0,0,0,.5)}
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:14px}
+.note{padding:20px;border-radius:16px;border:1px solid var(--line);background:rgba(12,15,14,.7);display:flex;flex-direction:column;gap:8px}
+.note b{font:12px var(--mono);color:var(--warn)}
+.note h3{font-size:19px;letter-spacing:-.02em}
+.note p{font-size:14.5px;color:var(--fg-2)}
+.acts{display:flex;flex-wrap:wrap;gap:10px}
+.acts a,.acts button{display:inline-flex;align-items:center;min-height:46px;padding:11px 18px;border-radius:12px;border:1px solid var(--line-2);background:transparent;color:var(--fg);font:600 15px var(--display);cursor:pointer}
+.acts .primary{background:var(--warn);border-color:var(--warn);color:#120d02}
+</style>
+</head>
+<body style="--tint:#F0B556">
+<div class="grain" aria-hidden="true"></div>
+<header class="cnav"><div class="wrap">
+  <a class="brand" href="../index.html"><span class="mark">AP</span><span>Aaryan Patel</span></a>
+  <nav aria-label="Vault"><a href="../index.html">← the lab</a></nav>
+</div></header>
+
+<main class="wrap">
+  <section class="vhero">
+    <p class="eyebrow" id="eyebrow">the vault · locked</p>
+    <h1 id="title">Five flags.<br><span>One door.</span></h1>
+    <p class="lede" id="lede" style="max-width:56ch">Flags are hidden across the lab: in the shell, in the 3D room, in the source, behind a red button and in today's puzzle. Each one you find lights a slot. Light all five.</p>
+  </section>
+
+  <section class="door" id="door" aria-label="Flags"></section>
+  <p class="status" id="status"></p>
+
+  <section class="open" aria-live="polite">
+    <div class="ticket">
+      <canvas id="ticket" width="1200" height="630" role="img" aria-label="Your vault ticket"></canvas>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <span class="eyebrow">you found all five</span>
+        <h2 class="h2">You read source, crash servers and solve puzzles for fun. We should talk.</h2>
+        <p class="lede">Here's your ticket. Skip the recruiter queue: the button below opens an email that tells me you got here.</p>
+        <div class="acts">
+          <a class="primary" id="mailBtn" href="#">Email me from the vault</a>
+          <button type="button" id="saveBtn">Save the ticket</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <span class="eyebrow">director's commentary</span>
+      <h2 class="h2" style="margin:8px 0 18px">Bugs I hit building this site.</h2>
+      <div class="notes">
+        <div class="note"><b>the invisible chapter</b><h3>backdrop-filter ate my pin</h3><p>The pinned Raft chapter vanished on scroll. A parent with <code>backdrop-filter</code> becomes the containing block for <code>position: fixed</code>, so the pinned element was fixed to the section instead of the screen.</p></div>
+        <div class="note"><b>the election storm</b><h3>timers kept running in the dark</h3><p>Scroll away from the old Raft demo and come back: every node had timed out at once. Election deadlines now shift by the time the tab spent off screen.</p></div>
+        <div class="note"><b>the 19-request second</b><h3>averages lie</h3><p>edgar-mcp's first limiter averaged 10 requests a second and still sent 19 in one. The fix is on its case page, and the demo replays the burst.</p></div>
+        <div class="note"><b>the kill -9 button</b><h3>never kill a majority</h3><p>The crash picks fewer than half the sections on purpose. Kill a majority and a real Raft cluster can't elect a leader, so neither can this page.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+<footer><div class="wrap"><span>© 2026 Aaryan Patel</span><a href="../index.html">← back to the lab</a></div></footer>
+
+<script type="module" src="../js/sfx.js"></script>
+<script type="module">
+import { FLAGS, found } from '../js/flags.js';
+const $ = (s) => document.querySelector(s);
+const got = new Set(found().map((f) => f.id)), all = got.size === FLAGS.length;
+const ICON = { ssh: '⌨', kill9: '☠', core: '◉', daily: '▦', source: '</>' };
+FLAGS.forEach((f, i) => {
+  const d = document.createElement('div'); d.className = 'slot' + (got.has(f.id) ? ' got' : '');
+  d.innerHTML = '<span class="ico"></span><span class="n"></span><b></b><p></p>';
+  d.querySelector('.ico').textContent = ICON[f.id]; d.querySelector('.n').textContent = 'flag ' + (i + 1) + (got.has(f.id) ? ' · found' : ' · missing');
+  d.querySelector('b').textContent = got.has(f.id) ? f.name : '???'; d.querySelector('p').textContent = got.has(f.id) ? 'Captured.' : 'Hint: ' + f.hint;
+  $('#door').append(d);
+});
+$('#status').textContent = all ? 'all five flags found · the vault is open' : `${got.size} of ${FLAGS.length} found. The hints above are free.`;
+if (all) {
+  document.body.classList.add('unlocked');
+  $('#eyebrow').textContent = 'the vault · open'; $('#title').innerHTML = 'You got in.<br><span>Nicely done.</span>';
+  $('#lede').textContent = 'Every flag found: the back door, the crash, the heartbeat, the daily and the source.';
+  await document.fonts.ready;
+  const when = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const c = $('#ticket'), x = c.getContext('2d');
+  const g = x.createLinearGradient(0, 0, 1200, 630); g.addColorStop(0, '#0b0e0d'); g.addColorStop(1, '#1a1406'); x.fillStyle = g; x.fillRect(0, 0, 1200, 630);
+  x.strokeStyle = '#F0B556'; x.lineWidth = 3; x.setLineDash([14, 10]); x.strokeRect(36, 36, 1128, 558); x.setLineDash([]);
+  for (let i = 0; i < 260; i++) { x.fillStyle = `rgba(240,181,86,${Math.random() * .25})`; x.fillRect(Math.random() * 1200, Math.random() * 630, 2, 2); }
+  x.fillStyle = '#F0B556'; x.font = '500 26px "JetBrains Mono", monospace'; x.fillText('ADMIT ONE · THE VAULT · AARYAN PATEL’S LAB', 84, 120);
+  x.fillStyle = '#F7F1E6'; x.font = '900 96px "Schibsted Grotesk", sans-serif'; x.fillText('5 / 5 flags', 84, 260);
+  x.font = '600 34px "Schibsted Grotesk", sans-serif'; x.fillStyle = '#d9cfbd'; x.fillText('back door · survivor · heartbeat · daily · source', 84, 330);
+  x.font = '24px "JetBrains Mono", monospace'; x.fillStyle = '#a89f8d'; x.fillText('opened ' + when + ' · asp53826.github.io/lab/vault', 84, 520);
+  x.font = '900 120px "Schibsted Grotesk", sans-serif'; x.fillStyle = 'rgba(240,181,86,.9)'; x.textAlign = 'right'; x.fillText('🚩', 1110, 540);
+  $('#saveBtn').onclick = () => { const a = document.createElement('a'); a.href = c.toDataURL('image/png'); a.download = 'aaryan-lab-vault-ticket.png'; a.click(); };
+  $('#mailBtn').href = 'mailto:aaryansp26@gmail.com?subject=' + encodeURIComponent('I opened the vault (5/5 flags)') + '&body=' + encodeURIComponent('Hi Aaryan,\n\nI found all five flags on your lab site on ' + when + '.\n\n');
+  setTimeout(() => window.__sfx?.play('win'), 400);
+}
+</script>
+<script type="module" src="../js/touches.js"></script>
+<script type="module" src="../js/presence.js"></script>
+</body>
+</html>

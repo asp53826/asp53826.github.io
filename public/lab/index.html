@@ -8,6 +8,13 @@
 <meta property="og:description" content="I build systems, then I try to break them. Databases, consensus, ML inference and quant tooling, measured honestly.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230A0C0B%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-family=%27monospace%27 font-weight=%27700%27 font-size=%2726%27 fill=%27%238BE59A%27 text-anchor=%27middle%27%3EAP%3C/text%3E%3C/svg%3E">
 <title>Aaryan Patel</title>
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://asp53826.github.io/lab/">
+<meta property="og:image" content="https://asp53826.github.io/lab/og/lab.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://asp53826.github.io/lab/">
 <meta name="description" content="Aaryan Patel — systems and software engineer. Databases, consensus, ML inference and quant tooling, each shipped with its tests, measurements and failure regime.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -474,6 +481,8 @@ html.chaos main{animation:hue 1.4s linear infinite}
   *,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
   .term{transform:none}
 }
+/* phones have no ⌘K: the nav keeps room for kill -9 instead */
+@media (max-width:640px){header.nav .kbd{display:none}}
 /* shipping log */
 .ship{padding-block:clamp(64px,9vw,120px);display:flex;flex-direction:column;gap:28px}
 .ship[hidden]{display:none}
@@ -521,6 +530,7 @@ html.chaos main{animation:hue 1.4s linear infinite}
 </style>
 </head>
 <body>
+<!-- note to whoever reads source: there's a flag here. type `submit flag{linearizable-or-bust}` in the shell. -->
 
 <div id="boot" aria-hidden="true">
   <div class="half t"></div><div class="half b"></div>
@@ -563,8 +573,8 @@ html.chaos main{animation:hue 1.4s linear infinite}
       <div class="ctas">
         <a class="btn primary" href="#live">Open the shell ↓</a>
         <button class="btn hot" type="button" id="dropBtn">▶ Drop the beat</button>
-        <a class="btn" href="#raft">Break a Raft cluster</a>
-        <a class="btn" href="explore/">Walk the lab in 3D →</a>
+        <a class="btn" href="explore/?tour">▶ 60-second tour</a>
+        <a class="btn" href="daily/">Daily challenge</a>
         <a class="btn" href="https://github.com/asp53826">GitHub ↗</a>
         <a class="btn" href="https://www.linkedin.com/in/aaryanpatelsystems/">LinkedIn ↗</a>
       </div>
@@ -979,13 +989,14 @@ async function play(i) {
   for (const [cls, t] of s.lines) { await sleep(reduced ? 0 : 200); if (my !== token) return; print(t, cls); done += 4; bump(); }
   if (auto) { await sleep(3200); if (my === token && auto) play((i + 1) % SCENES.length); }
 }
-const HELP = [['help', 'this list'], ['whoami', 'who I am'], ['ls', 'list projects'], ['cat <project>', 'details for one project'], ['open <project>', 'link to the source'], ['run <project>', 'replay a recorded run'], ['experience', 'where I work'], ['skills', 'what I use'], ['contact', 'how to reach me'], ['resume', 'résumé PDF'], ['raft', 'jump to the Raft playground'], ['play / stop', 'the 128 BPM lab mix'], ['games', 'list the arcade'], ['play-game', 'Short Gamma, the options-desk game'], ['royale', 'Order Book Royale, multiplayer'], ['accent <green|blue|amber|violet>', 'repaint the site'], ['clear', 'clear the screen']];
+const HELP = [['help', 'this list'], ['whoami', 'who I am'], ['ls', 'list projects'], ['cat <project>', 'details for one project'], ['open <project>', 'link to the source'], ['run <project>', 'replay a recorded run'], ['experience', 'where I work'], ['skills', 'what I use'], ['contact', 'how to reach me'], ['resume', 'résumé PDF'], ['raft', 'jump to the Raft playground'], ['play / stop', 'the 128 BPM lab mix'], ['games', 'list the arcade'], ['play-game', 'Short Gamma, the options-desk game'], ['royale', 'Order Book Royale, multiplayer'], ['accent <green|blue|amber|violet>', 'repaint the site'], ['kill -9', 'crash this website, watch it recover'], ['ssh lab', 'connect to the lab'], ['daily', 'today’s challenge'], ['tour', '60-second autopilot tour'], ['explore', 'walk the lab in 3D'], ['flags / hint', 'hidden flags you have found'], ['sound <on|off>', 'sound effects'], ['clear', 'clear the screen']];
 const COLORS = { green: '#8BE59A', blue: '#7CC8FF', amber: '#F0B556', violet: '#C9A7FF' };
 const hist = []; let hi = 0;
 function exec(raw) {
   const v = raw.trim(); if (!v) return;
   hist.push(v); hi = hist.length;
-  print('aaryan@lab:~$ ' + v, 'c');
+  print((window.__adv?.active ? 'you@lab:/srv$ ' : 'aaryan@lab:~$ ') + v, 'c');
+  if (window.__adv?.active) { if (window.__adv.handle(v, print) === 'clear') out.textContent = ''; return; }
   const [cmd, ...rest] = v.split(/\s+/); const arg = rest.join(' ').toLowerCase();
   const find = (a) => PROJECTS.find((p) => p.id === a || p.id.startsWith(a));
   switch (cmd.toLowerCase()) {
@@ -1008,7 +1019,18 @@ function exec(raw) {
     case 'play': case 'dance': toggleMix(true); print('♪ lab mix playing · 128 BPM · type stop to end', 'k'); break;
     case 'stop': toggleMix(false); print('mix stopped', 'd'); break;
     case 'clear': out.textContent = ''; break;
-    case 'sudo': if (arg === 'hire-me' || arg === 'hire me') { print('[sudo] password for recruiter: ********', 'd'); print('permission granted ✓', 'k'); print('next step: email aaryansp26@gmail.com', 'g'); } else print('sudo: try `sudo hire-me`', 'w'); break;
+    case 'ssh': if (arg.startsWith('lab') || arg.endsWith('@lab')) window.__adv?.start(print); else print('ssh: could not resolve ' + (arg || 'host') + '. try ssh lab', 'w'); break;
+    case 'kill': if (/(^|\s)-?9\b|sigkill|-kill/.test(arg)) { print('sending SIGKILL to this website. hold on.', 'k'); window.__kill9?.(); } else print('kill: usage: kill -9 1', 'w'); break;
+    case 'flags': { const F = window.__flags; if (!F) break; const got = new Set(F.found().map((f) => f.id)); F.FLAGS.forEach((f, i) => print((got.has(f.id) ? '🚩 ' : '·  ') + (i + 1) + '. ' + (got.has(f.id) ? f.name : '???'), got.has(f.id) ? 'g' : 'd')); print(got.size + '/' + F.FLAGS.length + ' found' + (got.size === F.FLAGS.length ? ' · the vault is open' : ' · type hint'), got.size === F.FLAGS.length ? 'k' : 'd'); if (got.size === F.FLAGS.length) printLink('→ vault/', 'vault/'); break; }
+    case 'hint': { const F = window.__flags; const next = F && F.FLAGS.find((f) => !F.has(f.id)); print(next ? 'hint: ' + next.hint : 'no hints left. you found everything.', next ? 'd' : 'g'); break; }
+    case 'submit': if (window.__flags?.checkSource(arg)) { if (!window.__flags.capture('source')) print('already submitted that one.', 'd'); else print('accepted. somebody reads source code.', 'g'); } else print('submit: that is not a flag. (flags look like flag{...})', 'w'); break;
+    case 'daily': print('today’s challenge is waiting', 'k'); printLink('→ daily/', 'daily/'); break;
+    case 'tour': print('60-second autopilot through the 3D lab', 'k'); printLink('→ explore/?tour', 'explore/?tour'); break;
+    case 'explore': printLink('→ walk the lab in 3D: explore/', 'explore/'); break;
+    case 'vault': printLink(window.__flags && window.__flags.found().length === window.__flags.FLAGS.length ? '→ vault/' : '→ vault/ (locked)', 'vault/'); break;
+    case 'sound': case 'sfx': if (arg === 'on' || arg === 'off') { window.__sfx?.set(arg === 'on'); print('sound effects ' + arg, 'g'); } else print('sound: on or off', 'w'); break;
+    case 'sudo': if (arg === 'hire aaryan') { print('[sudo] password for recruiter: ********', 'd'); print('checking quorum… 5/5 replicas agree', 'd'); print('✓ hire committed at term 2027, index 1. irrevocable.', 'k'); print('next step: email aaryansp26@gmail.com', 'g'); window.__sfx?.play('win'); }
+    else if (arg === 'hire-me' || arg === 'hire me') { print('[sudo] password for recruiter: ********', 'd'); print('permission granted ✓', 'k'); print('next step: email aaryansp26@gmail.com', 'g'); } else print('sudo: try `sudo hire-me`', 'w'); break;
     case 'rm': print('rm: refusing. this filesystem is append-only, like a good WAL.', 'w'); break;
     case 'exit': print('there is no exit. only more benchmarks.', 'd'); break;
     default: print(cmd + ': command not found. type help', 'w');
@@ -1205,14 +1227,16 @@ document.addEventListener('keydown', (e) => {
 
 /* ---------- the lab mix: a 128 BPM loop synthesized with Web Audio ---------- */
 const BPM = 128, STEP = 60 / BPM / 4;
-let actx = null, master = null, timer = null, nextT = 0, stepN = 0, kicks = [], noiseBuf = null;
+let actx = null, master = null, sweep = null, timer = null, nextT = 0, stepN = 0, kicks = [], noiseBuf = null;
 const BASS = [55, 0, 55, 65.41, 0, 55, 82.41, 0, 55, 0, 98, 55, 0, 65.41, 82.41, 0];
 function setupAudio() {
   actx = new (window.AudioContext || window.webkitAudioContext)();
   master = actx.createGain(); master.gain.value = .55;
   const comp = actx.createDynamicsCompressor();
   BEAT.an = actx.createAnalyser(); BEAT.an.fftSize = 256; BEAT.an.smoothingTimeConstant = .78;
-  master.connect(comp); comp.connect(BEAT.an); BEAT.an.connect(actx.destination);
+  // scrolling opens a low-pass on the whole mix: sit still and it goes muffled
+  sweep = actx.createBiquadFilter(); sweep.type = 'lowpass'; sweep.frequency.value = 900; sweep.Q.value = 4;
+  master.connect(sweep); sweep.connect(comp); comp.connect(BEAT.an); BEAT.an.connect(actx.destination);
   noiseBuf = actx.createBuffer(1, actx.sampleRate, actx.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
 }
 function env(g, t, a, peak, dec) { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + dec); }
@@ -1259,6 +1283,11 @@ function beatFrame(ts) {
   if (BEAT.playing && actx) { const now = actx.currentTime; const last = kicks.filter((k) => k <= now).pop(); v = last == null ? 0 : Math.exp(-(now - last) * 7); }
   else { const ph = ((ts / 1000) % period) / period; v = Math.exp(-ph * 5) * .35; }
   BEAT.v = v; root.style.setProperty('--b', v.toFixed(3));
+  if (sweep && BEAT.playing) {
+    const vel = Math.abs(scrollY - (beatFrame.y ?? scrollY)); beatFrame.y = scrollY;
+    beatFrame.open = Math.max((beatFrame.open || 0) * .94, Math.min(1, vel / 30));
+    sweep.frequency.setTargetAtTime(700 + Math.pow(beatFrame.open, .7) * 16000, actx.currentTime, .05);
+  }
 }
 requestAnimationFrame(beatFrame);
 
@@ -1406,9 +1435,11 @@ requestAnimationFrame(beatFrame);
       grp.position.set(gx, gy, 0); uni.uOp.value = op;
       ry += reduced ? 0 : .0016 + Math.abs(window.__vel || 0) * .0004;
       const tilt = name === 'galaxy' ? .55 : name === 'wave' ? .42 : name === 'raft' ? .0 : .12;
-      const wantRy = name === 'text' || name === 'gamma' ? mx * .5 : ry + mx * .9;
+      // a tilted phone steers the sculpture the way a mouse does on desktop
+      const tl = window.__tilt, tx = tl && tl.on ? tl.x : 0, ty = tl && tl.on ? tl.y : 0;
+      const wantRy = (name === 'text' || name === 'gamma' ? mx * .5 : ry + mx * .9) + tx * 1.1;
       grp.rotation.y += (wantRy - grp.rotation.y) * .06;
-      grp.rotation.x += ((tilt + my * .45) - grp.rotation.x) * .06;
+      grp.rotation.x += ((tilt + my * .45 + ty * .6) - grp.rotation.x) * .06;
       if (composer) { bloom.strength = 1.05 + BEAT.v * .6; composer.render(); } else renderer.render(sc3, cam);
     }
     requestAnimationFrame(frame);
@@ -1693,6 +1724,11 @@ requestAnimationFrame(beatFrame);
 <script type="module" src="js/story.js"></script>
 <script type="module" src="js/raft-chapter.js"></script>
 <script type="module" src="js/live.js"></script>
+<script type="module" src="js/sfx.js"></script>
+<script type="module" src="js/kill9.js"></script>
+<script type="module" src="js/tilt.js"></script>
+<script type="module" src="js/presence.js"></script>
+<script type="module" src="js/adventure.js"></script>
 
 </body>
 </html>

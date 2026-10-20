@@ -127,7 +127,9 @@ function paint() {
 }
 function tick() {
   let moved = false;
+  const before = P.done + S.done;
   for (let k = 0; k < speed; k++) { moved = S.step() | moved; moved = P.step() | moved; }
+  if (P.done + S.done > before) window.__sfx?.play('note', P.done);
   paint();
   if (S.done === NREQ && P.done === NREQ) {
     $('#verdict').textContent = `done: paging finished in ${P.pass} passes at ${pct(avg(P.util))} average use; static needed ${S.pass} passes at ${pct(avg(S.util))}.`;

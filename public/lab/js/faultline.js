@@ -68,3 +68,15 @@ export function invariants(s) {
       detail: new Set(digests).size === 1 ? 'all MVCC digests agree' : 'replicas differ while partitioned' },
   ];
 }
+
+// Sound and haptics for an engine step, keyed on the token that caused it.
+// No-ops unless the visitor turned sound on (haptics only need a phone).
+export function sonify(tok, s) {
+  const fx = window.__sfx; if (!fx || !tok) return;
+  const k = tok[0], ev = (s && s.event || '').toLowerCase();
+  if (k === 'r') fx.play('blip');
+  else if (k === 'c') fx.play('elect');
+  else if (k === 'i') { fx.play('crash'); fx.buzz([60, 30, 90]); }
+  else if (k === 'h') fx.play('heal');
+  else if (k === 'p' || k === 't') fx.play(/commit/.test(ev) ? 'commit' : 'note', s ? s.tick % 10 : 0);
+}
