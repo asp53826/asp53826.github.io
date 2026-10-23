@@ -12,6 +12,7 @@ const COLOR = { systems: '#5CE1E6', ml: '#8BE59A', quant: '#B9A6FF', autonomy: '
 const AREA = { systems: 'systems', ml: 'ml infrastructure', quant: 'quant', autonomy: 'autonomy / signal' };
 const GH = 'https://github.com/asp53826/';
 const STATIONS = [
+  { id: 'raft-hunt', route: 'systems', kind: 'orb', claim: 'A deterministic simulator pointed at real Raft libraries. It found a 2016-era PySyncObj bug where a deposed leader acknowledges a write nobody committed.', metric: '3 bugs', label: 'found in PySyncObj, each with a fix', href: '../work/raft-hunt.html', cta: 'Watch the bug replay' },
   { id: 'raft-mvcc', route: 'systems', kind: 'cluster', claim: 'Five-node Raft consensus with serializable MVCC and a linearizability checker, run live in WebAssembly.', metric: '598', label: 'assertions across seeded faults', href: '../work/raft-mvcc.html', cta: 'Break the cluster' },
   { id: 'columnar-engine', route: 'systems', kind: 'bars', claim: 'Vector-at-a-time analytical engine: null bitmaps, selection vectors, hash aggregation, joins, TPC-H Q1.', metric: '53.1M', label: 'rows / second', href: '../work/columnar-engine.html', cta: 'Filter a batch' },
   { id: 'lsm-tree', route: 'systems', kind: 'levels', claim: 'Dependency-free LSM-tree with WAL recovery, immutable SSTables, Bloom filters, tombstones and compaction.', metric: '0 deps', label: 'storage engine from scratch' },
@@ -314,6 +315,7 @@ if (renderer) {
 
 /* ---------- recruiter autopilot: the lab in about sixty seconds ---------- */
 const TOUR = [
+  ['raft-hunt', 'A simulator that owns a Raft library\'s clock, network and disk. Pointed at PySyncObj, it found a bug from 2016: a deposed leader acknowledges a write nobody committed.'],
   ['raft-mvcc', 'Raft consensus and MVCC in C++17, checked by 598 assertions under seeded faults. It runs in your browser as WebAssembly.'],
   ['columnar-engine', 'A vectorized query engine: 53.1M rows a second on TPC-H Q1, and a benchmark that shows exactly where it loses.'],
   ['vllm-lite', 'LLM serving from scratch. A paged KV cache takes memory use from 21% to 94% of the same budget.'],

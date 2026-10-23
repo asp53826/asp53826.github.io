@@ -919,6 +919,7 @@ const toast = (msg) => { const t = $('#toast'); t.textContent = msg; t.classList
 
 /* ---------- data ---------- */
 const PROJECTS = [
+  { id: 'raft-hunt', route: 'systems', stack: 'Python · Go', claim: 'A deterministic simulator pointed at real Raft libraries. Found a bug in PySyncObj that dates to 2016: a deposed leader acknowledges a write the cluster never committed.', metric: '3 bugs', label: 'found in PySyncObj, each with a fix', bound: 'etcd-io/raft, the control, came back clean in 3,000 runs.', href: 'work/raft-hunt.html' },
   { id: 'raft-mvcc', route: 'systems', stack: 'C++17', claim: 'Five-node Raft consensus with serializable MVCC and a linearizability checker, run live in WebAssembly.', metric: '598', label: 'assertions across seeded faults', bound: 'Minority leaders are fenced from committing. Shown, not assumed.', href: 'work/raft-mvcc.html' },
   { id: 'columnar-engine', route: 'systems', stack: 'C++17', claim: 'Vector-at-a-time analytical engine: null bitmaps, selection vectors, hash aggregation, joins, TPC-H Q1.', metric: '53.1M', label: 'rows / second', href: 'work/columnar-engine.html' },
   { id: 'dst-harness', route: 'systems', stack: 'Python', claim: 'Deterministic simulation testing: virtual clock, network and disk with seeded fault injection.', metric: '12', label: 'planted Raft bugs, scored by seeds-to-catch' },
