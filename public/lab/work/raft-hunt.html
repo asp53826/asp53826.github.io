@@ -147,6 +147,17 @@
           <tr class="lo"><td>figure 8 (old-term commit)</td><td class="r">0 / 800</td></tr>
         </tbody>
       </table></div>
+      <div class="tw"><table>
+        <caption>Planted bugs caught (etcd-io/raft, stock flags nothing)</caption>
+        <thead><tr><th>bug</th><th class="r">runs caught</th></tr></thead>
+        <tbody>
+          <tr><td>votes twice in a term</td><td class="r">137 / 300</td></tr>
+          <tr><td>no election restriction</td><td class="r">81 / 300</td></tr>
+          <tr><td>ReadIndex without a quorum check</td><td class="r">76 / 300</td></tr>
+          <tr><td>commits with half the cluster</td><td class="r">58 / 300</td></tr>
+          <tr class="lo"><td>figure 8</td><td class="r">0 / 300</td></tr>
+        </tbody>
+      </table></div>
     </div>
   </section>
 
