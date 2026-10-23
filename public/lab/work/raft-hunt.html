@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#05070A">
+<title>raft-hunt · Aaryan Patel</title>
+<meta property="og:title" content="raft-hunt · Aaryan Patel">
+<meta property="og:description" content="A deterministic simulator pointed at real Raft libraries. It found a bug that has been in PySyncObj since 2016: a deposed leader acknowledges a write the cluster never committed.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://asp53826.github.io/lab/work/raft-hunt.html">
+<meta property="og:image" content="https://asp53826.github.io/lab/og/raft-hunt.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://asp53826.github.io/lab/work/raft-hunt.html">
+<meta name="description" content="Deterministic simulation testing pointed at real Raft libraries: three findings in PySyncObj with standalone reproductions and verified fixes, and a clean bill for etcd-io/raft as the control.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 64 64%27%3E%3Crect width=%2764%27 height=%2764%27 rx=%2714%27 fill=%27%230A0C0B%27/%3E%3Ctext x=%2732%27 y=%2742%27 font-family=%27monospace%27 font-weight=%27700%27 font-size=%2726%27 fill=%27%238BE59A%27 text-anchor=%27middle%27%3EAP%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Schibsted+Grotesk:wght@400;500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="../css/case.css">
+<style>
+.hctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.hctl .label{margin-left:auto}
+.hstory{display:flex;flex-direction:column;gap:6px;min-height:118px}
+.hstory h3{font-size:clamp(20px,2.4vw,28px);letter-spacing:-.02em}
+.hstory p{color:var(--fg-2);max-width:78ch}
+#hNodes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:860px){#hNodes{grid-template-columns:1fr}}
+.hnode{border:1px solid var(--line);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px;background:rgba(5,7,10,.45);transition:border-color .3s,box-shadow .3s}
+.hnode.focus{border-color:var(--tint);box-shadow:0 0 0 1px var(--tint),0 0 40px color-mix(in srgb,var(--tint) 18%,transparent)}
+.hnode.cut{background:repeating-linear-gradient(135deg,rgba(240,181,86,.05) 0 10px,transparent 10px 20px),rgba(5,7,10,.45)}
+.hhead{display:flex;align-items:center;gap:10px;font:13px var(--mono)}
+.hhead b{font-size:18px}
+.role{padding:2px 8px;border-radius:999px;border:1px solid var(--line-2);color:var(--dim)}
+.role.leader{color:#05070a;background:var(--tint);border-color:var(--tint)}
+.term{margin-left:auto;color:var(--dim)}
+.hcut{font:12px var(--mono);color:var(--warn)}
+.hlog{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px;min-height:150px}
+.hlog li{display:grid;grid-template-columns:28px 1fr auto;gap:8px;align-items:center;padding:6px 10px;border-radius:8px;border:1px dashed color-mix(in srgb,var(--c) 60%,transparent);font:12.5px var(--mono);color:var(--fg-2)}
+.hlog li.committed{border-style:solid;background:color-mix(in srgb,var(--c) 14%,transparent)}
+.hlog li.applied .what{color:var(--fg)}
+.hlog li.stale{border-color:var(--danger);color:var(--danger)}
+.hlog li.stale.committed{background:rgba(255,138,122,.16);box-shadow:0 0 18px rgba(255,138,122,.25)}
+.hlog .idx{color:var(--dim)}
+.hlog .tt{color:var(--c);font-size:11px}
+.hfoot{display:flex;justify-content:space-between;gap:8px;font:12px var(--mono);color:var(--dim);border-top:1px solid var(--line);padding-top:8px}
+.hfoot .x{color:var(--fg)}
+.hfoot .x.bad{color:var(--danger)}
+.hacks{list-style:none;padding:0;margin:6px 0 0;font:12.5px var(--mono);display:flex;flex-direction:column;gap:3px}
+.hacks li{color:var(--fg-2)}
+.hacks li.bad{color:var(--danger);font-weight:700}
+.hacks li.dim{color:var(--dim)}
+.hlegend{display:flex;flex-wrap:wrap;gap:6px 18px;font:12px var(--mono);color:var(--dim)}
+.hlegend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-2px}
+#stormBars{display:flex;flex-direction:column;gap:12px}
+.srow{display:grid;grid-template-columns:200px 1fr 90px;gap:4px 14px;align-items:center;font:13px var(--mono);color:var(--fg-2)}
+.srow small{grid-column:2 / 4;color:var(--dim);font-size:11.5px}
+.srow b{text-align:right;color:var(--fg)}
+.strack{height:14px;border-radius:999px;background:#141a18;overflow:hidden}
+.strack i{display:block;height:100%;border-radius:999px;background:var(--warn)}
+.strack i.good{background:var(--tint)}
+@media (max-width:640px){.srow{grid-template-columns:1fr 70px}.srow .strack{grid-column:1 / 3;grid-row:2}.srow small{grid-column:1 / 3}}
+.ftable td:first-child{font-weight:600;color:var(--fg)}
+</style>
+</head>
+<body style="--tint:#8BE59A">
+<div class="grain" aria-hidden="true"></div>
+<header class="cnav"><div class="wrap">
+  <a class="brand" href="../index.html#workHS"><span class="mark">AP</span><span>Aaryan Patel</span></a>
+  <nav aria-label="Case study"><a href="../index.html#workHS">← all work</a><a class="pill" href="https://github.com/asp53826/raft-hunt">Source ↗</a></nav>
+</div></header>
+
+<main>
+  <section class="wrap chero">
+    <p class="eyebrow">case study · systems · Python + Go · deterministic simulation testing</p>
+    <h1 class="ctitle" style="view-transition-name:vt-raft-hunt">raft-hunt</h1>
+    <p class="thesis">I built a simulator that owns a Raft library's clock, network and disk, and pointed it at code other people ship. On its first seed it caught a bug that has been in PySyncObj since 2016.</p>
+    <dl class="cstats">
+      <div><dt>bugs in PySyncObj, each reproduced on the stock library with no simulator</dt><dd data-n="3">3</dd></div>
+      <div><dt>failing runs with my fix (+9/−1 lines) applied, down from 13 in the same 400 seeds</dt><dd data-n="0">0</dd></div>
+      <div><dt>client ops acknowledged across 4,000 runs of the fixed library, no safety violation</dt><dd data-n="1.59" data-suf="M">1.59M</dd></div>
+      <div class="loss"><dt>violations in 3,000 runs of etcd-io/raft, the control. Not every library has bugs to find.</dt><dd data-n="0">0</dd></div>
+    </dl>
+  </section>
+
+  <section class="wrap cdemo">
+    <div class="dhead reveal">
+      <div>
+        <span class="badge"><i aria-hidden="true"></i>recorded from the simulator · real PySyncObj 0.3.17 code</span>
+        <h2>A write nobody committed, acknowledged.</h2>
+        <p class="lede">Finding 001, step by step. Every log, commit index and value below is what the library actually held at that moment; the simulator only decided when messages arrived. Watch n2's last entry.</p>
+      </div>
+      <div class="hctl row">
+        <button class="chip" type="button" id="hPrev">← Back</button>
+        <button class="chip" type="button" id="hPlay">▶ Play</button>
+        <button class="chip" type="button" id="hNext">Next →</button>
+      </div>
+    </div>
+    <div class="demo reveal" style="display:flex;flex-direction:column;gap:16px">
+      <div class="hctl"><span class="label" id="hStep"></span><span class="label" id="hT"></span></div>
+      <div class="hstory" aria-live="polite"><h3 id="hTitle"></h3><p id="hText"></p></div>
+      <div id="hNodes"></div>
+      <div class="hlegend"><span><i style="background:color-mix(in srgb,#8BE59A 25%,transparent);border:1px solid #8BE59A"></i>committed</span><span><i style="border:1px dashed #8BE59A"></i>in the log, not committed</span><span><i style="background:rgba(255,138,122,.2);border:1px solid #FF8A7A"></i>the stale entry</span><span>t1, t2: the term that wrote the entry</span></div>
+      <div class="panel"><span class="label">what clients were told</span><ol class="hacks" id="hAcks"></ol></div>
+    </div>
+
+    <div class="demo reveal" style="display:flex;flex-direction:column;gap:14px">
+      <span class="label">finding 002 · messages one leader tick sends one lagging follower while its log compaction runs (log scale)</span>
+      <div id="stormBars"></div>
+    </div>
+  </section>
+
+  <section class="wrap cbody">
+    <div class="prose reveal">
+      <span class="eyebrow">how it works</span>
+      <h2 class="h2">Own the clock, the network and the disk.</h2>
+      <p>PySyncObj runs unmodified with its own tick turned off and a custom transport. Time is a virtual per-node clock, randomness is seeded, and every message passes through a network model that gives exactly what TCP gives: one in-order connection per pair, cut or blackholed by the fault schedule, with in-flight data lost when a connection dies. A crash keeps the node's journal files, like the OS page cache would.</p>
+      <h3>Checks on every step</h3>
+      <p>One leader per term. No two nodes applying different commands at the same index. No committed entry ever changing. At the end, the client history goes through a linearizability checker (Wing &amp; Gong with Lowe's memoization) that I checked against brute force on over 18,000 random histories.</p>
+      <h3>From a failing seed to a fix</h3>
+      <p>A failing seed replays exactly and shrinks by delta debugging over its fault plan. Then the proof moves out of the simulator: each PySyncObj finding has a standalone script that triggers it through the library's own message handler, run in a clean virtualenv.</p>
+      <h3>Testing the tester</h3>
+      <p>I planted known Raft bugs (double votes, no election restriction, minority commits, the vote-persistence bug PySyncObj really had) and measured how fast the harness catches each. A harness that finds nothing only means something if it finds these.</p>
+    </div>
+    <div class="measured reveal">
+      <span class="eyebrow">findings · PySyncObj 0.3.17 (= upstream master)</span>
+      <div class="tw"><table class="ftable">
+        <caption>Each has a standalone reproduction and a draft issue</caption>
+        <thead><tr><th>#</th><th>what breaks</th><th class="r">fix</th></tr></thead>
+        <tbody>
+          <tr class="lo"><td>001</td><td>deposed leader acks a write the cluster never committed</td><td class="r">+9 / −1</td></tr>
+          <tr><td>002</td><td>leader resends up to 82k messages per tick during compaction</td><td class="r">+5</td></tr>
+          <tr><td>003</td><td>LEADER_CHANGED documented as "not committed", can commit</td><td class="r">docs</td></tr>
+        </tbody>
+      </table></div>
+      <div class="tw"><table>
+        <caption>Planted bugs caught (PySyncObj, fixes applied)</caption>
+        <thead><tr><th>bug</th><th class="r">runs caught</th></tr></thead>
+        <tbody>
+          <tr><td>leader commits with a minority</td><td class="r">548 / 600</td></tr>
+          <tr><td>no election restriction</td><td class="r">46 / 200</td></tr>
+          <tr><td>accepts appends from an older term</td><td class="r">43 / 200</td></tr>
+          <tr><td>votes twice in a term</td><td class="r">16 / 200</td></tr>
+          <tr><td>forgets its vote on restart (real bug, PR #202)</td><td class="r">2 / 600</td></tr>
+          <tr class="lo"><td>figure 8 (old-term commit)</td><td class="r">0 / 800</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section class="loses">
+    <div class="wrap">
+      <span class="eyebrow reveal">being straight about it</span>
+      <h2 class="h2 reveal">What the harness got wrong, and what's still open.</h2>
+      <ul>
+        <li class="reveal"><strong>Its first 7 "bugs" were mine</strong><span>The harness trusted the docs that LEADER_CHANGED means "not committed". Seven linearizability failures later, reading why turned into finding 003.</span></li>
+        <li class="reveal"><strong>Its clock froze inside events</strong><span>A PySyncObj loop that stops after 0.1 s of wall time never stopped, and 14 seeds hung. Sends now cost time; asking why the loop spun turned into finding 002.</span></li>
+        <li class="reveal"><strong>Figure 8 slipped through</strong><span>Both libraries ship a new leader's no-op in the same batch as older entries, so a planted figure-8 bug never gets a window. 0 of 1,100 runs, reported as a miss.</span></li>
+        <li class="reveal"><strong>Not filed upstream yet</strong><span>Each finding has a draft issue and patch. 2 of 4,000 histories were too big for the checker's budget and are reported undecided, not passing.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="wrap repro">
+    <div class="reveal">
+      <span class="eyebrow">reproduce</span>
+      <pre>git clone https://github.com/asp53826/raft-hunt && cd raft-hunt
+python -m venv .venv && .venv/bin/pip install pytest pysyncobj==0.3.17
+.venv/bin/python findings/001-*/unit_repro.py      # exit 1 = reproduced
+.venv/bin/python -m targets.pysyncobj.run --seeds 0:400 -j 4</pre>
+    </div>
+    <div class="next reveal">
+      <span class="eyebrow">next case study</span>
+      <a class="big" href="raft-mvcc.html">raft-mvcc →</a>
+      <span class="lede">My own Raft and MVCC, running in your browser as WebAssembly.</span>
+    </div>
+  </section>
+</main>
+<footer><div class="wrap"><span>© 2026 Aaryan Patel</span><a href="../index.html">← back to the lab</a></div></footer>
+
+<script src="../vendor/lab-motion.js"></script>
+<script type="module" src="../js/sfx.js"></script>
+<script type="module" src="../js/case.js"></script>
+<script type="module" src="../js/demo-hunt.js"></script>
+<script type="module" src="../js/touches.js"></script>
+<script type="module" src="../js/presence.js"></script>
+</body>
+</html>
